@@ -5,1190 +5,726 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChurchFlow AI — Single File Prototype</title>
+  <title>ChurchFlow AI — Clickable Proclaim-style Frontend</title>
   <style>
     :root{
-      --bg:#0b1020;
-      --panel:#111833;
-      --panel-2:#182143;
-      --soft:#212d5a;
-      --text:#eef3ff;
-      --muted:#b3c0e6;
-      --accent:#7ea6ff;
-      --accent-2:#8bffd6;
-      --danger:#ff8f8f;
-      --warning:#ffd27e;
-      --success:#8cffb3;
-      --shadow:0 18px 45px rgba(0,0,0,.28);
-      --radius:18px;
+      --bg:#2d2c39;
+      --panel:#2b2a3a;
+      --line:#4a4858;
+      --text:#f0f0f5;
+      --muted:#b8b7c5;
+      --accent:#9ac6ff;
+      --accent-2:#ffd85e;
+      --green:#60d394;
+      --sidebar:#313041;
+      --shadow:0 10px 30px rgba(0,0,0,.24);
     }
-
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:linear-gradient(180deg,#0a0f1e,#101734 45%,#0c1225);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
-    body{min-height:100vh}
-    a{color:inherit}
+    html,body{margin:0;height:100%;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    body{overflow:hidden}
     button,input,select,textarea{font:inherit}
-    .app{
-      display:grid;
-      grid-template-columns:290px 1fr;
-      min-height:100vh;
-    }
-    .sidebar{
-      background:rgba(7,11,24,.88);
-      border-right:1px solid rgba(255,255,255,.08);
-      padding:22px 16px;
-      position:sticky;
-      top:0;
-      height:100vh;
-      backdrop-filter: blur(16px);
-    }
-    .brand{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      margin-bottom:22px;
-      padding:12px;
-      border-radius:16px;
-      background:linear-gradient(135deg,rgba(126,166,255,.18),rgba(139,255,214,.12));
-      border:1px solid rgba(255,255,255,.08);
-    }
-    .brand-icon{
-      width:46px;height:46px;border-radius:14px;
-      display:grid;place-items:center;
-      background:linear-gradient(135deg,var(--accent),#5f7fff);
-      color:#081126;font-weight:800;font-size:20px;
-      box-shadow:var(--shadow);
-    }
-    .brand h1{font-size:18px;margin:0}
-    .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
-    .nav{
-      display:grid;
-      gap:8px;
-      margin-top:8px;
-    }
-    .nav-btn{
-      width:100%;
-      border:0;
-      text-align:left;
-      padding:12px 14px;
-      color:var(--text);
-      background:transparent;
-      border-radius:14px;
-      cursor:pointer;
-      transition:.18s ease;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .nav-btn:hover,.nav-btn.active{
-      background:linear-gradient(135deg,rgba(126,166,255,.16),rgba(255,255,255,.04));
-      border:1px solid rgba(255,255,255,.08);
-      transform:translateX(2px);
-    }
-    .sidebar-foot{
-      position:absolute;
-      left:16px; right:16px; bottom:18px;
-      padding:14px;
-      border-radius:16px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-    }
-    .sidebar-foot small{display:block;color:var(--muted);line-height:1.45}
-
-    .main{
-      padding:24px;
-    }
+    .app{display:grid;grid-template-rows:50px 28px 1fr 150px;height:100vh}
     .topbar{
-      display:flex;align-items:center;justify-content:space-between;gap:16px;
-      margin-bottom:20px;
-      flex-wrap:wrap;
+      background:#4b4958;border-bottom:1px solid #5e5c6a;
+      display:flex;align-items:center;justify-content:space-between;padding:0 12px;gap:14px
     }
-    .topbar h2{margin:0;font-size:28px}
-    .topbar p{margin:4px 0 0;color:var(--muted)}
-    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .btn{
-      border:0;cursor:pointer;border-radius:14px;padding:11px 14px;
-      background:linear-gradient(135deg,var(--accent),#6488ff);color:#081126;font-weight:700;
-      box-shadow:var(--shadow);
+    .menu,.top-actions{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
+    .menu button,.top-actions button,.toggle-wrap,.status-pill{
+      background:transparent;border:0;color:#f6f6fa;padding:10px 12px;cursor:pointer
     }
-    .btn.secondary{
-      background:rgba(255,255,255,.06); color:var(--text); border:1px solid rgba(255,255,255,.08); box-shadow:none;
-    }
-    .btn.ghost{
-      background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.12);box-shadow:none;
-    }
+    .menu button:hover,.menu button.active,.top-actions button:hover{background:rgba(255,255,255,.08)}
+    .toggle-wrap{display:flex;align-items:center;gap:10px;color:#fff}
+    .switch{width:48px;height:24px;border-radius:999px;background:#1c1b22;position:relative;border:1px solid rgba(255,255,255,.18)}
+    .switch::after{content:"";width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;left:3px;top:2px}
+    .status-pill{padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.18);font-weight:700}
+    .status-pill.live{background:#59525f}
+    .light{width:11px;height:11px;border-radius:50%;background:var(--green);display:inline-block;margin-right:8px;box-shadow:0 0 0 4px rgba(96,211,148,.18)}
+    .update-bar{background:#a8d2f3;color:#25435d;font-weight:600;display:flex;align-items:center;justify-content:center;position:relative}
+    .update-bar .close{position:absolute;right:10px;top:4px;background:transparent;border:0;font-size:18px;color:#547896;cursor:pointer}
 
-    .page{display:none;animation:fade .22s ease}
-    .page.active{display:block}
-    @keyframes fade{from{opacity:.25;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .workspace{display:grid;grid-template-columns:290px 330px 1fr;min-height:0;background:var(--bg)}
+    .panel{border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column;background:var(--panel)}
+    .panel:last-child{border-right:0}
+    .panel-head{
+      min-height:40px;padding:8px 10px;border-bottom:1px solid var(--line);
+      display:flex;align-items:center;justify-content:space-between;gap:8px;background:#2d2c3d
+    }
+    .panel-head h3{margin:0;font-size:14px;font-weight:600}
+    .mini-btn{border:1px solid #676577;background:#403f4f;color:#fff;border-radius:4px;padding:6px 9px;cursor:pointer}
+    .mini-btn:hover,.mini-btn.active{background:#4a495b}
+    .dropdown{width:100%;padding:8px 10px;background:#555462;border:1px solid #696776;color:#fff;border-radius:3px}
+    .left-body,.settings-body,.preview-body{padding:8px;overflow:auto}
+    .presentation-card,.view-card{
+      background:#292838;border:1px solid #3c3b4b;color:#f4f4f8;padding:8px 10px;border-radius:2px;font-size:13px
+    }
+    .view-card{margin-bottom:10px}
+    .old-warning{margin-top:10px;background:#b3d7f3;color:#3a617e;padding:12px;border-radius:2px;line-height:1.35}
+    .group-title{
+      margin:14px -8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+      padding:8px 10px;font-size:12px;color:#ddd;text-transform:uppercase;background:#353444;font-weight:700
+    }
+    .slide-list{padding:6px 0}
+    .slide-item{
+      display:grid;grid-template-columns:38px 1fr 18px;gap:9px;align-items:center;
+      padding:6px 8px;cursor:pointer;border-left:3px solid transparent
+    }
+    .slide-item:hover,.slide-item.active{background:#3a3949;border-left-color:#ffdc5c}
+    .thumb-sm{height:22px;border-radius:2px;background:linear-gradient(135deg,#76b8ff,#d0ecff);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
+    .thumb-sm.purple{background:linear-gradient(135deg,#781aff,#ff5e9a)}
+    .thumb-sm.gold{background:linear-gradient(135deg,#c68a1d,#f7e4a0)}
+    .thumb-sm.blue{background:linear-gradient(135deg,#d7f3ff,#6ecbff)}
+    .thumb-sm.teal{background:linear-gradient(135deg,#0aa5c0,#8bf0ff)}
+    .thumb-sm.green{background:linear-gradient(135deg,#26705b,#63d39a)}
+    .slide-meta b{display:block;font-weight:600}
+    .slide-meta span{font-size:12px;color:var(--muted)}
+    .play-dot{width:12px;height:12px;border-radius:50%;background:#4f8dfd;position:relative}
+    .play-dot::after{content:"";position:absolute;left:4px;top:2px;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid #fff}
 
-    .grid{
-      display:grid;
-      gap:18px;
+    .settings-tabs,.preview-tabs,.subtabs{
+      display:flex;gap:0;border-bottom:1px solid var(--line);background:#302f40;overflow:auto
     }
-    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .card{
-      background:linear-gradient(180deg,rgba(24,33,67,.96),rgba(16,24,51,.96));
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
+    .settings-tab,.preview-tab,.subtab{
+      padding:10px 8px;font-size:12px;text-align:center;cursor:pointer;border-right:1px solid var(--line);color:#d0cedb;white-space:nowrap
     }
-    .card-head{
-      padding:16px 18px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    .settings-tab.active,.preview-tab.active,.subtab.active{background:#3a3949;color:#ffe66d;font-weight:700}
+    .settings-pane,.menu-pane,.subpane{display:none}
+    .settings-pane.active,.menu-pane.active,.subpane.active{display:block}
+    .field{margin-top:10px}
+    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+    .field input,.field textarea,.field select{
+      width:100%;padding:9px 10px;background:#4d4b5a;color:#fff;border:1px solid #696776;border-radius:3px
     }
-    .card-head h3,.card-head h4{margin:0}
-    .card-body{padding:18px}
-    .stat{
-      display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:18px;
-      background:linear-gradient(135deg,rgba(126,166,255,.11),rgba(139,255,214,.08));
-      border:1px solid rgba(255,255,255,.08);
+    .field textarea{min-height:92px;resize:vertical}
+    .small-actions,.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .chip{font-size:11px;padding:6px 8px;border-radius:999px;background:#3e4e67;border:1px solid #5a7493;color:#dce9f9}
+    .note-shot{
+      margin-top:12px;border:1px solid #6c6a79;background:#ede4cd;color:#2b2619;border-radius:4px;padding:12px;min-height:150px;position:relative;line-height:1.7;
+      background-image:linear-gradient(to bottom, rgba(60,90,160,.08) 1px, transparent 1px);background-size:100% 28px;
     }
-    .stat .label{color:var(--muted);font-size:13px}
-    .stat .value{font-size:34px;font-weight:800}
-    .stat .sub{color:var(--accent-2);font-size:12px}
-    .mini-badge{
-      font-size:11px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.07);color:var(--muted);display:inline-block
-    }
+    .note-shot::before{content:"";position:absolute;top:0;bottom:0;left:44px;width:2px;background:rgba(194,67,67,.2)}
+    .note-shot p{margin:0;padding-left:56px}
+    .editor-block,.info-block{margin-top:12px;background:#343344;border:1px solid #595767;border-radius:4px;padding:10px}
+    .slide-card{padding:10px;border:1px solid #595767;border-radius:4px;background:#3c3b4a;margin-top:8px}
+    .slide-card h4{margin:0 0 6px;font-size:13px}
+    .slide-card p,.info-block p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .info-tile{background:#3c3b4a;border:1px solid #595767;border-radius:4px;padding:10px}
+    .info-tile strong{display:block;margin-bottom:6px}
 
-    .field{display:grid;gap:8px;margin-bottom:14px}
-    .field label{font-size:13px;color:var(--muted)}
-    .input, .textarea, .select{
-      width:100%;background:rgba(255,255,255,.05);color:var(--text);
-      border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:12px 13px;
-      outline:none;
+    .preview-body{display:flex;flex-direction:column}
+    .stage{flex:1;background:#2c2b3a;padding:10px;display:flex;flex-direction:column;min-height:0}
+    .screen{
+      flex:1;border:1px solid #3f4f66;background:
+        radial-gradient(circle at top center, rgba(255,255,255,.58), transparent 24%),
+        radial-gradient(circle at 78% 22%, rgba(255,255,255,.28), transparent 16%),
+        radial-gradient(circle at 22% 72%, rgba(255,255,255,.16), transparent 14%),
+        linear-gradient(180deg, #5c90c9 0%, #9ed0ff 28%, #7db8e6 56%, #e8d6d3 77%, #f4e8ee 100%);
+      position:relative;overflow:hidden;box-shadow:var(--shadow);
     }
-    .textarea{min-height:110px;resize:vertical}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-    .tool{
-      padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.1);
-      background:rgba(255,255,255,.04);color:var(--muted);cursor:pointer
-    }
-    .slide-preview{
-      min-height:300px;border-radius:20px;padding:26px;
-      background:
-        radial-gradient(circle at top right, rgba(126,166,255,.24), transparent 35%),
-        radial-gradient(circle at bottom left, rgba(139,255,214,.18), transparent 30%),
-        linear-gradient(135deg,#0f1530,#17214a 58%,#0d1531);
-      border:1px solid rgba(255,255,255,.10);
-      display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
-      overflow:hidden;
-      position:relative;
-    }
-    .slide-preview .kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-2)}
-    .slide-preview h1{margin:12px 0 10px;font-size:clamp(30px,4vw,54px);max-width:920px}
-    .slide-preview p{margin:0;color:#d9e3ff;font-size:clamp(16px,1.6vw,24px);max-width:920px;line-height:1.55}
-    .slide-footer{
-      position:absolute;bottom:16px;left:20px;right:20px;
-      display:flex;justify-content:space-between;font-size:12px;color:#d2ddff88
-    }
+    .cloud{position:absolute;border-radius:50%;background:rgba(255,255,255,.84);filter:blur(1px)}
+    .cloud.one{width:230px;height:96px;left:220px;top:130px}
+    .cloud.two{width:160px;height:74px;right:170px;top:92px}
+    .cloud.three{width:250px;height:110px;right:70px;bottom:40px}
+    .ray{position:absolute;left:50%;top:0;transform-origin:top center;background:linear-gradient(180deg, rgba(255,255,255,.55), transparent);width:20px;height:480px;filter:blur(1px);opacity:.62}
+    .ray.r1{transform:translateX(-180px) rotate(8deg)}
+    .ray.r2{transform:translateX(-95px) rotate(-6deg)}
+    .ray.r3{transform:translateX(8px) rotate(3deg)}
+    .ray.r4{transform:translateX(105px) rotate(-12deg)}
+    .ray.r5{transform:translateX(185px) rotate(11deg)}
+    .play-overlay{position:absolute;inset:0;display:grid;place-items:center}
+    .play-btn{width:70px;height:62px;border-radius:12px;background:rgba(70,92,122,.45);display:grid;place-items:center;backdrop-filter:blur(3px)}
+    .play-btn::after{content:"";border-top:12px solid transparent;border-bottom:12px solid transparent;border-left:18px solid #fff;margin-left:5px}
+    .overlay-text{position:absolute;left:60px;right:60px;bottom:62px;text-align:center;display:none}
+    .overlay-text h1{margin:0 0 10px;font-size:46px;text-shadow:0 2px 15px rgba(0,0,0,.45)}
+    .overlay-text p{margin:0;font-size:22px;line-height:1.45;text-shadow:0 2px 15px rgba(0,0,0,.45)}
+    .bilingual-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;text-align:left}
+    .bilingual-grid div{background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.14);padding:12px;border-radius:4px}
+    .video-bar{position:absolute;left:0;right:0;bottom:0;height:22px;background:rgba(48,53,68,.55);display:flex;align-items:center;padding:0 8px;gap:10px}
+    .video-progress{flex:1;height:4px;background:rgba(255,255,255,.28);border-radius:999px;position:relative}
+    .video-progress span{position:absolute;left:0;top:0;bottom:0;width:87%;background:#75b7ff;border-radius:999px}
+    .video-time{font-size:12px;color:#ddd}
 
-    .split-screen{
-      display:grid;grid-template-columns:1fr 1fr;gap:12px;
-      min-height:300px;
-    }
-    .projection-pane{
-      border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(180deg,#0e1430,#16224d);
-    }
-    .projection-pane h4{margin:0 0 12px}
-    .projection-canvas{
-      min-height:220px;border-radius:16px;padding:18px;display:flex;align-items:center;justify-content:center;text-align:center;
-      background:linear-gradient(135deg,#050913,#0f1733);
-      border:1px solid rgba(255,255,255,.07)
-    }
+    .strip{border-top:1px solid var(--line);background:#43414f;display:flex;overflow:auto;gap:8px;padding:8px}
+    .film{min-width:170px;max-width:170px;border-radius:2px;cursor:pointer}
+    .film.active .film-label{color:#ffe66d}
+    .film-label{font-size:13px;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .film-thumb{height:95px;border:1px solid #5c5968;border-radius:2px;position:relative;overflow:hidden}
+    .film-thumb.blue{background:linear-gradient(135deg,#9fd8ff,#5ea6df)}
+    .film-thumb.welcome{background:linear-gradient(135deg,#871cff,#ff6aaa)}
+    .film-thumb.form{background:linear-gradient(135deg,#0e1146,#3039af)}
+    .film-thumb.cross{background:linear-gradient(180deg,#f9c874,#fff3d2 50%,#f4e8d8)}
+    .film-thumb.teal{background:linear-gradient(135deg,#1db5d8,#6be8ff)}
+    .film-thumb.sky{background:radial-gradient(circle at top center, rgba(255,255,255,.55), transparent 25%), linear-gradient(180deg,#6195c8 0,#a1d4ff 33%,#8ac1ea 66%,#f8eef1 100%)}
+    .film-thumb.green{background:linear-gradient(135deg,#26705b,#63d39a)}
+    .film-thumb::after{content:"";position:absolute;inset:auto 10px 10px auto;width:28px;height:28px;border-radius:6px;background:rgba(200,200,220,.55)}
 
-    .list{display:grid;gap:10px}
-    .list-item{
-      padding:14px;border-radius:16px;background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;gap:12px;align-items:center;
+    @media (max-width:1250px){
+      body{overflow:auto}
+      .app{height:auto;min-height:100vh;grid-template-rows:50px 28px auto 150px}
+      .workspace{grid-template-columns:1fr}
+      .panel{min-height:320px;border-right:0;border-bottom:1px solid var(--line)}
     }
-    .list-item strong{display:block}
-    .list-item span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
-    .chips{display:flex;gap:8px;flex-wrap:wrap}
-    .chip{font-size:11px;padding:7px 9px;border-radius:999px;background:rgba(126,166,255,.12);color:#dbe6ff;border:1px solid rgba(126,166,255,.20)}
-    .status-dot{
-      width:10px;height:10px;border-radius:999px;display:inline-block;margin-right:8px;background:var(--success);box-shadow:0 0 0 7px rgba(140,255,179,.08)
-    }
-
-    .verse-box{
-      border-radius:18px;padding:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)
-    }
-    .verse-ref{color:var(--accent-2);font-size:13px;margin-bottom:10px}
-    .verse-text{font-size:28px;line-height:1.45;margin:0}
-    .verse-text.small{font-size:22px;color:#dbe5ff}
-    .two-col-text{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-
-    .dropzone{
-      border:2px dashed rgba(126,166,255,.35);
-      border-radius:20px;padding:26px;text-align:center;background:rgba(126,166,255,.06)
-    }
-    .thumb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-    .thumb{
-      min-height:155px;border-radius:18px;padding:16px;display:flex;align-items:flex-end;
-      background:
-        radial-gradient(circle at top left, rgba(255,255,255,.16), transparent 24%),
-        linear-gradient(140deg,#203469,#6d48d1);
-      border:1px solid rgba(255,255,255,.09);font-weight:700
-    }
-    .thumb:nth-child(2){background:linear-gradient(140deg,#243b6b,#208870)}
-    .thumb:nth-child(3){background:linear-gradient(140deg,#5c3469,#b44b61)}
-
-    .note-paper{
-      min-height:300px;border-radius:18px;padding:18px;background:#f5efdf;color:#2b2515;
-      box-shadow:inset 0 0 0 1px rgba(0,0,0,.05);
-      background-image: linear-gradient(to bottom, rgba(60,90,160,.10) 1px, transparent 1px);
-      background-size:100% 34px;
-      position:relative;
-    }
-    .note-paper::before{
-      content:"";
-      position:absolute;top:0;bottom:0;left:52px;width:2px;background:rgba(210,80,80,.18);
-    }
-    .note-line{padding-left:64px;padding-top:6px;font-size:20px;line-height:34px}
-    .slide-mini{
-      min-height:300px;border-radius:18px;padding:22px;background:linear-gradient(135deg,#121935,#1c2757 58%,#111934);display:flex;align-items:center;justify-content:center;text-align:center
-    }
-    .timeline{display:grid;gap:12px}
-    .time-row{
-      display:grid;grid-template-columns:90px 1fr 110px;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)
-    }
-    .time-row .time{color:var(--accent-2);font-weight:700}
-    .time-row .flag{justify-self:end;font-size:12px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.07);color:var(--muted)}
-    .progress{
-      height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden
-    }
-    .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
-    .table{
-      width:100%;border-collapse:collapse
-    }
-    .table th,.table td{
-      padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:14px
-    }
-    .table th{color:var(--muted);font-weight:600}
-
-    .footer-note{color:var(--muted);font-size:12px;margin-top:12px}
-
-    @media (max-width: 1100px){
-      .grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .grid.three{grid-template-columns:1fr}
-      .grid.two,.split-screen,.two-col-text{grid-template-columns:1fr}
-      .app{grid-template-columns:1fr}
-      .sidebar{position:relative;height:auto}
-      .sidebar-foot{position:relative;left:auto;right:auto;bottom:auto;margin-top:16px}
-      .main{padding:18px}
-    }
-    @media (max-width: 680px){
-      .grid.four,.thumb-grid{grid-template-columns:1fr}
-      .topbar h2{font-size:23px}
-      .verse-text{font-size:22px}
-      .time-row{grid-template-columns:1fr}
+    @media (max-width:700px){
+      .bilingual-grid,.info-grid{grid-template-columns:1fr}
+      .overlay-text{left:20px;right:20px}
+      .overlay-text h1{font-size:28px}
+      .overlay-text p{font-size:16px}
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-icon">CF</div>
-        <div>
-          <h1>ChurchFlow AI</h1>
-          <p>Single-file HTML prototype</p>
-        </div>
+    <header class="topbar">
+      <div class="menu">
+        <button class="menu-btn active" data-menu="fileMenu">File</button>
+        <button class="menu-btn" data-menu="addMenu">Add Item</button>
+        <button class="menu-btn" data-menu="mediaMenu">Media</button>
+        <button class="menu-btn" data-menu="songsMenu">Song Library</button>
+        <button class="menu-btn" data-menu="bibleMenu">Bible</button>
+        <button class="menu-btn" data-menu="aiMenu">AI Tools</button>
+        <button class="menu-btn" data-menu="settingsMenu">Settings</button>
+        <button class="menu-btn" data-menu="viewMenu">View</button>
+        <button class="menu-btn" data-menu="helpMenu">Help</button>
       </div>
-
-      <div class="nav">
-        <button class="nav-btn active" data-page="dashboard">Dashboard <span>›</span></button>
-        <button class="nav-btn" data-page="presentations">Presentations <span>›</span></button>
-        <button class="nav-btn" data-page="bible">Bible Projection <span>›</span></button>
-        <button class="nav-btn" data-page="notes">Live Notes <span>›</span></button>
-        <button class="nav-btn" data-page="media">Media Library <span>›</span></button>
-        <button class="nav-btn" data-page="design">Design Studio <span>›</span></button>
-        <button class="nav-btn" data-page="ai">AI Tools <span>›</span></button>
-        <button class="nav-btn" data-page="streaming">Streaming <span>›</span></button>
-        <button class="nav-btn" data-page="mobile">Mobile Control <span>›</span></button>
-        <button class="nav-btn" data-page="settings">Settings <span>›</span></button>
+      <div class="top-actions">
+        <button>↶</button>
+        <button>↷</button>
+        <button>Team ▾</button>
+        <button>🎙 Recordings ▾</button>
+        <div class="toggle-wrap">
+          <strong>EDIT</strong>
+          <div class="switch"></div>
+          <span style="opacity:.75">PREVIEW</span>
+        </div>
+        <div class="status-pill live">ON AIR</div>
+        <div><span class="light"></span></div>
       </div>
+    </header>
 
-      <div class="sidebar-foot">
-        <small><strong>GitHub + Vercel ready:</strong> save this file as <code>index.html</code> and upload it to your repo.</small>
-      </div>
-    </aside>
+    <div class="update-bar">
+      Every main menu, panel, and section is now clickable so you can explore what is under each item.
+      <button class="close">×</button>
+    </div>
 
-    <main class="main">
-      <div class="topbar">
-        <div>
-          <h2 id="pageTitle">Dashboard</h2>
-          <p id="pageSubtitle">Overview of your service production workflow.</p>
+    <div class="workspace">
+      <aside class="panel">
+        <div class="panel-head">
+          <h3>Sunday Service 22FEB26 2.0</h3>
+          <button class="mini-btn">⤢</button>
         </div>
-        <div class="top-actions">
-          <button class="btn secondary" id="saveAllBtn">Save Demo Data</button>
-          <button class="btn" id="loadSampleBtn">Load Sunday Sample</button>
-        </div>
-      </div>
+        <div class="left-body">
+          <div class="presentation-card">📅 Sunday, March 22 <span style="float:right">Share ▾</span></div>
+          <div class="old-warning">
+            You are editing the weekly service lineup.<br><br>
+            • <strong>Create</strong> a new presentation from scratch<br>
+            • <strong>Duplicate</strong> this presentation and use it as a starting point
+          </div>
 
-      <section class="page active" id="dashboard">
-        <div class="grid four">
-          <div class="stat">
-            <div class="label">Active presentation</div>
-            <div class="value" id="dashPresentationCount">1</div>
-            <div class="sub">Sunday Promise Service</div>
-          </div>
-          <div class="stat">
-            <div class="label">Slides in lineup</div>
-            <div class="value" id="dashSlideCount">8</div>
-            <div class="sub">Ready for projection</div>
-          </div>
-          <div class="stat">
-            <div class="label">Media assets</div>
-            <div class="value" id="dashMediaCount">14</div>
-            <div class="sub">Images, videos, backgrounds</div>
-          </div>
-          <div class="stat">
-            <div class="label">Live stream status</div>
-            <div class="value" style="font-size:26px"><span class="status-dot"></span>Ready</div>
-            <div class="sub">OBS / camera sync mock</div>
-          </div>
-        </div>
+          <div class="group-title">Pre-Service Loop</div>
+          <div class="group-title">Warm-Up</div>
+          <div class="group-title">Service <span style="float:right;text-transform:none;font-size:14px">11:00 AM</span></div>
 
-        <div class="grid two" style="margin-top:18px">
-          <div class="card">
-            <div class="card-head">
-              <h3>Tonight's service flow</h3>
-              <span class="mini-badge">Multi-user workflow</span>
+          <div class="slide-list">
+            <div class="slide-item active" data-style="sky" data-title="Levites" data-body="" data-type="Video">
+              <div class="thumb-sm blue"></div>
+              <div class="slide-meta"><b>Levites</b><span>3:12</span></div>
+              <div class="play-dot"></div>
             </div>
-            <div class="card-body">
-              <div class="timeline">
-                <div class="time-row">
-                  <div class="time">6:30 PM</div>
-                  <div>
-                    <strong>Countdown + welcome loop</strong>
-                    <div class="footer-note">Animated opener, logo, lower-third ready</div>
-                  </div>
-                  <div class="flag">Queued</div>
-                </div>
-                <div class="time-row">
-                  <div class="time">6:40 PM</div>
-                  <div>
-                    <strong>Worship lyrics set</strong>
-                    <div class="footer-note">English / Swahili bilingual mode available</div>
-                  </div>
-                  <div class="flag">Ready</div>
-                </div>
-                <div class="time-row">
-                  <div class="time">7:05 PM</div>
-                  <div>
-                    <strong>Sermon slides + live notes</strong>
-                    <div class="footer-note">Auto-generated key points and thumbnails</div>
-                  </div>
-                  <div class="flag">Live</div>
-                </div>
-                <div class="time-row">
-                  <div class="time">7:45 PM</div>
-                  <div>
-                    <strong>Prayer and giving screen</strong>
-                    <div class="footer-note">Lower-third overlay + QR giving slide</div>
-                  </div>
-                  <div class="flag">Prepared</div>
-                </div>
+            <div class="slide-item" data-style="welcome" data-title="WELCOME" data-body="TO MOUNT OF OLIVES MINISTRY" data-type="Graphic">
+              <div class="thumb-sm purple"></div>
+              <div class="slide-meta"><b>Welcome Slide</b><span>Title slide</span></div>
+              <div></div>
+            </div>
+            <div class="slide-item" data-style="blue" data-title="" data-body="" data-type="Background">
+              <div class="thumb-sm blue"></div>
+              <div class="slide-meta"><b>Praise</b><span>Background loop</span></div>
+              <div class="play-dot"></div>
+            </div>
+            <div class="slide-item" data-style="form" data-title="TITHE & OFFERING" data-body="Simple form layout preview" data-type="Form">
+              <div class="thumb-sm gold"></div>
+              <div class="slide-meta"><b>Tithe Form</b><span>Offering input</span></div>
+              <div></div>
+            </div>
+            <div class="slide-item" data-style="cross" data-title="WORSHIP" data-body="Come before the Lord with thanksgiving" data-type="Graphic">
+              <div class="thumb-sm gold"></div>
+              <div class="slide-meta"><b>Worship</b><span>Cross visual</span></div>
+              <div class="play-dot"></div>
+            </div>
+            <div class="slide-item" data-style="teal" data-title="PREACHER" data-body="Speaker introduction slide" data-type="Graphic">
+              <div class="thumb-sm teal"></div>
+              <div class="slide-meta"><b>Preacher</b><span>Speaker slide</span></div>
+              <div class="play-dot"></div>
+            </div>
+            <div class="slide-item" data-style="teal" data-title="SALA YA BABA" data-body="Baba yetu uliye mbinguni, jina lako litukuzwe..." data-type="Lyrics">
+              <div class="thumb-sm teal"></div>
+              <div class="slide-meta"><b>Sala Ya Baba</b><span>Swahili lyrics</span></div>
+              <div></div>
+            </div>
+            <div class="slide-item" data-style="green" data-title="PASTOR NOTE CAPTURE" data-body="Photo note converted into editable sermon slides for the media team." data-type="AI OCR">
+              <div class="thumb-sm green"></div>
+              <div class="slide-meta"><b>Pastor Note Capture</b><span>Photo → slides → team edit</span></div>
+              <div></div>
+            </div>
+          </div>
+
+          <div class="group-title">Post-Service Loop</div>
+        </div>
+      </aside>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h3 id="centerPanelTitle">File Menu</h3>
+          <div>
+            <button class="mini-btn subtab active" data-subpane="menuMain">Overview</button>
+            <button class="mini-btn subtab" data-subpane="menuDetails">Details</button>
+          </div>
+        </div>
+        <div class="settings-body">
+          <div id="menuMain" class="subpane active">
+            <div id="fileMenu" class="menu-pane active">
+              <div class="view-card"><strong>File actions</strong><br><span style="color:#b8b7c5">Create new service, duplicate existing order, save, export, and publish.</span></div>
+              <div class="info-grid">
+                <div class="info-tile"><strong>New Presentation</strong><span style="color:#b8b7c5">Start a fresh Sunday service layout.</span></div>
+                <div class="info-tile"><strong>Duplicate Week</strong><span style="color:#b8b7c5">Copy last week and update content quickly.</span></div>
+                <div class="info-tile"><strong>Save</strong><span style="color:#b8b7c5">Save the current service structure.</span></div>
+                <div class="info-tile"><strong>Publish</strong><span style="color:#b8b7c5">Send approved presentation to church devices.</span></div>
               </div>
             </div>
-          </div>
 
-          <div class="card">
-            <div class="card-head">
-              <h3>Audience preview</h3>
-              <span class="mini-badge">Live projection mock</span>
-            </div>
-            <div class="card-body">
-              <div class="slide-preview" id="dashboardHeroPreview">
-                <div class="kicker">Sunday Service</div>
-                <h1>God's Promise Stands</h1>
-                <p>Welcome to worship. Today's service presentation is synchronized for screens, stream, and notes.</p>
-                <div class="slide-footer">
-                  <span>ChurchFlow AI</span>
-                  <span>1920 × 1080</span>
-                </div>
+            <div id="addMenu" class="menu-pane">
+              <div class="view-card"><strong>Add Item</strong><br><span style="color:#b8b7c5">Insert new slides, Bible verses, notes, media, forms, and split-screen content.</span></div>
+              <div class="chip-row">
+                <div class="chip">Title slide</div><div class="chip">Scripture</div><div class="chip">Lyrics</div><div class="chip">Video</div><div class="chip">Offering form</div><div class="chip">Split screen</div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      <section class="page" id="presentations">
-        <div class="grid two">
-          <div class="card">
-            <div class="card-head">
-              <h3>Presentation builder</h3>
-              <span class="mini-badge">Single file editor</span>
-            </div>
-            <div class="card-body">
-              <div class="toolbar">
-                <button class="tool">Title</button>
-                <button class="tool">Scripture</button>
-                <button class="tool">Image</button>
-                <button class="tool">Video</button>
-                <button class="tool">Lower Third</button>
-                <button class="tool">Announcement</button>
-              </div>
+            <div id="mediaMenu" class="menu-pane">
+              <div class="view-card"><strong>Media Library</strong><br><span style="color:#b8b7c5">Upload images, videos, motion backgrounds, and speaker graphics.</span></div>
               <div class="field">
-                <label for="slideTitle">Slide title</label>
-                <input id="slideTitle" class="input" value="God's Promise Stands" />
+                <label>Upload media</label>
+                <input type="file" multiple>
               </div>
-              <div class="field">
-                <label for="slideSubtitle">Slide subtitle / content</label>
-                <textarea id="slideSubtitle" class="textarea">Welcome to Mount of Olives Ministry. Tonight we worship with faith, prayer, and confidence in the promises of God.</textarea>
-              </div>
-              <div class="field">
-                <label for="slideFooterLeft">Footer left</label>
-                <input id="slideFooterLeft" class="input" value="Mount of Olives Ministry" />
-              </div>
-              <div class="field">
-                <label for="slideFooterRight">Footer right</label>
-                <input id="slideFooterRight" class="input" value="Sunday Worship • Live" />
-              </div>
-              <div class="toolbar">
-                <button class="btn" id="updatePreviewBtn">Update preview</button>
-                <button class="btn secondary" id="saveSlideBtn">Save slide</button>
-                <button class="btn ghost" id="clearSlideBtn">Clear</button>
-              </div>
-              <div class="footer-note">This mock saves your slide content into browser local storage so it remains after refresh on the same device.</div>
+              <div class="info-block"><p>In the real app, this area would show folders, tags, search, recent uploads, and favorite backgrounds.</p></div>
             </div>
-          </div>
 
-          <div class="card">
-            <div class="card-head">
-              <h3>Live slide preview</h3>
-              <span class="mini-badge">Projector view</span>
+            <div id="songsMenu" class="menu-pane">
+              <div class="view-card"><strong>Song Library</strong><br><span style="color:#b8b7c5">Store worship songs, verses, language versions, and reusable lyric templates.</span></div>
+              <div class="slide-card"><h4>Sala Ya Baba</h4><p>Swahili lyrics available for projection.</p></div>
+              <div class="slide-card"><h4>Your Grace Is Enough</h4><p>English lyric layout with chorus breaks.</p></div>
             </div>
-            <div class="card-body">
-              <div class="slide-preview" id="mainSlidePreview">
-                <div class="kicker">Live Service</div>
-                <h1 id="previewTitle">God's Promise Stands</h1>
-                <p id="previewSubtitle">Welcome to Mount of Olives Ministry. Tonight we worship with faith, prayer, and confidence in the promises of God.</p>
-                <div class="slide-footer">
-                  <span id="previewFooterLeft">Mount of Olives Ministry</span>
-                  <span id="previewFooterRight">Sunday Worship • Live</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <div class="card" style="margin-top:18px">
-          <div class="card-head">
-            <h3>Split-screen projection</h3>
-            <span class="mini-badge">Project two items at once</span>
-          </div>
-          <div class="card-body">
-            <div class="split-screen">
-              <div class="projection-pane">
-                <h4>Left output</h4>
-                <div class="projection-canvas">
-                  <div>
-                    <div class="mini-badge">Lyrics</div>
-                    <h2 style="margin:14px 0 8px">Your grace is enough</h2>
-                    <p style="color:var(--muted)">For me, in every season of my life.</p>
-                  </div>
-                </div>
-              </div>
-              <div class="projection-pane">
-                <h4>Right output</h4>
-                <div class="projection-canvas">
-                  <div>
-                    <div class="mini-badge">Image / live notes</div>
-                    <h2 style="margin:14px 0 8px">Sermon point 1</h2>
-                    <p style="color:var(--muted)">God's word remains firm even when circumstances change.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="page" id="bible">
-        <div class="grid two">
-          <div class="card">
-            <div class="card-head">
-              <h3>Bible projection</h3>
-              <span class="mini-badge">English • Swahili • Bilingual</span>
-            </div>
-            <div class="card-body">
+            <div id="bibleMenu" class="menu-pane">
+              <div class="view-card"><strong>Bible Projection</strong><br><span style="color:#b8b7c5">Show English, Swahili, or bilingual scriptures on screen.</span></div>
               <div class="field">
-                <label for="verseRef">Reference</label>
-                <input id="verseRef" class="input" value="Genesis 1:1" />
+                <label for="bibleRef">Bible reference</label>
+                <input id="bibleRef" value="Genesis 1:1">
               </div>
               <div class="field">
                 <label for="englishVerse">English verse</label>
-                <textarea id="englishVerse" class="textarea">In the beginning God created the heaven and the earth.</textarea>
+                <textarea id="englishVerse">In the beginning God created the heaven and the earth.</textarea>
               </div>
               <div class="field">
                 <label for="swahiliVerse">Swahili verse</label>
-                <textarea id="swahiliVerse" class="textarea">Hapo mwanzo Mungu aliziumba mbingu na nchi.</textarea>
+                <textarea id="swahiliVerse">Hapo mwanzo Mungu aliziumba mbingu na nchi.</textarea>
               </div>
-              <div class="toolbar">
-                <button class="btn" id="showEnglishBtn">English only</button>
-                <button class="btn secondary" id="showSwahiliBtn">Swahili only</button>
-                <button class="btn ghost" id="showBilingualBtn">Bilingual</button>
+              <div class="small-actions">
+                <button class="mini-btn" id="showEnglishBtn">English only</button>
+                <button class="mini-btn" id="showSwahiliBtn">Swahili only</button>
+                <button class="mini-btn" id="showBilingualBtn">Bilingual</button>
               </div>
             </div>
-          </div>
 
-          <div class="card">
-            <div class="card-head">
-              <h3>Projection preview</h3>
-              <span class="mini-badge" id="bibleModeBadge">Bilingual</span>
-            </div>
-            <div class="card-body">
-              <div class="verse-box">
-                <div class="verse-ref" id="verseRefPreview">Genesis 1:1</div>
-                <div id="bibleOutput">
-                  <div class="two-col-text">
-                    <p class="verse-text small" id="englishVersePreview">In the beginning God created the heaven and the earth.</p>
-                    <p class="verse-text small" id="swahiliVersePreview">Hapo mwanzo Mungu aliziumba mbingu na nchi.</p>
+            <div id="aiMenu" class="menu-pane">
+              <div class="view-card"><strong>AI Tools</strong><br><span style="color:#b8b7c5">Generate sermon slides, polish notes, suggest thumbnails, and convert note photos into editable content.</span></div>
+              <div class="settings-tabs" style="margin:-8px -8px 10px">
+                <div class="settings-tab active" data-pane="notesPane">Pastor Notes</div>
+                <div class="settings-tab" data-pane="thumbPane">Thumbnail</div>
+              </div>
+
+              <div class="settings-pane active" id="notesPane">
+                <div class="chip-row">
+                  <div class="chip">Photo upload mock</div>
+                  <div class="chip">OCR extraction mock</div>
+                  <div class="chip">AI slide outline</div>
+                  <div class="chip">Media team editing</div>
+                </div>
+                <div class="field">
+                  <label for="notePhotoInput">Take or upload a note picture</label>
+                  <input id="notePhotoInput" type="file" accept="image/*">
+                </div>
+                <div class="note-shot" id="noteShotBox">
+                  <p>Theme: God's Promise Stands</p>
+                  <p>1. God speaks before results appear</p>
+                  <p>2. Faith stays steady in process</p>
+                  <p>3. Promise is bigger than pain</p>
+                  <p>4. Obedience prepares the way</p>
+                </div>
+                <div class="small-actions">
+                  <button class="mini-btn" id="extractNotesBtn">Extract note text</button>
+                  <button class="mini-btn" id="generateSlidesBtn">Turn into slides</button>
+                </div>
+                <div class="editor-block">
+                  <div class="field">
+                    <label for="ocrText">Extracted sermon text</label>
+                    <textarea id="ocrText">Theme: God's Promise Stands
+
+1. God speaks before results appear.
+2. Faith stays steady in process.
+3. Promise is bigger than pain.
+4. Obedience prepares the way.</textarea>
+                  </div>
+                  <div id="generatedSlideCards">
+                    <div class="slide-card"><h4>Slide 1 — Title</h4><p>God's Promise Stands</p></div>
+                    <div class="slide-card"><h4>Slide 2 — Key Point</h4><p>God speaks before results appear.</p></div>
+                    <div class="slide-card"><h4>Slide 3 — Key Point</h4><p>Faith stays steady in process.</p></div>
+                  </div>
+                  <div class="small-actions">
+                    <button class="mini-btn" id="sendToPreviewBtn">Send to preview</button>
+                    <button class="mini-btn" id="openTeamEditBtn">Ready for media team</button>
                   </div>
                 </div>
               </div>
-              <div class="footer-note">Ideal for projector screens, confidence screens, and stream overlays.</div>
+
+              <div class="settings-pane" id="thumbPane">
+                <div class="slide-card"><h4>Thumbnail Suggestion 1</h4><p>God's Promise Stands — clean dramatic worship background.</p></div>
+                <div class="slide-card"><h4>Thumbnail Suggestion 2</h4><p>Faith Through the Process — bold text and light rays.</p></div>
+              </div>
+            </div>
+
+            <div id="settingsMenu" class="menu-pane">
+              <div class="view-card"><strong>Settings</strong><br><span style="color:#b8b7c5">Configure projection, stream output, save behavior, and team workflow defaults.</span></div>
+              <div class="field"><label>Default output</label><select><option>Main screen</option><option>Confidence monitor</option><option>Stream overlay</option></select></div>
+              <div class="field"><label>Primary Bible mode</label><select><option>Bilingual</option><option>English</option><option>Swahili</option></select></div>
+            </div>
+
+            <div id="viewMenu" class="menu-pane">
+              <div class="view-card"><strong>View Options</strong><br><span style="color:#b8b7c5">Switch between edit, preview, confidence screen, notes, and signal monitoring.</span></div>
+              <div class="chip-row">
+                <div class="chip">Edit mode</div>
+                <div class="chip">Preview mode</div>
+                <div class="chip">Confidence</div>
+                <div class="chip">Notes</div>
+                <div class="chip">Signals</div>
+              </div>
+            </div>
+
+            <div id="helpMenu" class="menu-pane">
+              <div class="view-card"><strong>Help</strong><br><span style="color:#b8b7c5">Show onboarding, feature guides, keyboard shortcuts, and support links.</span></div>
+              <div class="slide-card"><h4>Getting Started</h4><p>Create a weekly service, add media, add Bible verses, and preview on the right panel.</p></div>
+              <div class="slide-card"><h4>Pastor Note Capture</h4><p>Upload a note photo, extract text, generate slides, and let the media team edit.</p></div>
+            </div>
+          </div>
+
+          <div id="menuDetails" class="subpane">
+            <div class="info-block">
+              <p id="detailText">Choose a top menu or slide item to see detailed controls here. This area is now clickable so you can explore the frontend more clearly.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="page" id="notes">
-        <div class="grid two">
-          <div class="card">
-            <div class="card-head">
-              <h3>Live notes + collaboration</h3>
-              <span class="mini-badge">Pastor / media team sync</span>
-            </div>
-            <div class="card-body">
-              <div class="field">
-                <label for="sermonNotes">Sermon notes</label>
-                <textarea id="sermonNotes" class="textarea" style="min-height:280px">Theme: God's Promise Stands
-
-1. God speaks before we see the result.
-2. Faith remains steady when the process feels long.
-3. The promise is bigger than present pain.
-4. Obedience positions us for fulfillment.</textarea>
-              </div>
-              <div class="toolbar">
-                <button class="btn" id="convertNotesBtn">Convert notes to slides</button>
-                <button class="btn secondary" id="proofreadBtn">Proofread notes</button>
-              </div>
-              <div class="list" style="margin-top:12px">
-                <div class="list-item">
-                  <div>
-                    <strong>Pastor Grace</strong>
-                    <span>Editing sermon points</span>
-                  </div>
-                  <div class="chip">Live</div>
-                </div>
-                <div class="list-item">
-                  <div>
-                    <strong>Media Operator</strong>
-                    <span>Preparing lower thirds and scripture slides</span>
-                  </div>
-                  <div class="chip">Synced</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-head">
-              <h3>Notes-to-slide preview</h3>
-              <span class="mini-badge">AI-assisted mock</span>
-            </div>
-            <div class="card-body">
-              <div class="grid two">
-                <div class="note-paper">
-                  <div class="note-line">Theme: God's Promise Stands</div>
-                  <div class="note-line">1. God speaks before results.</div>
-                  <div class="note-line">2. Faith stays steady in process.</div>
-                  <div class="note-line">3. Promise is bigger than pain.</div>
-                  <div class="note-line">4. Obedience leads to fulfillment.</div>
-                </div>
-                <div class="slide-mini" id="notesSlideOutput">
-                  <div>
-                    <div class="mini-badge">Generated sermon slide</div>
-                    <h2 style="margin:14px 0 10px">God's Promise Stands</h2>
-                    <p style="color:var(--muted);max-width:420px">God speaks before we see the result. Faith stays steady during the process.</p>
-                  </div>
-                </div>
-              </div>
-              <div class="footer-note">In a real product, this would connect to OCR and AI generation from handwritten or photographed notes.</div>
-            </div>
-          </div>
+      <main class="panel">
+        <div class="preview-tabs">
+          <div class="preview-tab active" data-preview="projector">Text Over (Mirror)</div>
+          <div class="preview-tab" data-preview="confidence">Confidence (Default)</div>
+          <div class="preview-tab" data-preview="notes">Notes</div>
+          <div class="preview-tab" data-preview="signals">Signals</div>
         </div>
-      </section>
+        <div class="preview-body">
+          <div class="stage">
+            <div id="projectorPreview" class="preview-pane active">
+              <div class="screen" id="mainScreen">
+                <div class="ray r1"></div><div class="ray r2"></div><div class="ray r3"></div><div class="ray r4"></div><div class="ray r5"></div>
+                <div class="cloud one"></div><div class="cloud two"></div><div class="cloud three"></div>
 
-      <section class="page" id="media">
-        <div class="grid two">
-          <div class="card">
-            <div class="card-head">
-              <h3>Media library</h3>
-              <span class="mini-badge">Images • videos • backgrounds</span>
-            </div>
-            <div class="card-body">
-              <div class="dropzone">
-                <h3 style="margin-top:0">Upload media</h3>
-                <p style="color:var(--muted)">Choose files for sermon visuals, backgrounds, announcement videos, and lower thirds.</p>
-                <input id="mediaInput" type="file" multiple class="input" />
-              </div>
-              <div class="list" id="mediaList" style="margin-top:16px"></div>
-            </div>
-          </div>
+                <div class="play-overlay" id="centerOverlay"><div class="play-btn"></div></div>
 
-          <div class="card">
-            <div class="card-head">
-              <h3>Media lineup</h3>
-              <span class="mini-badge">Service assets</span>
-            </div>
-            <div class="card-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Asset</th>
-                    <th>Type</th>
-                    <th>Use</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td>Welcome Loop</td><td>Video</td><td>Pre-service screen</td></tr>
-                  <tr><td>Conference Flyer</td><td>Image</td><td>Announcement</td></tr>
-                  <tr><td>Prayer Background</td><td>Background</td><td>Ministry time</td></tr>
-                  <tr><td>Giving QR Graphic</td><td>Graphic</td><td>Offering slide</td></tr>
-                </tbody>
-              </table>
-              <div class="footer-note">This demo lists selected browser files during the session. It does not upload to a server yet.</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="page" id="design">
-        <div class="grid two">
-          <div class="card">
-            <div class="card-head">
-              <h3>Design studio</h3>
-              <span class="mini-badge">Canva-style mock</span>
-            </div>
-            <div class="card-body">
-              <div class="field">
-                <label for="designTitle">Design headline</label>
-                <input id="designTitle" class="input" value="Revival Night 2026" />
-              </div>
-              <div class="field">
-                <label for="designSubtitle">Design subtext</label>
-                <input id="designSubtitle" class="input" value="Prayer • Worship • The Word" />
-              </div>
-              <div class="toolbar">
-                <button class="tool" data-theme="sermon">Sermon</button>
-                <button class="tool" data-theme="revival">Revival</button>
-                <button class="tool" data-theme="youth">Youth</button>
-                <button class="tool" data-theme="conference">Conference</button>
-              </div>
-              <button class="btn" id="applyDesignBtn">Apply to design preview</button>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-head">
-              <h3>Design preview</h3>
-              <span class="mini-badge">Editable template</span>
-            </div>
-            <div class="card-body">
-              <div class="slide-preview" id="designPreview">
-                <div class="kicker">Event Graphic</div>
-                <h1 id="designPreviewTitle">Revival Night 2026</h1>
-                <p id="designPreviewSubtitle">Prayer • Worship • The Word</p>
-                <div class="slide-footer">
-                  <span>Editable design</span>
-                  <span>Social + projector sizes</span>
+                <div class="overlay-text" id="overlayText">
+                  <h1 id="overlayTitle">Welcome</h1>
+                  <p id="overlayBody">ChurchFlow presentation preview</p>
+                  <div class="bilingual-grid" id="bilingualGrid" style="display:none"></div>
                 </div>
+
+                <div class="video-bar">
+                  <div class="video-progress"><span></span></div>
+                  <div class="video-time" id="timeLabel">0:00 / 3:12</div>
+                  <div style="font-size:14px">🔊</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="confidencePreview" class="preview-pane" style="display:none">
+              <div class="info-block">
+                <p><strong>Confidence Screen</strong><br>Shows the next item, current verse, timer, and presenter notes for the pastor or speaker.</p>
+              </div>
+              <div class="info-grid">
+                <div class="info-tile"><strong>Current</strong><span>Welcome Slide</span></div>
+                <div class="info-tile"><strong>Next</strong><span>Sala Ya Baba</span></div>
+                <div class="info-tile"><strong>Timer</strong><span>00:14:28</span></div>
+                <div class="info-tile"><strong>Speaker Note</strong><span>Pause after scripture reading.</span></div>
+              </div>
+            </div>
+
+            <div id="notesPreview" class="preview-pane" style="display:none">
+              <div class="editor-block">
+                <div class="field">
+                  <label>Live Notes</label>
+                  <textarea>Theme: God's Promise Stands
+
+1. God speaks before results appear.
+2. Faith stays steady in process.
+3. Promise is bigger than pain.</textarea>
+                </div>
+              </div>
+            </div>
+
+            <div id="signalsPreview" class="preview-pane" style="display:none">
+              <div class="info-grid">
+                <div class="info-tile"><strong>Stream Status</strong><span>Ready</span></div>
+                <div class="info-tile"><strong>Recording</strong><span>Standby</span></div>
+                <div class="info-tile"><strong>Camera Feed</strong><span>Connected</span></div>
+                <div class="info-tile"><strong>Overlay Sync</strong><span>Healthy</span></div>
               </div>
             </div>
           </div>
         </div>
-      </section>
+      </main>
+    </div>
 
-      <section class="page" id="ai">
-        <div class="grid two">
-          <div class="card">
-            <div class="card-head">
-              <h3>AI assistant</h3>
-              <span class="mini-badge">Slides • proofreading • thumbnails</span>
-            </div>
-            <div class="card-body">
-              <div class="field">
-                <label for="aiPrompt">Prompt</label>
-                <textarea id="aiPrompt" class="textarea">Create a sermon slide deck for the message "God's Promise Stands" with 5 slides, warm modern backgrounds, one scripture slide, one quote slide, and one altar call slide.</textarea>
-              </div>
-              <div class="toolbar">
-                <button class="btn" id="generateAiSlidesBtn">Generate AI slide ideas</button>
-                <button class="btn secondary" id="generateThumbnailBtn">Generate thumbnail ideas</button>
-              </div>
-              <div class="list" id="aiIdeasList" style="margin-top:16px"></div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-head">
-              <h3>Thumbnail suggestions</h3>
-              <span class="mini-badge">Performance-inspired mock</span>
-            </div>
-            <div class="card-body">
-              <div class="thumb-grid">
-                <div class="thumb">God's Promise Stands</div>
-                <div class="thumb">Faith Through the Process</div>
-                <div class="thumb">When God Has Spoken</div>
-              </div>
-              <div class="footer-note">In a real build, the system could select templates based on prior engagement, theme, and text length.</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="page" id="streaming">
-        <div class="grid two">
-          <div class="card">
-            <div class="card-head">
-              <h3>Streaming + recording</h3>
-              <span class="mini-badge">Live output control</span>
-            </div>
-            <div class="card-body">
-              <div class="list">
-                <div class="list-item">
-                  <div><strong>Camera feed</strong><span>Main angle online</span></div>
-                  <div class="chip" id="cameraStatus">Standby</div>
-                </div>
-                <div class="list-item">
-                  <div><strong>Presentation overlay</strong><span>Slides on stream</span></div>
-                  <div class="chip" id="overlayStatus">Ready</div>
-                </div>
-                <div class="list-item">
-                  <div><strong>Local recording</strong><span>Device recording state</span></div>
-                  <div class="chip" id="recordStatus">Off</div>
-                </div>
-              </div>
-              <div class="toolbar" style="margin-top:14px">
-                <button class="btn" id="startStreamBtn">Start stream</button>
-                <button class="btn secondary" id="recordBtn">Record</button>
-                <button class="btn ghost" id="stopStreamBtn">Stop all</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-head">
-              <h3>Broadcast health</h3>
-              <span class="mini-badge">System monitor</span>
-            </div>
-            <div class="card-body">
-              <div class="field">
-                <label>Encoder output</label>
-                <div class="progress"><span style="width:78%"></span></div>
-              </div>
-              <div class="field">
-                <label>Upload stability</label>
-                <div class="progress"><span style="width:89%"></span></div>
-              </div>
-              <div class="field">
-                <label>Media sync</label>
-                <div class="progress"><span style="width:94%"></span></div>
-              </div>
-              <div class="footer-note">This page is a frontend simulation for how streaming controls and health indicators could look.</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="page" id="mobile">
-        <div class="grid two">
-          <div class="card">
-            <div class="card-head">
-              <h3>Mobile remote</h3>
-              <span class="mini-badge">Pastor / operator control</span>
-            </div>
-            <div class="card-body">
-              <div class="grid two">
-                <button class="btn">Previous</button>
-                <button class="btn">Next</button>
-                <button class="btn secondary">Black screen</button>
-                <button class="btn secondary">Show scripture</button>
-              </div>
-              <div class="field" style="margin-top:18px">
-                <label>Current cue</label>
-                <input class="input" value="Sermon Slide 3 — Promise is bigger than pain" />
-              </div>
-              <div class="footer-note">This shows how a mobile control surface could work for live services.</div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-head">
-              <h3>Congregation experience</h3>
-              <span class="mini-badge">Companion access</span>
-            </div>
-            <div class="card-body">
-              <div class="list">
-                <div class="list-item"><div><strong>Live scripture follow-along</strong><span>Members can read verses on their phone</span></div><div class="chip">Enabled</div></div>
-                <div class="list-item"><div><strong>Translated notes</strong><span>English / Swahili support</span></div><div class="chip">Available</div></div>
-                <div class="list-item"><div><strong>Prayer request entry</strong><span>Linked to ministry team dashboard</span></div><div class="chip">Planned</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="page" id="settings">
-        <div class="grid two">
-          <div class="card">
-            <div class="card-head">
-              <h3>System settings</h3>
-              <span class="mini-badge">General preferences</span>
-            </div>
-            <div class="card-body">
-              <div class="field">
-                <label>Theme</label>
-                <select class="select">
-                  <option>Midnight Blue</option>
-                  <option>Royal Gold</option>
-                  <option>Clean Light</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Default projection output</label>
-                <select class="select">
-                  <option>Main screen</option>
-                  <option>Confidence monitor</option>
-                  <option>Livestream overlay</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Primary Bible language</label>
-                <select class="select">
-                  <option>English</option>
-                  <option>Swahili</option>
-                  <option>Bilingual</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Auto-save interval</label>
-                <select class="select">
-                  <option>Every 30 seconds</option>
-                  <option>Every 1 minute</option>
-                  <option>Every 5 minutes</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-head">
-              <h3>Production readiness</h3>
-              <span class="mini-badge">Frontend only</span>
-            </div>
-            <div class="card-body">
-              <div class="chips">
-                <div class="chip">Needs backend auth</div>
-                <div class="chip">Needs database</div>
-                <div class="chip">Needs cloud storage</div>
-                <div class="chip">Needs AI API</div>
-                <div class="chip">Needs OCR</div>
-                <div class="chip">Needs live sync</div>
-              </div>
-              <p style="color:var(--muted);margin-top:16px;line-height:1.7">
-                This single HTML file is excellent for a GitHub and Vercel prototype. To become a real production tool, it should later connect to a backend such as Supabase or Firebase and APIs for AI, streaming, OCR, and multi-user collaboration.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+    <footer class="strip">
+      <div class="film active" data-style="sky" data-title="Levites" data-body="">
+        <div class="film-label">Levites</div><div class="film-thumb sky"></div>
+      </div>
+      <div class="film" data-style="welcome" data-title="WELCOME" data-body="TO MOUNT OF OLIVES MINISTRY">
+        <div class="film-label">Welcome Slide</div><div class="film-thumb welcome"></div>
+      </div>
+      <div class="film" data-style="form" data-title="TITHE & OFFERING" data-body="Simple form layout preview">
+        <div class="film-label">Tithe Form</div><div class="film-thumb form"></div>
+      </div>
+      <div class="film" data-style="cross" data-title="WORSHIP" data-body="Come before the Lord with thanksgiving">
+        <div class="film-label">Worship</div><div class="film-thumb cross"></div>
+      </div>
+      <div class="film" data-style="teal" data-title="PREACHER" data-body="Speaker introduction slide">
+        <div class="film-label">Preacher</div><div class="film-thumb teal"></div>
+      </div>
+      <div class="film" data-style="teal" data-title="SALA YA BABA" data-body="Baba yetu uliye mbinguni, jina lako litukuzwe...">
+        <div class="film-label">Sala Ya Baba</div><div class="film-thumb teal"></div>
+      </div>
+      <div class="film" data-style="green" data-title="PASTOR NOTE CAPTURE" data-body="Photo note converted into editable sermon slides for the media team.">
+        <div class="film-label">Pastor Note Capture</div><div class="film-thumb green"></div>
+      </div>
+    </footer>
   </div>
 
-<script>
-  const navButtons = document.querySelectorAll('.nav-btn');
-  const pages = document.querySelectorAll('.page');
-  const pageTitle = document.getElementById('pageTitle');
-  const pageSubtitle = document.getElementById('pageSubtitle');
-
-  const pageMeta = {
-    dashboard: ["Dashboard", "Overview of your service production workflow."],
-    presentations: ["Presentations", "Build and preview live service slides."],
-    bible: ["Bible Projection", "English, Swahili, and bilingual scripture display."],
-    notes: ["Live Notes", "Sermon notes, proofing, and notes-to-slide workflow."],
-    media: ["Media Library", "Manage images, videos, and backgrounds."],
-    design: ["Design Studio", "Create clean event graphics and slide visuals."],
-    ai: ["AI Tools", "Generate ideas for slides, thumbnails, and sermon assets."],
-    streaming: ["Streaming", "Control presentation overlays, stream state, and recording."],
-    mobile: ["Mobile Control", "Remote actions and companion experience mock."],
-    settings: ["Settings", "System preferences and production readiness notes."]
-  };
-
-  function showPage(id){
-    navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.page === id));
-    pages.forEach(page => page.classList.toggle('active', page.id === id));
-    pageTitle.textContent = pageMeta[id][0];
-    pageSubtitle.textContent = pageMeta[id][1];
-  }
-
-  navButtons.forEach(btn => btn.addEventListener('click', () => showPage(btn.dataset.page)));
-
-  // Presentation preview
-  const slideTitle = document.getElementById('slideTitle');
-  const slideSubtitle = document.getElementById('slideSubtitle');
-  const slideFooterLeft = document.getElementById('slideFooterLeft');
-  const slideFooterRight = document.getElementById('slideFooterRight');
-
-  const previewTitle = document.getElementById('previewTitle');
-  const previewSubtitle = document.getElementById('previewSubtitle');
-  const previewFooterLeft = document.getElementById('previewFooterLeft');
-  const previewFooterRight = document.getElementById('previewFooterRight');
-
-  function updatePresentationPreview(){
-    previewTitle.textContent = slideTitle.value || 'Untitled slide';
-    previewSubtitle.textContent = slideSubtitle.value || 'Slide content will appear here.';
-    previewFooterLeft.textContent = slideFooterLeft.value || 'ChurchFlow AI';
-    previewFooterRight.textContent = slideFooterRight.value || 'Live';
-    document.getElementById('dashboardHeroPreview').querySelector('h1').textContent = previewTitle.textContent;
-    document.getElementById('dashboardHeroPreview').querySelector('p').textContent = previewSubtitle.textContent;
-    document.getElementById('dashSlideCount').textContent = String(Math.max(1, Math.ceil((slideSubtitle.value || '').length / 55)));
-  }
-
-  document.getElementById('updatePreviewBtn').addEventListener('click', updatePresentationPreview);
-
-  document.getElementById('clearSlideBtn').addEventListener('click', () => {
-    slideTitle.value = '';
-    slideSubtitle.value = '';
-    slideFooterLeft.value = '';
-    slideFooterRight.value = '';
-    updatePresentationPreview();
-  });
-
-  document.getElementById('saveSlideBtn').addEventListener('click', () => {
-    const data = {
-      title: slideTitle.value,
-      subtitle: slideSubtitle.value,
-      footerLeft: slideFooterLeft.value,
-      footerRight: slideFooterRight.value
+  <script>
+    const menuButtons = document.querySelectorAll('.menu-btn');
+    const menuPanes = document.querySelectorAll('.menu-pane');
+    const centerPanelTitle = document.getElementById('centerPanelTitle');
+    const detailText = document.getElementById('detailText');
+    const subtabs = document.querySelectorAll('.subtab');
+    const subpanes = document.querySelectorAll('.subpane');
+    const slideItems = document.querySelectorAll('.slide-item');
+    const films = document.querySelectorAll('.film');
+    const previewTabs = document.querySelectorAll('.preview-tab');
+    const previewPanes = {
+      projector: document.getElementById('projectorPreview'),
+      confidence: document.getElementById('confidencePreview'),
+      notes: document.getElementById('notesPreview'),
+      signals: document.getElementById('signalsPreview')
     };
-    localStorage.setItem('churchflow_slide', JSON.stringify(data));
-    alert('Slide saved in your browser.');
-  });
 
-  function loadSavedSlide(){
-    const saved = localStorage.getItem('churchflow_slide');
-    if(!saved) return;
-    try{
-      const data = JSON.parse(saved);
-      slideTitle.value = data.title || '';
-      slideSubtitle.value = data.subtitle || '';
-      slideFooterLeft.value = data.footerLeft || '';
-      slideFooterRight.value = data.footerRight || '';
-      updatePresentationPreview();
-    }catch(e){}
-  }
+    const overlayText = document.getElementById('overlayText');
+    const overlayTitle = document.getElementById('overlayTitle');
+    const overlayBody = document.getElementById('overlayBody');
+    const centerOverlay = document.getElementById('centerOverlay');
+    const timeLabel = document.getElementById('timeLabel');
+    const mainScreen = document.getElementById('mainScreen');
+    const bilingualGrid = document.getElementById('bilingualGrid');
 
-  document.getElementById('saveAllBtn').addEventListener('click', () => {
-    const demoData = {
-      notes: document.getElementById('sermonNotes').value,
-      verseRef: document.getElementById('verseRef').value,
-      english: document.getElementById('englishVerse').value,
-      swahili: document.getElementById('swahiliVerse').value
-    };
-    localStorage.setItem('churchflow_demo', JSON.stringify(demoData));
-    localStorage.setItem('churchflow_slide', JSON.stringify({
-      title: slideTitle.value,
-      subtitle: slideSubtitle.value,
-      footerLeft: slideFooterLeft.value,
-      footerRight: slideFooterRight.value
-    }));
-    alert('Demo data saved.');
-  });
-
-  document.getElementById('loadSampleBtn').addEventListener('click', () => {
-    slideTitle.value = "God's Promise Stands";
-    slideSubtitle.value = "Welcome to Mount of Olives Ministry. Tonight we worship with faith, prayer, and confidence in the promises of God.";
-    slideFooterLeft.value = "Mount of Olives Ministry";
-    slideFooterRight.value = "Sunday Worship • Live";
-    updatePresentationPreview();
-
-    document.getElementById('verseRef').value = "Isaiah 55:11";
-    document.getElementById('englishVerse').value = "So shall my word be that goeth forth out of my mouth: it shall not return unto me void.";
-    document.getElementById('swahiliVerse').value = "Ndivyo litakavyokuwa neno langu litokalo katika kinywa changu; halitanirudia bure.";
-    renderBible('bilingual');
-
-    document.getElementById('sermonNotes').value = "Theme: God's Promise Stands\n\n1. God's word does not fail.\n2. Delay is not denial.\n3. Obedience prepares us for fulfillment.\n4. Hope must remain active.";
-    convertNotesToSlide();
-
-    document.getElementById('aiIdeasList').innerHTML = '';
-  });
-
-  // Bible
-  function renderBible(mode){
-    const ref = document.getElementById('verseRef').value || 'Reference';
-    const eng = document.getElementById('englishVerse').value || '';
-    const swa = document.getElementById('swahiliVerse').value || '';
-    document.getElementById('verseRefPreview').textContent = ref;
-    const output = document.getElementById('bibleOutput');
-    const badge = document.getElementById('bibleModeBadge');
-
-    if(mode === 'english'){
-      badge.textContent = 'English';
-      output.innerHTML = `<p class="verse-text">${eng}</p>`;
-    } else if(mode === 'swahili'){
-      badge.textContent = 'Swahili';
-      output.innerHTML = `<p class="verse-text">${swa}</p>`;
-    } else {
-      badge.textContent = 'Bilingual';
-      output.innerHTML = `
-        <div class="two-col-text">
-          <p class="verse-text small">${eng}</p>
-          <p class="verse-text small">${swa}</p>
-        </div>`;
+    function activateMenu(menuId){
+      menuButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.menu === menuId));
+      menuPanes.forEach(pane => pane.classList.toggle('active', pane.id === menuId));
+      const label = [...menuButtons].find(btn => btn.dataset.menu === menuId)?.textContent || 'Menu';
+      centerPanelTitle.textContent = label + ' Menu';
+      detailText.textContent = label + ' is open. Explore the controls in the center panel. This is where the frontend shows what is under each top menu.';
     }
-  }
-  document.getElementById('showEnglishBtn').addEventListener('click', () => renderBible('english'));
-  document.getElementById('showSwahiliBtn').addEventListener('click', () => renderBible('swahili'));
-  document.getElementById('showBilingualBtn').addEventListener('click', () => renderBible('bilingual'));
 
-  ['verseRef','englishVerse','swahiliVerse'].forEach(id => {
-    document.getElementById(id).addEventListener('input', () => renderBible(document.getElementById('bibleModeBadge').textContent.toLowerCase()));
-  });
+    menuButtons.forEach(btn => btn.addEventListener('click', () => activateMenu(btn.dataset.menu)));
 
-  // Notes to slide
-  function convertNotesToSlide(){
-    const notes = document.getElementById('sermonNotes').value.trim().split('\n').filter(Boolean);
-    const headline = notes[0]?.replace('Theme:','').trim() || 'Generated sermon slide';
-    const supporting = notes.slice(1,3).join(' ').replace(/^\d+\.\s*/,'').trim() || 'Key sermon points will appear here.';
-    document.getElementById('notesSlideOutput').innerHTML = `
-      <div>
-        <div class="mini-badge">Generated sermon slide</div>
-        <h2 style="margin:14px 0 10px">${headline}</h2>
-        <p style="color:var(--muted);max-width:420px">${supporting}</p>
-      </div>`;
-  }
-  document.getElementById('convertNotesBtn').addEventListener('click', convertNotesToSlide);
-  document.getElementById('proofreadBtn').addEventListener('click', () => {
-    const area = document.getElementById('sermonNotes');
-    area.value = area.value
-      .replace(/\bGos\b/g, 'God')
-      .replace(/\s+\./g,'.')
-      .replace(/ +/g,' ')
-      .replace(/\n{3,}/g,'\n\n');
-    alert('Notes lightly proofread.');
-  });
+    subtabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        subtabs.forEach(t => t.classList.remove('active'));
+        subpanes.forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.subpane).classList.add('active');
+      });
+    });
 
-  // Media
-  const mediaInput = document.getElementById('mediaInput');
-  const mediaList = document.getElementById('mediaList');
-  mediaInput.addEventListener('change', () => {
-    mediaList.innerHTML = '';
-    const files = Array.from(mediaInput.files || []);
-    document.getElementById('dashMediaCount').textContent = String(Math.max(14, files.length));
-    if(!files.length){
-      mediaList.innerHTML = '<div class="list-item"><div><strong>No files selected</strong><span>Select files from your device for this demo</span></div><div class="chip">Empty</div></div>';
-      return;
+    function resetPreviewBase(){
+      document.querySelectorAll('.cloud,.ray').forEach(el => el.style.display = '');
+      bilingualGrid.style.display = 'none';
+      overlayBody.style.display = 'block';
+      overlayTitle.style.fontSize = '46px';
+      overlayBody.style.fontSize = '22px';
     }
-    files.forEach(file => {
-      const kind = file.type || 'Unknown';
-      const item = document.createElement('div');
-      item.className = 'list-item';
-      item.innerHTML = `<div><strong>${file.name}</strong><span>${kind} • ${(file.size/1024).toFixed(1)} KB</span></div><div class="chip">Queued</div>`;
-      mediaList.appendChild(item);
-    });
-  });
 
-  // Design studio
-  let selectedTheme = 'sermon';
-  document.querySelectorAll('[data-theme]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedTheme = btn.dataset.theme;
-      document.querySelectorAll('[data-theme]').forEach(b => b.style.outline = '');
-      btn.style.outline = '2px solid rgba(139,255,214,.45)';
-    });
-  });
+    function applyStyle(style, title = '', body = ''){
+      resetPreviewBase();
+      overlayTitle.textContent = title;
+      overlayBody.innerHTML = body;
+      centerOverlay.style.display = title || body ? 'none' : 'grid';
+      overlayText.style.display = title || body ? 'block' : 'none';
 
-  document.getElementById('applyDesignBtn').addEventListener('click', () => {
-    document.getElementById('designPreviewTitle').textContent = document.getElementById('designTitle').value || 'Design title';
-    document.getElementById('designPreviewSubtitle').textContent = document.getElementById('designSubtitle').value || 'Design subtitle';
-    const preview = document.getElementById('designPreview');
-    const themes = {
-      sermon: 'radial-gradient(circle at top right, rgba(126,166,255,.24), transparent 35%), radial-gradient(circle at bottom left, rgba(139,255,214,.18), transparent 30%), linear-gradient(135deg,#0f1530,#17214a 58%,#0d1531)',
-      revival: 'radial-gradient(circle at top left, rgba(255,210,126,.24), transparent 35%), radial-gradient(circle at bottom right, rgba(255,143,143,.18), transparent 30%), linear-gradient(135deg,#331915,#67251f 58%,#25110f)',
-      youth: 'radial-gradient(circle at top left, rgba(139,255,214,.20), transparent 35%), radial-gradient(circle at bottom right, rgba(126,166,255,.18), transparent 30%), linear-gradient(135deg,#0f3029,#135446 58%,#0c221d)',
-      conference: 'radial-gradient(circle at top left, rgba(255,210,126,.20), transparent 35%), radial-gradient(circle at bottom left, rgba(126,166,255,.18), transparent 30%), linear-gradient(135deg,#221934,#46317c 58%,#18122a)'
-    };
-    preview.style.background = themes[selectedTheme];
-  });
+      if(style === 'welcome'){
+        mainScreen.style.background = 'linear-gradient(135deg,#781aff,#ff59a1 58%,#5e2a95)';
+      } else if(style === 'form'){
+        mainScreen.style.background = 'linear-gradient(135deg,#101540,#2e3bb7)';
+      } else if(style === 'cross'){
+        mainScreen.style.background = 'linear-gradient(180deg,#f8ca77,#fff4da 52%,#f2e3d5)';
+      } else if(style === 'teal'){
+        mainScreen.style.background = 'linear-gradient(135deg,#18abd1,#6fefff)';
+      } else if(style === 'green'){
+        mainScreen.style.background = 'linear-gradient(135deg,#1f5548,#5fce9a)';
+      } else if(style === 'bible'){
+        mainScreen.style.background = 'linear-gradient(135deg,#102141,#27447a 56%,#14284a)';
+      } else {
+        mainScreen.style.background = 'radial-gradient(circle at top center, rgba(255,255,255,.58), transparent 24%), radial-gradient(circle at 78% 22%, rgba(255,255,255,.28), transparent 16%), radial-gradient(circle at 22% 72%, rgba(255,255,255,.16), transparent 14%), linear-gradient(180deg, #5c90c9 0%, #9ed0ff 28%, #7db8e6 56%, #e8d6d3 77%, #f4e8ee 100%)';
+      }
 
-  // AI
-  document.getElementById('generateAiSlidesBtn').addEventListener('click', () => {
-    const prompt = document.getElementById('aiPrompt').value.trim();
-    const list = document.getElementById('aiIdeasList');
-    list.innerHTML = '';
-    const ideas = [
-      'Opening title slide with warm cinematic background',
-      'Main scripture slide with bilingual text option',
-      'Three sermon point slides with large readable typography',
-      'Prayer response slide with calm gradient visual',
-      'Closing slide with church name, time, and call to action'
-    ];
-    ideas.forEach((idea, i) => {
-      const item = document.createElement('div');
-      item.className = 'list-item';
-      item.innerHTML = `<div><strong>Idea ${i+1}</strong><span>${idea}</span></div><div class="chip">Generated</div>`;
-      list.appendChild(item);
-    });
-    if(prompt){
-      const extra = document.createElement('div');
-      extra.className = 'list-item';
-      extra.innerHTML = `<div><strong>Prompt summary</strong><span>${prompt.slice(0, 120)}${prompt.length > 120 ? '...' : ''}</span></div><div class="chip">Parsed</div>`;
-      list.prepend(extra);
+      if(style === 'sky'){
+        document.querySelectorAll('.cloud,.ray').forEach(el => el.style.display = '');
+        timeLabel.textContent = '0:00 / 3:12';
+      } else {
+        document.querySelectorAll('.cloud,.ray').forEach(el => el.style.display = 'none');
+        timeLabel.textContent = 'Still';
+      }
     }
-  });
 
-  document.getElementById('generateThumbnailBtn').addEventListener('click', () => {
-    alert('Thumbnail suggestions refreshed.');
-  });
+    function renderBible(mode){
+      const ref = document.getElementById('bibleRef').value.trim() || 'Genesis 1:1';
+      const eng = document.getElementById('englishVerse').value.trim();
+      const swa = document.getElementById('swahiliVerse').value.trim();
 
-  // Streaming
-  let streamActive = false;
-  let recordingActive = false;
+      applyStyle('bible', ref, '');
+      overlayTitle.textContent = ref;
+      overlayBody.style.display = 'none';
 
-  function refreshStreamingUI(){
-    document.getElementById('cameraStatus').textContent = streamActive ? 'Live' : 'Standby';
-    document.getElementById('overlayStatus').textContent = streamActive ? 'On Air' : 'Ready';
-    document.getElementById('recordStatus').textContent = recordingActive ? 'Recording' : 'Off';
-  }
-  document.getElementById('startStreamBtn').addEventListener('click', () => {
-    streamActive = true;
-    refreshStreamingUI();
-  });
-  document.getElementById('recordBtn').addEventListener('click', () => {
-    recordingActive = !recordingActive;
-    refreshStreamingUI();
-  });
-  document.getElementById('stopStreamBtn').addEventListener('click', () => {
-    streamActive = false;
-    recordingActive = false;
-    refreshStreamingUI();
-  });
+      if(mode === 'english'){
+        bilingualGrid.style.display = 'block';
+        bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+eng+'</div></div>';
+      } else if(mode === 'swahili'){
+        bilingualGrid.style.display = 'block';
+        bilingualGrid.innerHTML = '<div><strong>Swahili</strong><div style="margin-top:6px">'+swa+'</div></div>';
+      } else {
+        bilingualGrid.style.display = 'grid';
+        bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+eng+'</div></div><div><strong>Swahili</strong><div style="margin-top:6px">'+swa+'</div></div>';
+      }
+    }
 
-  // Init
-  loadSavedSlide();
-  renderBible('bilingual');
-  convertNotesToSlide();
-  refreshStreamingUI();
-  updatePresentationPreview();
-</script>
+    document.getElementById('showEnglishBtn').addEventListener('click', () => renderBible('english'));
+    document.getElementById('showSwahiliBtn').addEventListener('click', () => renderBible('swahili'));
+    document.getElementById('showBilingualBtn').addEventListener('click', () => renderBible('bilingual'));
+
+    function setActive(selector, current){
+      document.querySelectorAll(selector).forEach(el => el.classList.remove('active'));
+      current.classList.add('active');
+    }
+
+    slideItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        setActive('.slide-item', item);
+        if(films[index]) setActive('.film', films[index]);
+        const style = item.dataset.style;
+        if(item.dataset.type === 'AI OCR'){
+          activateMenu('aiMenu');
+          detailText.textContent = 'Pastor Note Capture selected. Use the center AI Tools panel to upload a note photo, extract the text, generate slides, and prepare it for the media team.';
+        } else if(item.dataset.type === 'Lyrics'){
+          activateMenu('songsMenu');
+          detailText.textContent = 'Lyrics item selected. The center panel can hold song text, verse ordering, language versions, and presentation settings.';
+        } else if(item.dataset.type === 'Video' || item.dataset.type === 'Background' || item.dataset.type === 'Graphic' || item.dataset.type === 'Form'){
+          activateMenu('mediaMenu');
+          detailText.textContent = 'Media-related slide selected. The center panel can show file settings, transitions, asset replacement, and metadata.';
+        }
+        applyStyle(style, item.dataset.title, item.dataset.body);
+      });
+    });
+
+    films.forEach((film, index) => {
+      film.addEventListener('click', () => {
+        setActive('.film', film);
+        if(slideItems[index]) {
+          setActive('.slide-item', slideItems[index]);
+          slideItems[index].click();
+        } else {
+          applyStyle(film.dataset.style, film.dataset.title, film.dataset.body);
+        }
+      });
+    });
+
+    previewTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        previewTabs.forEach(t => t.classList.remove('active'));
+        Object.values(previewPanes).forEach(p => p.style.display = 'none');
+        tab.classList.add('active');
+        previewPanes[tab.dataset.preview].style.display = 'block';
+      });
+    });
+
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const container = tab.closest('#aiMenu');
+        container.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+        container.querySelectorAll('.settings-pane').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.pane).classList.add('active');
+      });
+    });
+
+    document.getElementById('extractNotesBtn').addEventListener('click', () => {
+      const file = document.getElementById('notePhotoInput').files[0];
+      if(file){
+        document.getElementById('noteShotBox').innerHTML = '<p>Captured from: '+file.name+'</p><p>Theme: God\\'s Promise Stands</p><p>1. God speaks before results appear</p><p>2. Faith stays steady in process</p><p>3. Promise is bigger than pain</p><p>4. Obedience prepares the way</p>';
+      }
+      document.getElementById('ocrText').value = "Theme: God's Promise Stands\n\n1. God speaks before results appear.\n2. Faith stays steady in process.\n3. Promise is bigger than pain.\n4. Obedience prepares the way.";
+      detailText.textContent = 'Note text extracted. The media team can now edit the text in the center panel before sending it to the main preview.';
+    });
+
+    function generateSlidesFromOCR(){
+      const raw = document.getElementById('ocrText').value.trim();
+      const lines = raw.split('\n').map(s => s.trim()).filter(Boolean);
+      const cards = document.getElementById('generatedSlideCards');
+      cards.innerHTML = '';
+      const titleLine = lines[0]?.replace(/^Theme:\s*/i, '') || 'Generated sermon title';
+
+      const intro = document.createElement('div');
+      intro.className = 'slide-card';
+      intro.innerHTML = '<h4>Slide 1 — Title</h4><p>'+titleLine+'</p>';
+      cards.appendChild(intro);
+
+      lines.slice(1,5).forEach((line, i) => {
+        const clean = line.replace(/^\d+\.\s*/, '');
+        const card = document.createElement('div');
+        card.className = 'slide-card';
+        card.innerHTML = '<h4>Slide '+(i+2)+' — Key Point</h4><p>'+clean+'</p>';
+        cards.appendChild(card);
+      });
+
+      applyStyle('green', titleLine, lines.slice(1,3).map(line => line.replace(/^\d+\.\s*/, '')).join('<br>'));
+      detailText.textContent = 'Slides generated from the pastor note. The preview on the right now shows the generated sermon content.';
+    }
+
+    document.getElementById('generateSlidesBtn').addEventListener('click', generateSlidesFromOCR);
+    document.getElementById('sendToPreviewBtn').addEventListener('click', generateSlidesFromOCR);
+    document.getElementById('openTeamEditBtn').addEventListener('click', () => {
+      detailText.textContent = 'Marked ready for media team editing. In a real app, this would sync to the shared editing workspace.';
+    });
+
+    document.querySelector('.close').addEventListener('click', e => {
+      e.target.parentElement.style.display = 'none';
+    });
+
+    activateMenu('fileMenu');
+    applyStyle('sky', '', '');
+  </script>
 </body>
 </html>

@@ -1,872 +1,1194 @@
-import React, { useMemo, useState } from "react";
-import { motion } from "framer-motion";
-import {
-  Monitor,
-  Play,
-  Pencil,
-  BookOpen,
-  SplitSquareHorizontal,
-  Users,
-  Upload,
-  Image as ImageIcon,
-  Video,
-  Mic,
-  Smartphone,
-  Sparkles,
-  LayoutTemplate,
-  Camera,
-  Radio,
-  Save,
-  Search,
-  Menu,
-  Bell,
-  Globe,
-  FileText,
-  Clapperboard,
-  FolderOpen,
-  Wand2,
-  Languages,
-  ChevronRight,
-  Plus,
-  CheckCircle2,
-  Eye,
-  Tv,
-  Library,
-} from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
-const sidebar = [
-  { id: "dashboard", label: "Dashboard", icon: Monitor },
-  { id: "presentations", label: "Presentations", icon: LayoutTemplate },
-  { id: "bible", label: "Bible Studio", icon: BookOpen },
-  { id: "notes", label: "Live Notes", icon: FileText },
-  { id: "thumbnails", label: "AI Thumbnails", icon: ImageIcon },
-  { id: "stream", label: "Live Stream", icon: Radio },
-  { id: "media", label: "Media Library", icon: FolderOpen },
-  { id: "control", label: "Mobile Control", icon: Smartphone },
-  { id: "settings", label: "Branding", icon: Globe },
-];
 
-const sampleSlides = [
-  {
-    id: 1,
-    type: "Title",
-    title: "God's Promise Stands",
-    subtitle: "Mount of Olives Ministry",
-  },
-  {
-    id: 2,
-    type: "Scripture",
-    title: "Romans 8:28",
-    subtitle: "English + Swahili bilingual layout",
-  },
-  {
-    id: 3,
-    type: "Sermon Point",
-    title: "Faith grows when we trust God completely",
-    subtitle: "AI formatted from pastor notes",
-  },
-  {
-    id: 4,
-    type: "Announcement",
-    title: "Conference July 13–19, 2026",
-    subtitle: "Branded event promo slide",
-  },
-];
-
-const bilingualVerses = [
-  {
-    ref: "Romans 8:28",
-    en: "And we know that in all things God works for the good of those who love him.",
-    sw: "Nasi twajua ya kuwa katika mambo yote Mungu hufanya kazi pamoja kwa wema wa wale wampendao.",
-  },
-  {
-    ref: "Psalm 23:1",
-    en: "The Lord is my shepherd; I shall not want.",
-    sw: "Bwana ndiye mchungaji wangu, sitapungukiwa na kitu.",
-  },
-];
-
-const recentMedia = [
-  { name: "Sunday_Worship_Background.mp4", kind: "Video", icon: Video },
-  { name: "Conference_Promo_Main.png", kind: "Image", icon: ImageIcon },
-  { name: "Sermon_Intro_Bed.mp3", kind: "Audio", icon: Mic },
-  { name: "MOOM_Logo_White.svg", kind: "Brand", icon: Library },
-];
-
-const liveTeam = [
-  { name: "Pastor", role: "Owner" },
-  { name: "Media Lead", role: "Editor" },
-  { name: "Worship", role: "Collaborator" },
-  { name: "Streaming", role: "Operator" },
-];
-
-function StatCard({ title, value, subtext, icon: Icon }) {
-  return (
-    <Card className="rounded-3xl border-0 shadow-sm">
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-sm text-slate-500">{title}</p>
-            <p className="mt-2 text-3xl font-semibold tracking-tight">{value}</p>
-            <p className="mt-2 text-sm text-slate-500">{subtext}</p>
-          </div>
-          <div className="rounded-2xl bg-slate-100 p-3">
-            <Icon className="h-5 w-5" />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function SectionTitle({ title, description, action }) {
-  return (
-    <div className="mb-4 flex items-center justify-between gap-4">
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
-        <p className="text-sm text-slate-500">{description}</p>
-      </div>
-      {action}
-    </div>
-  );
-}
-
-function DashboardView() {
-  return (
-    <div className="space-y-6">
-      <SectionTitle
-        title="Church Production Dashboard"
-        description="Manage live presentation, Bible projection, AI slides, streaming, and media from one control surface."
-        action={<Button className="rounded-2xl">Create Sunday Service</Button>}
-      />
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <StatCard title="Slides Ready" value="48" subtext="Sunday 9:00 AM service" icon={LayoutTemplate} />
-        <StatCard title="Live Collaborators" value="12" subtext="Synced across devices" icon={Users} />
-        <StatCard title="Media Assets" value="1,284" subtext="Images, videos, audio, backgrounds" icon={FolderOpen} />
-        <StatCard title="Streaming Status" value="Ready" subtext="YouTube + Facebook preconfigured" icon={Radio} />
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Live Service Builder</CardTitle>
-            <CardDescription>Prepare the entire service flow with editable slides, scriptures, media, and split-screen scenes.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {[
-              { title: "Sermon Slides", text: "Generate professional sermon slides from notes or photos.", icon: Wand2 },
-              { title: "Bible On Screen", text: "Project English, Swahili, or bilingual scripture instantly.", icon: Languages },
-              { title: "Split Screen", text: "Show scripture + video, image + notes, or dual-language content.", icon: SplitSquareHorizontal },
-              { title: "Go Live", text: "Publish from live window while editing in real time.", icon: Play },
-            ].map((item) => (
-              <div key={item.title} className="rounded-3xl border border-slate-200 p-4">
-                <div className="mb-3 inline-flex rounded-2xl bg-slate-100 p-3">
-                  <item.icon className="h-5 w-5" />
-                </div>
-                <h3 className="font-semibold">{item.title}</h3>
-                <p className="mt-2 text-sm text-slate-500">{item.text}</p>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Team Activity</CardTitle>
-            <CardDescription>Live synchronized editing and production roles.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {liveTeam.map((person) => (
-              <div key={person.name} className="flex items-center justify-between rounded-2xl border border-slate-200 p-3">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarFallback>{person.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">{person.name}</p>
-                    <p className="text-sm text-slate-500">{person.role}</p>
-                  </div>
-                </div>
-                <Badge variant="secondary" className="rounded-xl">Live</Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Upcoming Slides</CardTitle>
-            <CardDescription>Preview of the active presentation sequence.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {sampleSlides.map((slide) => (
-              <div key={slide.id} className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
-                <div>
-                  <div className="mb-1 flex items-center gap-2">
-                    <Badge className="rounded-xl">{slide.type}</Badge>
-                    <span className="text-xs text-slate-400">Slide {slide.id}</span>
-                  </div>
-                  <p className="font-semibold">{slide.title}</p>
-                  <p className="text-sm text-slate-500">{slide.subtitle}</p>
-                </div>
-                <ChevronRight className="h-4 w-4 text-slate-400" />
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Live Output Preview</CardTitle>
-            <CardDescription>Audience display and confidence monitor layout.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]">
-              <div className="min-h-[280px] rounded-3xl bg-gradient-to-br from-slate-950 via-slate-800 to-slate-700 p-6 text-white shadow-inner">
-                <div className="mb-5 flex items-center justify-between">
-                  <Badge className="rounded-xl bg-red-600 text-white hover:bg-red-600">GO LIVE</Badge>
-                  <div className="flex items-center gap-2 text-xs text-slate-300">
-                    <Tv className="h-4 w-4" /> Main Screen
-                  </div>
-                </div>
-                <p className="text-sm uppercase tracking-[0.25em] text-slate-300">Romans 8:28</p>
-                <h3 className="mt-6 max-w-xl text-3xl font-semibold leading-tight">
-                  And we know that in all things God works for the good of those who love Him.
-                </h3>
-                <p className="mt-5 max-w-xl text-lg text-slate-200">
-                  Nasi twajua ya kuwa katika mambo yote Mungu hufanya kazi pamoja kwa wema wa wale wampendao.
-                </p>
-              </div>
-              <div className="space-y-4">
-                <div className="rounded-3xl border border-slate-200 p-4">
-                  <p className="text-sm font-medium">Confidence Monitor</p>
-                  <p className="mt-2 text-sm text-slate-500">Pastor notes, timer, next slide, and cue markers.</p>
-                  <Progress value={68} className="mt-4" />
-                  <p className="mt-2 text-xs text-slate-400">Service progress: 68%</p>
-                </div>
-                <div className="rounded-3xl border border-slate-200 p-4">
-                  <p className="text-sm font-medium">Split-Screen Ready</p>
-                  <p className="mt-2 text-sm text-slate-500">Dual-language scripture + background video scene saved.</p>
-                  <Button variant="outline" className="mt-4 w-full rounded-2xl">Activate Layout</Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-function PresentationsView() {
-  const [sermonTitle, setSermonTitle] = useState("God's Promise Stands");
-  const [preacher, setPreacher] = useState("Pastor Grace Kipendo");
-  const [notes, setNotes] = useState(
-    "Main theme: God remains faithful.\nPoint 1: His promises do not fail.\nPoint 2: Faith requires obedience.\nPoint 3: Hope grows in hardship."
-  );
-
-  return (
-    <div className="space-y-6">
-      <SectionTitle
-        title="Presentation Builder"
-        description="Create sermon slides, announcement decks, bilingual scripture screens, and live service scenes."
-        action={<Button className="rounded-2xl gap-2"><Plus className="h-4 w-4" /> New Deck</Button>}
-      />
-
-      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>AI Slide Generator</CardTitle>
-            <CardDescription>Turn sermon notes or structured outlines into polished projection-ready slides.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input value={sermonTitle} onChange={(e) => setSermonTitle(e.target.value)} placeholder="Sermon title" className="rounded-2xl" />
-            <Input value={preacher} onChange={(e) => setPreacher(e.target.value)} placeholder="Preacher name" className="rounded-2xl" />
-            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={10} className="rounded-2xl" />
-            <div className="grid gap-3 md:grid-cols-3">
-              <Button className="rounded-2xl gap-2"><Sparkles className="h-4 w-4" /> Generate Slides</Button>
-              <Button variant="outline" className="rounded-2xl gap-2"><Pencil className="h-4 w-4" /> Summarize Points</Button>
-              <Button variant="outline" className="rounded-2xl gap-2"><Save className="h-4 w-4" /> Save Draft</Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Generated Slide Themes</CardTitle>
-            <CardDescription>AI recommends visual direction, font pairing, and contrast balance.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2">
-            {[
-              "Modern Dark Worship",
-              "Warm Scripture Focus",
-              "Conference Broadcast Style",
-              "Minimal Bilingual Layout",
-            ].map((theme, idx) => (
-              <motion.div
-                whileHover={{ y: -3 }}
-                key={theme}
-                className="rounded-3xl border border-slate-200 p-4"
-              >
-                <div className={`mb-4 h-28 rounded-2xl ${idx % 2 === 0 ? "bg-gradient-to-br from-slate-900 to-slate-600" : "bg-gradient-to-br from-amber-200 to-orange-400"}`} />
-                <p className="font-medium">{theme}</p>
-                <p className="mt-1 text-sm text-slate-500">Optimized for readability and projector contrast.</p>
-                <Button variant="outline" className="mt-3 rounded-2xl w-full">Use Theme</Button>
-              </motion.div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="rounded-3xl border-0 shadow-sm">
-        <CardHeader>
-          <CardTitle>Slide Sequence Editor</CardTitle>
-          <CardDescription>Live window and edit window workflow for service-time updates.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
-            <div className="space-y-3">
-              {sampleSlides.map((slide) => (
-                <div key={slide.id} className="rounded-2xl border border-slate-200 p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{slide.title}</p>
-                      <p className="text-sm text-slate-500">{slide.type}</p>
-                    </div>
-                    <Button size="sm" variant="ghost" className="rounded-xl">Edit</Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="rounded-3xl border border-slate-200 p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <Badge className="rounded-xl">Edit Window</Badge>
-                <div className="flex gap-2">
-                  <Button variant="outline" className="rounded-2xl">Preview</Button>
-                  <Button className="rounded-2xl">Push Live</Button>
-                </div>
-              </div>
-              <div className="min-h-[280px] rounded-3xl bg-slate-50 p-6">
-                <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Sermon Point</p>
-                <h3 className="mt-6 text-3xl font-semibold">Faith requires obedience before visible evidence.</h3>
-                <p className="mt-4 text-slate-600">AI formatting suggests shorter lines, larger title font, and stronger contrast background.</p>
-                <div className="mt-6 grid gap-3 md:grid-cols-3">
-                  <Button variant="outline" className="rounded-2xl">Make Slide Better</Button>
-                  <Button variant="outline" className="rounded-2xl">Duplicate</Button>
-                  <Button variant="outline" className="rounded-2xl">Add Scripture</Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function BibleView() {
-  const [search, setSearch] = useState("Romans 8:28");
-  const currentVerse = useMemo(() => bilingualVerses[0], []);
-
-  return (
-    <div className="space-y-6">
-      <SectionTitle
-        title="Bible Studio"
-        description="Search, preview, and project scripture in English, Swahili, or bilingual layouts."
-        action={<Button className="rounded-2xl gap-2"><BookOpen className="h-4 w-4" /> Add to Presentation</Button>}
-      />
-
-      <Card className="rounded-3xl border-0 shadow-sm">
-        <CardContent className="p-5">
-          <div className="flex flex-col gap-3 md:flex-row">
-            <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} className="rounded-2xl pl-10" placeholder="Search reference or verse..." />
-            </div>
-            <Button variant="outline" className="rounded-2xl">English</Button>
-            <Button variant="outline" className="rounded-2xl">Swahili</Button>
-            <Button className="rounded-2xl">Bilingual</Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>{currentVerse.ref}</CardTitle>
-            <CardDescription>Dual-language scripture preview optimized for live projection.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-3xl bg-slate-950 p-6 text-white">
-                <p className="mb-3 text-xs uppercase tracking-[0.25em] text-slate-400">English</p>
-                <p className="text-xl leading-8">{currentVerse.en}</p>
-              </div>
-              <div className="rounded-3xl bg-amber-50 p-6 text-slate-900">
-                <p className="mb-3 text-xs uppercase tracking-[0.25em] text-slate-400">Swahili</p>
-                <p className="text-xl leading-8">{currentVerse.sw}</p>
-              </div>
-            </div>
-            <div className="mt-4 grid gap-3 md:grid-cols-3">
-              <Button className="rounded-2xl">Project Now</Button>
-              <Button variant="outline" className="rounded-2xl">Create Slide</Button>
-              <Button variant="outline" className="rounded-2xl">Split Screen</Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Bible Templates</CardTitle>
-            <CardDescription>Preset verse layouts for screens, livestream overlays, and bilingual projection.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {[
-              "Full Screen Scripture",
-              "Lower Third Verse Overlay",
-              "Side-by-Side Bilingual",
-              "Split Screen Verse + Background Video",
-            ].map((item) => (
-              <div key={item} className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
-                <div>
-                  <p className="font-medium">{item}</p>
-                  <p className="text-sm text-slate-500">AI sizes text to fit the selected verse length.</p>
-                </div>
-                <Button size="sm" variant="outline" className="rounded-xl">Use</Button>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-function NotesView() {
-  return (
-    <div className="space-y-6">
-      <SectionTitle
-        title="Live Notes + Photo to Slides"
-        description="Capture handwritten notes, extract text, and generate sermon slides with AI."
-        action={<Button className="rounded-2xl gap-2"><Camera className="h-4 w-4" /> Scan Notes</Button>}
-      />
-
-      <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Handwritten Notes Upload</CardTitle>
-            <CardDescription>Pastor can take a picture of notes and convert them into presentation-ready sermon slides.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex min-h-[220px] items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-              <div>
-                <Camera className="mx-auto h-10 w-10 text-slate-400" />
-                <p className="mt-4 font-medium">Drop photo here or capture from tablet/phone</p>
-                <p className="mt-1 text-sm text-slate-500">OCR + AI sermon structure extraction</p>
-                <Button className="mt-4 rounded-2xl">Select Image</Button>
-              </div>
-            </div>
-            <div className="grid gap-3 md:grid-cols-2">
-              <Button className="rounded-2xl gap-2"><Sparkles className="h-4 w-4" /> Auto-generate Full Slides</Button>
-              <Button variant="outline" className="rounded-2xl">Summarize Key Points</Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Live Notes Workspace</CardTitle>
-            <CardDescription>Google Docs-style collaborative notes that update service content in real time.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Textarea
-              rows={15}
-              className="rounded-3xl"
-              defaultValue={`Sermon Flow\n\nOpening Scripture: Romans 8:28\nMain Point 1: God's promises remain true\nMain Point 2: Obedience is proof of faith\nMain Point 3: Endurance reveals hope\n\nCue: Add prayer moment slide\nCue: Show bilingual scripture on screen`}
-            />
-            <div className="mt-4 flex flex-wrap gap-3">
-              <Button className="rounded-2xl">Sync to Slides</Button>
-              <Button variant="outline" className="rounded-2xl">Share with Team</Button>
-              <Button variant="outline" className="rounded-2xl">Track Changes</Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-function ThumbnailView() {
-  const [title, setTitle] = useState("God's Promise Stands");
-  const [speaker, setSpeaker] = useState("Pastor Grace Kipendo");
-
-  return (
-    <div className="space-y-6">
-      <SectionTitle
-        title="AI Thumbnail Generator"
-        description="Generate sermon, livestream, and event thumbnails with AI-selected layouts based on performance patterns."
-        action={<Button className="rounded-2xl gap-2"><Sparkles className="h-4 w-4" /> Generate High-Performance Thumbnail</Button>}
-      />
-
-      <div className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Thumbnail Inputs</CardTitle>
-            <CardDescription>Select image, enter title and preacher, then let AI build a ready-to-use design.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex min-h-[180px] items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-              <div>
-                <Upload className="mx-auto h-8 w-8 text-slate-400" />
-                <p className="mt-3 font-medium">Upload preacher or event image</p>
-                <p className="text-sm text-slate-500">AI auto-crops and applies best framing</p>
-              </div>
-            </div>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Sermon title" className="rounded-2xl" />
-            <Input value={speaker} onChange={(e) => setSpeaker(e.target.value)} placeholder="Preacher name" className="rounded-2xl" />
-            <div className="grid gap-3 md:grid-cols-2">
-              <Button className="rounded-2xl">Best for YouTube</Button>
-              <Button variant="outline" className="rounded-2xl">Best for Facebook</Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>AI Suggested Templates</CardTitle>
-            <CardDescription>Layouts ranked by likely engagement and readability for ministry content.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 lg:grid-cols-2">
-            {[
-              "High Contrast YouTube Sermon",
-              "Conference Broadcast Promo",
-              "Revival Night Event Thumbnail",
-              "Scripture Teaching Minimal Style",
-            ].map((template, i) => (
-              <div key={template} className="overflow-hidden rounded-3xl border border-slate-200">
-                <div className={`h-40 p-5 text-white ${i % 2 === 0 ? "bg-gradient-to-br from-indigo-700 via-slate-900 to-black" : "bg-gradient-to-br from-emerald-500 via-teal-700 to-slate-900"}`}>
-                  <Badge className="rounded-xl bg-white/20 text-white hover:bg-white/20">AI Suggested</Badge>
-                  <h3 className="mt-5 text-2xl font-bold leading-tight">{title}</h3>
-                  <p className="mt-2 text-sm text-white/80">{speaker}</p>
-                </div>
-                <div className="p-4">
-                  <p className="font-medium">{template}</p>
-                  <p className="mt-1 text-sm text-slate-500">Chosen for strong visual hierarchy and sermon thumbnail performance.</p>
-                  <Button variant="outline" className="mt-3 w-full rounded-2xl">Use Template</Button>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-function StreamView() {
-  return (
-    <div className="space-y-6">
-      <SectionTitle
-        title="Live Stream Studio"
-        description="Sync slides with camera feeds, overlays, and local recording from the active device."
-        action={<Button className="rounded-2xl gap-2"><Radio className="h-4 w-4" /> Start Stream</Button>}
-      />
-
-      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Program Output</CardTitle>
-            <CardDescription>Camera feed, lower thirds, scriptures, and slide overlays synchronized in one scene.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="min-h-[320px] rounded-3xl bg-gradient-to-br from-slate-950 via-slate-800 to-slate-700 p-6 text-white">
-              <div className="flex items-center justify-between">
-                <Badge className="rounded-xl bg-red-600 text-white hover:bg-red-600">LIVE</Badge>
-                <div className="flex gap-2">
-                  <Badge variant="secondary" className="rounded-xl">Camera 1</Badge>
-                  <Badge variant="secondary" className="rounded-xl">Scripture Overlay</Badge>
-                </div>
-              </div>
-              <div className="mt-10 flex h-44 items-end rounded-3xl border border-white/10 bg-white/5 p-6">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.25em] text-slate-300">Lower Third</p>
-                  <h3 className="mt-2 text-2xl font-semibold">God's Promise Stands</h3>
-                  <p className="text-slate-300">Mount of Olives Ministry</p>
-                </div>
-              </div>
-            </div>
-            <div className="mt-4 grid gap-3 md:grid-cols-4">
-              <Button variant="outline" className="rounded-2xl">Camera 1</Button>
-              <Button variant="outline" className="rounded-2xl">Camera 2</Button>
-              <Button variant="outline" className="rounded-2xl">Slides</Button>
-              <Button variant="outline" className="rounded-2xl">Split View</Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-6">
-          <Card className="rounded-3xl border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle>Streaming Destinations</CardTitle>
-              <CardDescription>Preconfigured church platforms and social channels.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {[
-                "YouTube Live",
-                "Facebook Live",
-                "Church Web Player",
-              ].map((dest) => (
-                <div key={dest} className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
-                  <p className="font-medium">{dest}</p>
-                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-3xl border-0 shadow-sm">
-            <CardHeader>
-              <CardTitle>Recording</CardTitle>
-              <CardDescription>Save service output directly on the active production device.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-2xl border border-slate-200 p-4">
-                <p className="font-medium">Active Capture</p>
-                <p className="mt-1 text-sm text-slate-500">Video + overlays + audio + synced presentation scenes</p>
-              </div>
-              <Button className="w-full rounded-2xl gap-2"><Clapperboard className="h-4 w-4" /> Start Recording</Button>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MediaView() {
-  return (
-    <div className="space-y-6">
-      <SectionTitle
-        title="Media Library"
-        description="Store and organize videos, images, backgrounds, logos, and audio for presentations and streaming."
-        action={<Button className="rounded-2xl gap-2"><Upload className="h-4 w-4" /> Upload Media</Button>}
-      />
-
-      <Card className="rounded-3xl border-0 shadow-sm">
-        <CardContent className="p-5">
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {recentMedia.map((item) => (
-              <div key={item.name} className="rounded-3xl border border-slate-200 p-4">
-                <div className="mb-4 inline-flex rounded-2xl bg-slate-100 p-3">
-                  <item.icon className="h-5 w-5" />
-                </div>
-                <p className="font-medium break-all">{item.name}</p>
-                <p className="mt-1 text-sm text-slate-500">{item.kind}</p>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function MobileView() {
-  return (
-    <div className="space-y-6">
-      <SectionTitle
-        title="Mobile Control + Congregation Experience"
-        description="Pastor tablet control and member live-follow app in one connected system."
-      />
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Pastor Control Center</CardTitle>
-            <CardDescription>Control slides, view confidence notes, and trigger scripture from tablet or phone.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {[
-              "Next / previous slide",
-              "Confidence monitor notes",
-              "Live scripture projection",
-              "Service flow controls",
-            ].map((item) => (
-              <div key={item} className="rounded-2xl border border-slate-200 p-4 text-sm">{item}</div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-3xl border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Congregation App</CardTitle>
-            <CardDescription>Members follow live notes, bilingual scripture, and announcements in real time.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {[
-              "Live synchronized notes",
-              "English + Swahili Bible feed",
-              "Announcements and event links",
-              "Sermon outline and follow-along mode",
-            ].map((item) => (
-              <div key={item} className="rounded-2xl border border-slate-200 p-4 text-sm">{item}</div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
-}
-
-function BrandingView() {
-  return (
-    <div className="space-y-6">
-      <SectionTitle
-        title="Branding + Personalization"
-        description="Customize your church account with logo, theme colors, reusable templates, and ministry identity."
-      />
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {[
-          "Upload church logo",
-          "Create ministry color system",
-          "Set sermon slide templates",
-          "Build conference event branding",
-          "Configure recurring lower thirds",
-          "Save worship lyric theme packs",
-        ].map((item) => (
-          <Card key={item} className="rounded-3xl border-0 shadow-sm">
-            <CardContent className="p-5">
-              <p className="font-medium">{item}</p>
-              <p className="mt-2 text-sm text-slate-500">Reusable branding tools for presentations, streaming, and thumbnails.</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export default function ChurchPresentationFrontend() {
-  const [active, setActive] = useState("dashboard");
-
-  const renderView = () => {
-    switch (active) {
-      case "dashboard":
-        return <DashboardView />;
-      case "presentations":
-        return <PresentationsView />;
-      case "bible":
-        return <BibleView />;
-      case "notes":
-        return <NotesView />;
-      case "thumbnails":
-        return <ThumbnailView />;
-      case "stream":
-        return <StreamView />;
-      case "media":
-        return <MediaView />;
-      case "control":
-        return <MobileView />;
-      case "settings":
-        return <BrandingView />;
-      default:
-        return <DashboardView />;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChurchFlow AI — Single File Prototype</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#111833;
+      --panel-2:#182143;
+      --soft:#212d5a;
+      --text:#eef3ff;
+      --muted:#b3c0e6;
+      --accent:#7ea6ff;
+      --accent-2:#8bffd6;
+      --danger:#ff8f8f;
+      --warning:#ffd27e;
+      --success:#8cffb3;
+      --shadow:0 18px 45px rgba(0,0,0,.28);
+      --radius:18px;
     }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#0a0f1e,#101734 45%,#0c1225);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+    body{min-height:100vh}
+    a{color:inherit}
+    button,input,select,textarea{font:inherit}
+    .app{
+      display:grid;
+      grid-template-columns:290px 1fr;
+      min-height:100vh;
+    }
+    .sidebar{
+      background:rgba(7,11,24,.88);
+      border-right:1px solid rgba(255,255,255,.08);
+      padding:22px 16px;
+      position:sticky;
+      top:0;
+      height:100vh;
+      backdrop-filter: blur(16px);
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-bottom:22px;
+      padding:12px;
+      border-radius:16px;
+      background:linear-gradient(135deg,rgba(126,166,255,.18),rgba(139,255,214,.12));
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .brand-icon{
+      width:46px;height:46px;border-radius:14px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--accent),#5f7fff);
+      color:#081126;font-weight:800;font-size:20px;
+      box-shadow:var(--shadow);
+    }
+    .brand h1{font-size:18px;margin:0}
+    .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
+    .nav{
+      display:grid;
+      gap:8px;
+      margin-top:8px;
+    }
+    .nav-btn{
+      width:100%;
+      border:0;
+      text-align:left;
+      padding:12px 14px;
+      color:var(--text);
+      background:transparent;
+      border-radius:14px;
+      cursor:pointer;
+      transition:.18s ease;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .nav-btn:hover,.nav-btn.active{
+      background:linear-gradient(135deg,rgba(126,166,255,.16),rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.08);
+      transform:translateX(2px);
+    }
+    .sidebar-foot{
+      position:absolute;
+      left:16px; right:16px; bottom:18px;
+      padding:14px;
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .sidebar-foot small{display:block;color:var(--muted);line-height:1.45}
+
+    .main{
+      padding:24px;
+    }
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      margin-bottom:20px;
+      flex-wrap:wrap;
+    }
+    .topbar h2{margin:0;font-size:28px}
+    .topbar p{margin:4px 0 0;color:var(--muted)}
+    .top-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{
+      border:0;cursor:pointer;border-radius:14px;padding:11px 14px;
+      background:linear-gradient(135deg,var(--accent),#6488ff);color:#081126;font-weight:700;
+      box-shadow:var(--shadow);
+    }
+    .btn.secondary{
+      background:rgba(255,255,255,.06); color:var(--text); border:1px solid rgba(255,255,255,.08); box-shadow:none;
+    }
+    .btn.ghost{
+      background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.12);box-shadow:none;
+    }
+
+    .page{display:none;animation:fade .22s ease}
+    .page.active{display:block}
+    @keyframes fade{from{opacity:.25;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+    .grid{
+      display:grid;
+      gap:18px;
+    }
+    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .card{
+      background:linear-gradient(180deg,rgba(24,33,67,.96),rgba(16,24,51,.96));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card-head{
+      padding:16px 18px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .card-head h3,.card-head h4{margin:0}
+    .card-body{padding:18px}
+    .stat{
+      display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:18px;
+      background:linear-gradient(135deg,rgba(126,166,255,.11),rgba(139,255,214,.08));
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .stat .label{color:var(--muted);font-size:13px}
+    .stat .value{font-size:34px;font-weight:800}
+    .stat .sub{color:var(--accent-2);font-size:12px}
+    .mini-badge{
+      font-size:11px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.07);color:var(--muted);display:inline-block
+    }
+
+    .field{display:grid;gap:8px;margin-bottom:14px}
+    .field label{font-size:13px;color:var(--muted)}
+    .input, .textarea, .select{
+      width:100%;background:rgba(255,255,255,.05);color:var(--text);
+      border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:12px 13px;
+      outline:none;
+    }
+    .textarea{min-height:110px;resize:vertical}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    .tool{
+      padding:8px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.04);color:var(--muted);cursor:pointer
+    }
+    .slide-preview{
+      min-height:300px;border-radius:20px;padding:26px;
+      background:
+        radial-gradient(circle at top right, rgba(126,166,255,.24), transparent 35%),
+        radial-gradient(circle at bottom left, rgba(139,255,214,.18), transparent 30%),
+        linear-gradient(135deg,#0f1530,#17214a 58%,#0d1531);
+      border:1px solid rgba(255,255,255,.10);
+      display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+      overflow:hidden;
+      position:relative;
+    }
+    .slide-preview .kicker{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-2)}
+    .slide-preview h1{margin:12px 0 10px;font-size:clamp(30px,4vw,54px);max-width:920px}
+    .slide-preview p{margin:0;color:#d9e3ff;font-size:clamp(16px,1.6vw,24px);max-width:920px;line-height:1.55}
+    .slide-footer{
+      position:absolute;bottom:16px;left:20px;right:20px;
+      display:flex;justify-content:space-between;font-size:12px;color:#d2ddff88
+    }
+
+    .split-screen{
+      display:grid;grid-template-columns:1fr 1fr;gap:12px;
+      min-height:300px;
+    }
+    .projection-pane{
+      border-radius:18px;padding:18px;border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg,#0e1430,#16224d);
+    }
+    .projection-pane h4{margin:0 0 12px}
+    .projection-canvas{
+      min-height:220px;border-radius:16px;padding:18px;display:flex;align-items:center;justify-content:center;text-align:center;
+      background:linear-gradient(135deg,#050913,#0f1733);
+      border:1px solid rgba(255,255,255,.07)
+    }
+
+    .list{display:grid;gap:10px}
+    .list-item{
+      padding:14px;border-radius:16px;background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;gap:12px;align-items:center;
+    }
+    .list-item strong{display:block}
+    .list-item span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{font-size:11px;padding:7px 9px;border-radius:999px;background:rgba(126,166,255,.12);color:#dbe6ff;border:1px solid rgba(126,166,255,.20)}
+    .status-dot{
+      width:10px;height:10px;border-radius:999px;display:inline-block;margin-right:8px;background:var(--success);box-shadow:0 0 0 7px rgba(140,255,179,.08)
+    }
+
+    .verse-box{
+      border-radius:18px;padding:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)
+    }
+    .verse-ref{color:var(--accent-2);font-size:13px;margin-bottom:10px}
+    .verse-text{font-size:28px;line-height:1.45;margin:0}
+    .verse-text.small{font-size:22px;color:#dbe5ff}
+    .two-col-text{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+    .dropzone{
+      border:2px dashed rgba(126,166,255,.35);
+      border-radius:20px;padding:26px;text-align:center;background:rgba(126,166,255,.06)
+    }
+    .thumb-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .thumb{
+      min-height:155px;border-radius:18px;padding:16px;display:flex;align-items:flex-end;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,.16), transparent 24%),
+        linear-gradient(140deg,#203469,#6d48d1);
+      border:1px solid rgba(255,255,255,.09);font-weight:700
+    }
+    .thumb:nth-child(2){background:linear-gradient(140deg,#243b6b,#208870)}
+    .thumb:nth-child(3){background:linear-gradient(140deg,#5c3469,#b44b61)}
+
+    .note-paper{
+      min-height:300px;border-radius:18px;padding:18px;background:#f5efdf;color:#2b2515;
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,.05);
+      background-image: linear-gradient(to bottom, rgba(60,90,160,.10) 1px, transparent 1px);
+      background-size:100% 34px;
+      position:relative;
+    }
+    .note-paper::before{
+      content:"";
+      position:absolute;top:0;bottom:0;left:52px;width:2px;background:rgba(210,80,80,.18);
+    }
+    .note-line{padding-left:64px;padding-top:6px;font-size:20px;line-height:34px}
+    .slide-mini{
+      min-height:300px;border-radius:18px;padding:22px;background:linear-gradient(135deg,#121935,#1c2757 58%,#111934);display:flex;align-items:center;justify-content:center;text-align:center
+    }
+    .timeline{display:grid;gap:12px}
+    .time-row{
+      display:grid;grid-template-columns:90px 1fr 110px;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)
+    }
+    .time-row .time{color:var(--accent-2);font-weight:700}
+    .time-row .flag{justify-self:end;font-size:12px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.07);color:var(--muted)}
+    .progress{
+      height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden
+    }
+    .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+    .table{
+      width:100%;border-collapse:collapse
+    }
+    .table th,.table td{
+      padding:12px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:14px
+    }
+    .table th{color:var(--muted);font-weight:600}
+
+    .footer-note{color:var(--muted);font-size:12px;margin-top:12px}
+
+    @media (max-width: 1100px){
+      .grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .grid.three{grid-template-columns:1fr}
+      .grid.two,.split-screen,.two-col-text{grid-template-columns:1fr}
+      .app{grid-template-columns:1fr}
+      .sidebar{position:relative;height:auto}
+      .sidebar-foot{position:relative;left:auto;right:auto;bottom:auto;margin-top:16px}
+      .main{padding:18px}
+    }
+    @media (max-width: 680px){
+      .grid.four,.thumb-grid{grid-template-columns:1fr}
+      .topbar h2{font-size:23px}
+      .verse-text{font-size:22px}
+      .time-row{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">CF</div>
+        <div>
+          <h1>ChurchFlow AI</h1>
+          <p>Single-file HTML prototype</p>
+        </div>
+      </div>
+
+      <div class="nav">
+        <button class="nav-btn active" data-page="dashboard">Dashboard <span>›</span></button>
+        <button class="nav-btn" data-page="presentations">Presentations <span>›</span></button>
+        <button class="nav-btn" data-page="bible">Bible Projection <span>›</span></button>
+        <button class="nav-btn" data-page="notes">Live Notes <span>›</span></button>
+        <button class="nav-btn" data-page="media">Media Library <span>›</span></button>
+        <button class="nav-btn" data-page="design">Design Studio <span>›</span></button>
+        <button class="nav-btn" data-page="ai">AI Tools <span>›</span></button>
+        <button class="nav-btn" data-page="streaming">Streaming <span>›</span></button>
+        <button class="nav-btn" data-page="mobile">Mobile Control <span>›</span></button>
+        <button class="nav-btn" data-page="settings">Settings <span>›</span></button>
+      </div>
+
+      <div class="sidebar-foot">
+        <small><strong>GitHub + Vercel ready:</strong> save this file as <code>index.html</code> and upload it to your repo.</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2 id="pageTitle">Dashboard</h2>
+          <p id="pageSubtitle">Overview of your service production workflow.</p>
+        </div>
+        <div class="top-actions">
+          <button class="btn secondary" id="saveAllBtn">Save Demo Data</button>
+          <button class="btn" id="loadSampleBtn">Load Sunday Sample</button>
+        </div>
+      </div>
+
+      <section class="page active" id="dashboard">
+        <div class="grid four">
+          <div class="stat">
+            <div class="label">Active presentation</div>
+            <div class="value" id="dashPresentationCount">1</div>
+            <div class="sub">Sunday Promise Service</div>
+          </div>
+          <div class="stat">
+            <div class="label">Slides in lineup</div>
+            <div class="value" id="dashSlideCount">8</div>
+            <div class="sub">Ready for projection</div>
+          </div>
+          <div class="stat">
+            <div class="label">Media assets</div>
+            <div class="value" id="dashMediaCount">14</div>
+            <div class="sub">Images, videos, backgrounds</div>
+          </div>
+          <div class="stat">
+            <div class="label">Live stream status</div>
+            <div class="value" style="font-size:26px"><span class="status-dot"></span>Ready</div>
+            <div class="sub">OBS / camera sync mock</div>
+          </div>
+        </div>
+
+        <div class="grid two" style="margin-top:18px">
+          <div class="card">
+            <div class="card-head">
+              <h3>Tonight's service flow</h3>
+              <span class="mini-badge">Multi-user workflow</span>
+            </div>
+            <div class="card-body">
+              <div class="timeline">
+                <div class="time-row">
+                  <div class="time">6:30 PM</div>
+                  <div>
+                    <strong>Countdown + welcome loop</strong>
+                    <div class="footer-note">Animated opener, logo, lower-third ready</div>
+                  </div>
+                  <div class="flag">Queued</div>
+                </div>
+                <div class="time-row">
+                  <div class="time">6:40 PM</div>
+                  <div>
+                    <strong>Worship lyrics set</strong>
+                    <div class="footer-note">English / Swahili bilingual mode available</div>
+                  </div>
+                  <div class="flag">Ready</div>
+                </div>
+                <div class="time-row">
+                  <div class="time">7:05 PM</div>
+                  <div>
+                    <strong>Sermon slides + live notes</strong>
+                    <div class="footer-note">Auto-generated key points and thumbnails</div>
+                  </div>
+                  <div class="flag">Live</div>
+                </div>
+                <div class="time-row">
+                  <div class="time">7:45 PM</div>
+                  <div>
+                    <strong>Prayer and giving screen</strong>
+                    <div class="footer-note">Lower-third overlay + QR giving slide</div>
+                  </div>
+                  <div class="flag">Prepared</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Audience preview</h3>
+              <span class="mini-badge">Live projection mock</span>
+            </div>
+            <div class="card-body">
+              <div class="slide-preview" id="dashboardHeroPreview">
+                <div class="kicker">Sunday Service</div>
+                <h1>God's Promise Stands</h1>
+                <p>Welcome to worship. Today's service presentation is synchronized for screens, stream, and notes.</p>
+                <div class="slide-footer">
+                  <span>ChurchFlow AI</span>
+                  <span>1920 × 1080</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="presentations">
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <h3>Presentation builder</h3>
+              <span class="mini-badge">Single file editor</span>
+            </div>
+            <div class="card-body">
+              <div class="toolbar">
+                <button class="tool">Title</button>
+                <button class="tool">Scripture</button>
+                <button class="tool">Image</button>
+                <button class="tool">Video</button>
+                <button class="tool">Lower Third</button>
+                <button class="tool">Announcement</button>
+              </div>
+              <div class="field">
+                <label for="slideTitle">Slide title</label>
+                <input id="slideTitle" class="input" value="God's Promise Stands" />
+              </div>
+              <div class="field">
+                <label for="slideSubtitle">Slide subtitle / content</label>
+                <textarea id="slideSubtitle" class="textarea">Welcome to Mount of Olives Ministry. Tonight we worship with faith, prayer, and confidence in the promises of God.</textarea>
+              </div>
+              <div class="field">
+                <label for="slideFooterLeft">Footer left</label>
+                <input id="slideFooterLeft" class="input" value="Mount of Olives Ministry" />
+              </div>
+              <div class="field">
+                <label for="slideFooterRight">Footer right</label>
+                <input id="slideFooterRight" class="input" value="Sunday Worship • Live" />
+              </div>
+              <div class="toolbar">
+                <button class="btn" id="updatePreviewBtn">Update preview</button>
+                <button class="btn secondary" id="saveSlideBtn">Save slide</button>
+                <button class="btn ghost" id="clearSlideBtn">Clear</button>
+              </div>
+              <div class="footer-note">This mock saves your slide content into browser local storage so it remains after refresh on the same device.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Live slide preview</h3>
+              <span class="mini-badge">Projector view</span>
+            </div>
+            <div class="card-body">
+              <div class="slide-preview" id="mainSlidePreview">
+                <div class="kicker">Live Service</div>
+                <h1 id="previewTitle">God's Promise Stands</h1>
+                <p id="previewSubtitle">Welcome to Mount of Olives Ministry. Tonight we worship with faith, prayer, and confidence in the promises of God.</p>
+                <div class="slide-footer">
+                  <span id="previewFooterLeft">Mount of Olives Ministry</span>
+                  <span id="previewFooterRight">Sunday Worship • Live</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:18px">
+          <div class="card-head">
+            <h3>Split-screen projection</h3>
+            <span class="mini-badge">Project two items at once</span>
+          </div>
+          <div class="card-body">
+            <div class="split-screen">
+              <div class="projection-pane">
+                <h4>Left output</h4>
+                <div class="projection-canvas">
+                  <div>
+                    <div class="mini-badge">Lyrics</div>
+                    <h2 style="margin:14px 0 8px">Your grace is enough</h2>
+                    <p style="color:var(--muted)">For me, in every season of my life.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="projection-pane">
+                <h4>Right output</h4>
+                <div class="projection-canvas">
+                  <div>
+                    <div class="mini-badge">Image / live notes</div>
+                    <h2 style="margin:14px 0 8px">Sermon point 1</h2>
+                    <p style="color:var(--muted)">God's word remains firm even when circumstances change.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="bible">
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <h3>Bible projection</h3>
+              <span class="mini-badge">English • Swahili • Bilingual</span>
+            </div>
+            <div class="card-body">
+              <div class="field">
+                <label for="verseRef">Reference</label>
+                <input id="verseRef" class="input" value="Genesis 1:1" />
+              </div>
+              <div class="field">
+                <label for="englishVerse">English verse</label>
+                <textarea id="englishVerse" class="textarea">In the beginning God created the heaven and the earth.</textarea>
+              </div>
+              <div class="field">
+                <label for="swahiliVerse">Swahili verse</label>
+                <textarea id="swahiliVerse" class="textarea">Hapo mwanzo Mungu aliziumba mbingu na nchi.</textarea>
+              </div>
+              <div class="toolbar">
+                <button class="btn" id="showEnglishBtn">English only</button>
+                <button class="btn secondary" id="showSwahiliBtn">Swahili only</button>
+                <button class="btn ghost" id="showBilingualBtn">Bilingual</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Projection preview</h3>
+              <span class="mini-badge" id="bibleModeBadge">Bilingual</span>
+            </div>
+            <div class="card-body">
+              <div class="verse-box">
+                <div class="verse-ref" id="verseRefPreview">Genesis 1:1</div>
+                <div id="bibleOutput">
+                  <div class="two-col-text">
+                    <p class="verse-text small" id="englishVersePreview">In the beginning God created the heaven and the earth.</p>
+                    <p class="verse-text small" id="swahiliVersePreview">Hapo mwanzo Mungu aliziumba mbingu na nchi.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="footer-note">Ideal for projector screens, confidence screens, and stream overlays.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="notes">
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <h3>Live notes + collaboration</h3>
+              <span class="mini-badge">Pastor / media team sync</span>
+            </div>
+            <div class="card-body">
+              <div class="field">
+                <label for="sermonNotes">Sermon notes</label>
+                <textarea id="sermonNotes" class="textarea" style="min-height:280px">Theme: God's Promise Stands
+
+1. God speaks before we see the result.
+2. Faith remains steady when the process feels long.
+3. The promise is bigger than present pain.
+4. Obedience positions us for fulfillment.</textarea>
+              </div>
+              <div class="toolbar">
+                <button class="btn" id="convertNotesBtn">Convert notes to slides</button>
+                <button class="btn secondary" id="proofreadBtn">Proofread notes</button>
+              </div>
+              <div class="list" style="margin-top:12px">
+                <div class="list-item">
+                  <div>
+                    <strong>Pastor Grace</strong>
+                    <span>Editing sermon points</span>
+                  </div>
+                  <div class="chip">Live</div>
+                </div>
+                <div class="list-item">
+                  <div>
+                    <strong>Media Operator</strong>
+                    <span>Preparing lower thirds and scripture slides</span>
+                  </div>
+                  <div class="chip">Synced</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Notes-to-slide preview</h3>
+              <span class="mini-badge">AI-assisted mock</span>
+            </div>
+            <div class="card-body">
+              <div class="grid two">
+                <div class="note-paper">
+                  <div class="note-line">Theme: God's Promise Stands</div>
+                  <div class="note-line">1. God speaks before results.</div>
+                  <div class="note-line">2. Faith stays steady in process.</div>
+                  <div class="note-line">3. Promise is bigger than pain.</div>
+                  <div class="note-line">4. Obedience leads to fulfillment.</div>
+                </div>
+                <div class="slide-mini" id="notesSlideOutput">
+                  <div>
+                    <div class="mini-badge">Generated sermon slide</div>
+                    <h2 style="margin:14px 0 10px">God's Promise Stands</h2>
+                    <p style="color:var(--muted);max-width:420px">God speaks before we see the result. Faith stays steady during the process.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="footer-note">In a real product, this would connect to OCR and AI generation from handwritten or photographed notes.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="media">
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <h3>Media library</h3>
+              <span class="mini-badge">Images • videos • backgrounds</span>
+            </div>
+            <div class="card-body">
+              <div class="dropzone">
+                <h3 style="margin-top:0">Upload media</h3>
+                <p style="color:var(--muted)">Choose files for sermon visuals, backgrounds, announcement videos, and lower thirds.</p>
+                <input id="mediaInput" type="file" multiple class="input" />
+              </div>
+              <div class="list" id="mediaList" style="margin-top:16px"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Media lineup</h3>
+              <span class="mini-badge">Service assets</span>
+            </div>
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Asset</th>
+                    <th>Type</th>
+                    <th>Use</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Welcome Loop</td><td>Video</td><td>Pre-service screen</td></tr>
+                  <tr><td>Conference Flyer</td><td>Image</td><td>Announcement</td></tr>
+                  <tr><td>Prayer Background</td><td>Background</td><td>Ministry time</td></tr>
+                  <tr><td>Giving QR Graphic</td><td>Graphic</td><td>Offering slide</td></tr>
+                </tbody>
+              </table>
+              <div class="footer-note">This demo lists selected browser files during the session. It does not upload to a server yet.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="design">
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <h3>Design studio</h3>
+              <span class="mini-badge">Canva-style mock</span>
+            </div>
+            <div class="card-body">
+              <div class="field">
+                <label for="designTitle">Design headline</label>
+                <input id="designTitle" class="input" value="Revival Night 2026" />
+              </div>
+              <div class="field">
+                <label for="designSubtitle">Design subtext</label>
+                <input id="designSubtitle" class="input" value="Prayer • Worship • The Word" />
+              </div>
+              <div class="toolbar">
+                <button class="tool" data-theme="sermon">Sermon</button>
+                <button class="tool" data-theme="revival">Revival</button>
+                <button class="tool" data-theme="youth">Youth</button>
+                <button class="tool" data-theme="conference">Conference</button>
+              </div>
+              <button class="btn" id="applyDesignBtn">Apply to design preview</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Design preview</h3>
+              <span class="mini-badge">Editable template</span>
+            </div>
+            <div class="card-body">
+              <div class="slide-preview" id="designPreview">
+                <div class="kicker">Event Graphic</div>
+                <h1 id="designPreviewTitle">Revival Night 2026</h1>
+                <p id="designPreviewSubtitle">Prayer • Worship • The Word</p>
+                <div class="slide-footer">
+                  <span>Editable design</span>
+                  <span>Social + projector sizes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="ai">
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <h3>AI assistant</h3>
+              <span class="mini-badge">Slides • proofreading • thumbnails</span>
+            </div>
+            <div class="card-body">
+              <div class="field">
+                <label for="aiPrompt">Prompt</label>
+                <textarea id="aiPrompt" class="textarea">Create a sermon slide deck for the message "God's Promise Stands" with 5 slides, warm modern backgrounds, one scripture slide, one quote slide, and one altar call slide.</textarea>
+              </div>
+              <div class="toolbar">
+                <button class="btn" id="generateAiSlidesBtn">Generate AI slide ideas</button>
+                <button class="btn secondary" id="generateThumbnailBtn">Generate thumbnail ideas</button>
+              </div>
+              <div class="list" id="aiIdeasList" style="margin-top:16px"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Thumbnail suggestions</h3>
+              <span class="mini-badge">Performance-inspired mock</span>
+            </div>
+            <div class="card-body">
+              <div class="thumb-grid">
+                <div class="thumb">God's Promise Stands</div>
+                <div class="thumb">Faith Through the Process</div>
+                <div class="thumb">When God Has Spoken</div>
+              </div>
+              <div class="footer-note">In a real build, the system could select templates based on prior engagement, theme, and text length.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="streaming">
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <h3>Streaming + recording</h3>
+              <span class="mini-badge">Live output control</span>
+            </div>
+            <div class="card-body">
+              <div class="list">
+                <div class="list-item">
+                  <div><strong>Camera feed</strong><span>Main angle online</span></div>
+                  <div class="chip" id="cameraStatus">Standby</div>
+                </div>
+                <div class="list-item">
+                  <div><strong>Presentation overlay</strong><span>Slides on stream</span></div>
+                  <div class="chip" id="overlayStatus">Ready</div>
+                </div>
+                <div class="list-item">
+                  <div><strong>Local recording</strong><span>Device recording state</span></div>
+                  <div class="chip" id="recordStatus">Off</div>
+                </div>
+              </div>
+              <div class="toolbar" style="margin-top:14px">
+                <button class="btn" id="startStreamBtn">Start stream</button>
+                <button class="btn secondary" id="recordBtn">Record</button>
+                <button class="btn ghost" id="stopStreamBtn">Stop all</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Broadcast health</h3>
+              <span class="mini-badge">System monitor</span>
+            </div>
+            <div class="card-body">
+              <div class="field">
+                <label>Encoder output</label>
+                <div class="progress"><span style="width:78%"></span></div>
+              </div>
+              <div class="field">
+                <label>Upload stability</label>
+                <div class="progress"><span style="width:89%"></span></div>
+              </div>
+              <div class="field">
+                <label>Media sync</label>
+                <div class="progress"><span style="width:94%"></span></div>
+              </div>
+              <div class="footer-note">This page is a frontend simulation for how streaming controls and health indicators could look.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="mobile">
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <h3>Mobile remote</h3>
+              <span class="mini-badge">Pastor / operator control</span>
+            </div>
+            <div class="card-body">
+              <div class="grid two">
+                <button class="btn">Previous</button>
+                <button class="btn">Next</button>
+                <button class="btn secondary">Black screen</button>
+                <button class="btn secondary">Show scripture</button>
+              </div>
+              <div class="field" style="margin-top:18px">
+                <label>Current cue</label>
+                <input class="input" value="Sermon Slide 3 — Promise is bigger than pain" />
+              </div>
+              <div class="footer-note">This shows how a mobile control surface could work for live services.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Congregation experience</h3>
+              <span class="mini-badge">Companion access</span>
+            </div>
+            <div class="card-body">
+              <div class="list">
+                <div class="list-item"><div><strong>Live scripture follow-along</strong><span>Members can read verses on their phone</span></div><div class="chip">Enabled</div></div>
+                <div class="list-item"><div><strong>Translated notes</strong><span>English / Swahili support</span></div><div class="chip">Available</div></div>
+                <div class="list-item"><div><strong>Prayer request entry</strong><span>Linked to ministry team dashboard</span></div><div class="chip">Planned</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="settings">
+        <div class="grid two">
+          <div class="card">
+            <div class="card-head">
+              <h3>System settings</h3>
+              <span class="mini-badge">General preferences</span>
+            </div>
+            <div class="card-body">
+              <div class="field">
+                <label>Theme</label>
+                <select class="select">
+                  <option>Midnight Blue</option>
+                  <option>Royal Gold</option>
+                  <option>Clean Light</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Default projection output</label>
+                <select class="select">
+                  <option>Main screen</option>
+                  <option>Confidence monitor</option>
+                  <option>Livestream overlay</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Primary Bible language</label>
+                <select class="select">
+                  <option>English</option>
+                  <option>Swahili</option>
+                  <option>Bilingual</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Auto-save interval</label>
+                <select class="select">
+                  <option>Every 30 seconds</option>
+                  <option>Every 1 minute</option>
+                  <option>Every 5 minutes</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Production readiness</h3>
+              <span class="mini-badge">Frontend only</span>
+            </div>
+            <div class="card-body">
+              <div class="chips">
+                <div class="chip">Needs backend auth</div>
+                <div class="chip">Needs database</div>
+                <div class="chip">Needs cloud storage</div>
+                <div class="chip">Needs AI API</div>
+                <div class="chip">Needs OCR</div>
+                <div class="chip">Needs live sync</div>
+              </div>
+              <p style="color:var(--muted);margin-top:16px;line-height:1.7">
+                This single HTML file is excellent for a GitHub and Vercel prototype. To become a real production tool, it should later connect to a backend such as Supabase or Firebase and APIs for AI, streaming, OCR, and multi-user collaboration.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+<script>
+  const navButtons = document.querySelectorAll('.nav-btn');
+  const pages = document.querySelectorAll('.page');
+  const pageTitle = document.getElementById('pageTitle');
+  const pageSubtitle = document.getElementById('pageSubtitle');
+
+  const pageMeta = {
+    dashboard: ["Dashboard", "Overview of your service production workflow."],
+    presentations: ["Presentations", "Build and preview live service slides."],
+    bible: ["Bible Projection", "English, Swahili, and bilingual scripture display."],
+    notes: ["Live Notes", "Sermon notes, proofing, and notes-to-slide workflow."],
+    media: ["Media Library", "Manage images, videos, and backgrounds."],
+    design: ["Design Studio", "Create clean event graphics and slide visuals."],
+    ai: ["AI Tools", "Generate ideas for slides, thumbnails, and sermon assets."],
+    streaming: ["Streaming", "Control presentation overlays, stream state, and recording."],
+    mobile: ["Mobile Control", "Remote actions and companion experience mock."],
+    settings: ["Settings", "System preferences and production readiness notes."]
   };
 
-  return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
-      <div className="grid min-h-screen lg:grid-cols-[280px_1fr]">
-        <aside className="border-r border-slate-200 bg-white p-4 lg:p-5">
-          <div className="mb-6 flex items-center gap-3 rounded-3xl bg-slate-950 p-4 text-white">
-            <div className="rounded-2xl bg-white/10 p-2">
-              <Monitor className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-sm text-slate-300">MOOM Suite</p>
-              <h1 className="text-lg font-semibold">Church AI Studio</h1>
-            </div>
-          </div>
+  function showPage(id){
+    navButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.page === id));
+    pages.forEach(page => page.classList.toggle('active', page.id === id));
+    pageTitle.textContent = pageMeta[id][0];
+    pageSubtitle.textContent = pageMeta[id][1];
+  }
 
-          <nav className="space-y-2">
-            {sidebar.map((item) => {
-              const Icon = item.icon;
-              const isActive = active === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setActive(item.id)}
-                  className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left transition ${
-                    isActive ? "bg-slate-950 text-white shadow-sm" : "bg-transparent hover:bg-slate-100"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span className="text-sm font-medium">{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
+  navButtons.forEach(btn => btn.addEventListener('click', () => showPage(btn.dataset.page)));
 
-          <Separator className="my-5" />
+  // Presentation preview
+  const slideTitle = document.getElementById('slideTitle');
+  const slideSubtitle = document.getElementById('slideSubtitle');
+  const slideFooterLeft = document.getElementById('slideFooterLeft');
+  const slideFooterRight = document.getElementById('slideFooterRight');
 
-          <Card className="rounded-3xl border-0 bg-slate-50 shadow-none">
-            <CardContent className="p-4">
-              <p className="text-sm font-medium">Service Status</p>
-              <p className="mt-1 text-sm text-slate-500">Sunday Main Service</p>
-              <div className="mt-4 flex items-center justify-between text-sm">
-                <span>Preflight checks</span>
-                <span className="font-medium">92%</span>
-              </div>
-              <Progress value={92} className="mt-2" />
-              <Button className="mt-4 w-full rounded-2xl">Open Go Live</Button>
-            </CardContent>
-          </Card>
-        </aside>
+  const previewTitle = document.getElementById('previewTitle');
+  const previewSubtitle = document.getElementById('previewSubtitle');
+  const previewFooterLeft = document.getElementById('previewFooterLeft');
+  const previewFooterRight = document.getElementById('previewFooterRight');
 
-        <main className="min-w-0">
-          <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
-            <div className="flex items-center justify-between gap-4 px-4 py-4 lg:px-8">
-              <div className="flex items-center gap-3">
-                <Button variant="outline" size="icon" className="rounded-2xl lg:hidden">
-                  <Menu className="h-4 w-4" />
-                </Button>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Frontend MVP</p>
-                  <h2 className="text-xl font-semibold tracking-tight">All-in-One Church Presentation Platform</h2>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="hidden md:block">
-                  <Input placeholder="Search slides, scripture, media..." className="w-72 rounded-2xl" />
-                </div>
-                <Button variant="outline" size="icon" className="rounded-2xl">
-                  <Bell className="h-4 w-4" />
-                </Button>
-                <Avatar>
-                  <AvatarFallback>GK</AvatarFallback>
-                </Avatar>
-              </div>
-            </div>
-          </header>
+  function updatePresentationPreview(){
+    previewTitle.textContent = slideTitle.value || 'Untitled slide';
+    previewSubtitle.textContent = slideSubtitle.value || 'Slide content will appear here.';
+    previewFooterLeft.textContent = slideFooterLeft.value || 'ChurchFlow AI';
+    previewFooterRight.textContent = slideFooterRight.value || 'Live';
+    document.getElementById('dashboardHeroPreview').querySelector('h1').textContent = previewTitle.textContent;
+    document.getElementById('dashboardHeroPreview').querySelector('p').textContent = previewSubtitle.textContent;
+    document.getElementById('dashSlideCount').textContent = String(Math.max(1, Math.ceil((slideSubtitle.value || '').length / 55)));
+  }
 
-          <ScrollArea className="h-[calc(100vh-81px)]">
-            <div className="px-4 py-6 lg:px-8">{renderView()}</div>
-          </ScrollArea>
-        </main>
-      </div>
-    </div>
-  );
-}
+  document.getElementById('updatePreviewBtn').addEventListener('click', updatePresentationPreview);
+
+  document.getElementById('clearSlideBtn').addEventListener('click', () => {
+    slideTitle.value = '';
+    slideSubtitle.value = '';
+    slideFooterLeft.value = '';
+    slideFooterRight.value = '';
+    updatePresentationPreview();
+  });
+
+  document.getElementById('saveSlideBtn').addEventListener('click', () => {
+    const data = {
+      title: slideTitle.value,
+      subtitle: slideSubtitle.value,
+      footerLeft: slideFooterLeft.value,
+      footerRight: slideFooterRight.value
+    };
+    localStorage.setItem('churchflow_slide', JSON.stringify(data));
+    alert('Slide saved in your browser.');
+  });
+
+  function loadSavedSlide(){
+    const saved = localStorage.getItem('churchflow_slide');
+    if(!saved) return;
+    try{
+      const data = JSON.parse(saved);
+      slideTitle.value = data.title || '';
+      slideSubtitle.value = data.subtitle || '';
+      slideFooterLeft.value = data.footerLeft || '';
+      slideFooterRight.value = data.footerRight || '';
+      updatePresentationPreview();
+    }catch(e){}
+  }
+
+  document.getElementById('saveAllBtn').addEventListener('click', () => {
+    const demoData = {
+      notes: document.getElementById('sermonNotes').value,
+      verseRef: document.getElementById('verseRef').value,
+      english: document.getElementById('englishVerse').value,
+      swahili: document.getElementById('swahiliVerse').value
+    };
+    localStorage.setItem('churchflow_demo', JSON.stringify(demoData));
+    localStorage.setItem('churchflow_slide', JSON.stringify({
+      title: slideTitle.value,
+      subtitle: slideSubtitle.value,
+      footerLeft: slideFooterLeft.value,
+      footerRight: slideFooterRight.value
+    }));
+    alert('Demo data saved.');
+  });
+
+  document.getElementById('loadSampleBtn').addEventListener('click', () => {
+    slideTitle.value = "God's Promise Stands";
+    slideSubtitle.value = "Welcome to Mount of Olives Ministry. Tonight we worship with faith, prayer, and confidence in the promises of God.";
+    slideFooterLeft.value = "Mount of Olives Ministry";
+    slideFooterRight.value = "Sunday Worship • Live";
+    updatePresentationPreview();
+
+    document.getElementById('verseRef').value = "Isaiah 55:11";
+    document.getElementById('englishVerse').value = "So shall my word be that goeth forth out of my mouth: it shall not return unto me void.";
+    document.getElementById('swahiliVerse').value = "Ndivyo litakavyokuwa neno langu litokalo katika kinywa changu; halitanirudia bure.";
+    renderBible('bilingual');
+
+    document.getElementById('sermonNotes').value = "Theme: God's Promise Stands\n\n1. God's word does not fail.\n2. Delay is not denial.\n3. Obedience prepares us for fulfillment.\n4. Hope must remain active.";
+    convertNotesToSlide();
+
+    document.getElementById('aiIdeasList').innerHTML = '';
+  });
+
+  // Bible
+  function renderBible(mode){
+    const ref = document.getElementById('verseRef').value || 'Reference';
+    const eng = document.getElementById('englishVerse').value || '';
+    const swa = document.getElementById('swahiliVerse').value || '';
+    document.getElementById('verseRefPreview').textContent = ref;
+    const output = document.getElementById('bibleOutput');
+    const badge = document.getElementById('bibleModeBadge');
+
+    if(mode === 'english'){
+      badge.textContent = 'English';
+      output.innerHTML = `<p class="verse-text">${eng}</p>`;
+    } else if(mode === 'swahili'){
+      badge.textContent = 'Swahili';
+      output.innerHTML = `<p class="verse-text">${swa}</p>`;
+    } else {
+      badge.textContent = 'Bilingual';
+      output.innerHTML = `
+        <div class="two-col-text">
+          <p class="verse-text small">${eng}</p>
+          <p class="verse-text small">${swa}</p>
+        </div>`;
+    }
+  }
+  document.getElementById('showEnglishBtn').addEventListener('click', () => renderBible('english'));
+  document.getElementById('showSwahiliBtn').addEventListener('click', () => renderBible('swahili'));
+  document.getElementById('showBilingualBtn').addEventListener('click', () => renderBible('bilingual'));
+
+  ['verseRef','englishVerse','swahiliVerse'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => renderBible(document.getElementById('bibleModeBadge').textContent.toLowerCase()));
+  });
+
+  // Notes to slide
+  function convertNotesToSlide(){
+    const notes = document.getElementById('sermonNotes').value.trim().split('\n').filter(Boolean);
+    const headline = notes[0]?.replace('Theme:','').trim() || 'Generated sermon slide';
+    const supporting = notes.slice(1,3).join(' ').replace(/^\d+\.\s*/,'').trim() || 'Key sermon points will appear here.';
+    document.getElementById('notesSlideOutput').innerHTML = `
+      <div>
+        <div class="mini-badge">Generated sermon slide</div>
+        <h2 style="margin:14px 0 10px">${headline}</h2>
+        <p style="color:var(--muted);max-width:420px">${supporting}</p>
+      </div>`;
+  }
+  document.getElementById('convertNotesBtn').addEventListener('click', convertNotesToSlide);
+  document.getElementById('proofreadBtn').addEventListener('click', () => {
+    const area = document.getElementById('sermonNotes');
+    area.value = area.value
+      .replace(/\bGos\b/g, 'God')
+      .replace(/\s+\./g,'.')
+      .replace(/ +/g,' ')
+      .replace(/\n{3,}/g,'\n\n');
+    alert('Notes lightly proofread.');
+  });
+
+  // Media
+  const mediaInput = document.getElementById('mediaInput');
+  const mediaList = document.getElementById('mediaList');
+  mediaInput.addEventListener('change', () => {
+    mediaList.innerHTML = '';
+    const files = Array.from(mediaInput.files || []);
+    document.getElementById('dashMediaCount').textContent = String(Math.max(14, files.length));
+    if(!files.length){
+      mediaList.innerHTML = '<div class="list-item"><div><strong>No files selected</strong><span>Select files from your device for this demo</span></div><div class="chip">Empty</div></div>';
+      return;
+    }
+    files.forEach(file => {
+      const kind = file.type || 'Unknown';
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      item.innerHTML = `<div><strong>${file.name}</strong><span>${kind} • ${(file.size/1024).toFixed(1)} KB</span></div><div class="chip">Queued</div>`;
+      mediaList.appendChild(item);
+    });
+  });
+
+  // Design studio
+  let selectedTheme = 'sermon';
+  document.querySelectorAll('[data-theme]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedTheme = btn.dataset.theme;
+      document.querySelectorAll('[data-theme]').forEach(b => b.style.outline = '');
+      btn.style.outline = '2px solid rgba(139,255,214,.45)';
+    });
+  });
+
+  document.getElementById('applyDesignBtn').addEventListener('click', () => {
+    document.getElementById('designPreviewTitle').textContent = document.getElementById('designTitle').value || 'Design title';
+    document.getElementById('designPreviewSubtitle').textContent = document.getElementById('designSubtitle').value || 'Design subtitle';
+    const preview = document.getElementById('designPreview');
+    const themes = {
+      sermon: 'radial-gradient(circle at top right, rgba(126,166,255,.24), transparent 35%), radial-gradient(circle at bottom left, rgba(139,255,214,.18), transparent 30%), linear-gradient(135deg,#0f1530,#17214a 58%,#0d1531)',
+      revival: 'radial-gradient(circle at top left, rgba(255,210,126,.24), transparent 35%), radial-gradient(circle at bottom right, rgba(255,143,143,.18), transparent 30%), linear-gradient(135deg,#331915,#67251f 58%,#25110f)',
+      youth: 'radial-gradient(circle at top left, rgba(139,255,214,.20), transparent 35%), radial-gradient(circle at bottom right, rgba(126,166,255,.18), transparent 30%), linear-gradient(135deg,#0f3029,#135446 58%,#0c221d)',
+      conference: 'radial-gradient(circle at top left, rgba(255,210,126,.20), transparent 35%), radial-gradient(circle at bottom left, rgba(126,166,255,.18), transparent 30%), linear-gradient(135deg,#221934,#46317c 58%,#18122a)'
+    };
+    preview.style.background = themes[selectedTheme];
+  });
+
+  // AI
+  document.getElementById('generateAiSlidesBtn').addEventListener('click', () => {
+    const prompt = document.getElementById('aiPrompt').value.trim();
+    const list = document.getElementById('aiIdeasList');
+    list.innerHTML = '';
+    const ideas = [
+      'Opening title slide with warm cinematic background',
+      'Main scripture slide with bilingual text option',
+      'Three sermon point slides with large readable typography',
+      'Prayer response slide with calm gradient visual',
+      'Closing slide with church name, time, and call to action'
+    ];
+    ideas.forEach((idea, i) => {
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      item.innerHTML = `<div><strong>Idea ${i+1}</strong><span>${idea}</span></div><div class="chip">Generated</div>`;
+      list.appendChild(item);
+    });
+    if(prompt){
+      const extra = document.createElement('div');
+      extra.className = 'list-item';
+      extra.innerHTML = `<div><strong>Prompt summary</strong><span>${prompt.slice(0, 120)}${prompt.length > 120 ? '...' : ''}</span></div><div class="chip">Parsed</div>`;
+      list.prepend(extra);
+    }
+  });
+
+  document.getElementById('generateThumbnailBtn').addEventListener('click', () => {
+    alert('Thumbnail suggestions refreshed.');
+  });
+
+  // Streaming
+  let streamActive = false;
+  let recordingActive = false;
+
+  function refreshStreamingUI(){
+    document.getElementById('cameraStatus').textContent = streamActive ? 'Live' : 'Standby';
+    document.getElementById('overlayStatus').textContent = streamActive ? 'On Air' : 'Ready';
+    document.getElementById('recordStatus').textContent = recordingActive ? 'Recording' : 'Off';
+  }
+  document.getElementById('startStreamBtn').addEventListener('click', () => {
+    streamActive = true;
+    refreshStreamingUI();
+  });
+  document.getElementById('recordBtn').addEventListener('click', () => {
+    recordingActive = !recordingActive;
+    refreshStreamingUI();
+  });
+  document.getElementById('stopStreamBtn').addEventListener('click', () => {
+    streamActive = false;
+    recordingActive = false;
+    refreshStreamingUI();
+  });
+
+  // Init
+  loadSavedSlide();
+  renderBible('bilingual');
+  convertNotesToSlide();
+  refreshStreamingUI();
+  updatePresentationPreview();
+</script>
+</body>
+</html>

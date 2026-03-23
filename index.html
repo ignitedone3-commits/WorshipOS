@@ -1,0 +1,872 @@
+import React, { useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Monitor,
+  Play,
+  Pencil,
+  BookOpen,
+  SplitSquareHorizontal,
+  Users,
+  Upload,
+  Image as ImageIcon,
+  Video,
+  Mic,
+  Smartphone,
+  Sparkles,
+  LayoutTemplate,
+  Camera,
+  Radio,
+  Save,
+  Search,
+  Menu,
+  Bell,
+  Globe,
+  FileText,
+  Clapperboard,
+  FolderOpen,
+  Wand2,
+  Languages,
+  ChevronRight,
+  Plus,
+  CheckCircle2,
+  Eye,
+  Tv,
+  Library,
+} from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+const sidebar = [
+  { id: "dashboard", label: "Dashboard", icon: Monitor },
+  { id: "presentations", label: "Presentations", icon: LayoutTemplate },
+  { id: "bible", label: "Bible Studio", icon: BookOpen },
+  { id: "notes", label: "Live Notes", icon: FileText },
+  { id: "thumbnails", label: "AI Thumbnails", icon: ImageIcon },
+  { id: "stream", label: "Live Stream", icon: Radio },
+  { id: "media", label: "Media Library", icon: FolderOpen },
+  { id: "control", label: "Mobile Control", icon: Smartphone },
+  { id: "settings", label: "Branding", icon: Globe },
+];
+
+const sampleSlides = [
+  {
+    id: 1,
+    type: "Title",
+    title: "God's Promise Stands",
+    subtitle: "Mount of Olives Ministry",
+  },
+  {
+    id: 2,
+    type: "Scripture",
+    title: "Romans 8:28",
+    subtitle: "English + Swahili bilingual layout",
+  },
+  {
+    id: 3,
+    type: "Sermon Point",
+    title: "Faith grows when we trust God completely",
+    subtitle: "AI formatted from pastor notes",
+  },
+  {
+    id: 4,
+    type: "Announcement",
+    title: "Conference July 13–19, 2026",
+    subtitle: "Branded event promo slide",
+  },
+];
+
+const bilingualVerses = [
+  {
+    ref: "Romans 8:28",
+    en: "And we know that in all things God works for the good of those who love him.",
+    sw: "Nasi twajua ya kuwa katika mambo yote Mungu hufanya kazi pamoja kwa wema wa wale wampendao.",
+  },
+  {
+    ref: "Psalm 23:1",
+    en: "The Lord is my shepherd; I shall not want.",
+    sw: "Bwana ndiye mchungaji wangu, sitapungukiwa na kitu.",
+  },
+];
+
+const recentMedia = [
+  { name: "Sunday_Worship_Background.mp4", kind: "Video", icon: Video },
+  { name: "Conference_Promo_Main.png", kind: "Image", icon: ImageIcon },
+  { name: "Sermon_Intro_Bed.mp3", kind: "Audio", icon: Mic },
+  { name: "MOOM_Logo_White.svg", kind: "Brand", icon: Library },
+];
+
+const liveTeam = [
+  { name: "Pastor", role: "Owner" },
+  { name: "Media Lead", role: "Editor" },
+  { name: "Worship", role: "Collaborator" },
+  { name: "Streaming", role: "Operator" },
+];
+
+function StatCard({ title, value, subtext, icon: Icon }) {
+  return (
+    <Card className="rounded-3xl border-0 shadow-sm">
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-sm text-slate-500">{title}</p>
+            <p className="mt-2 text-3xl font-semibold tracking-tight">{value}</p>
+            <p className="mt-2 text-sm text-slate-500">{subtext}</p>
+          </div>
+          <div className="rounded-2xl bg-slate-100 p-3">
+            <Icon className="h-5 w-5" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SectionTitle({ title, description, action }) {
+  return (
+    <div className="mb-4 flex items-center justify-between gap-4">
+      <div>
+        <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
+        <p className="text-sm text-slate-500">{description}</p>
+      </div>
+      {action}
+    </div>
+  );
+}
+
+function DashboardView() {
+  return (
+    <div className="space-y-6">
+      <SectionTitle
+        title="Church Production Dashboard"
+        description="Manage live presentation, Bible projection, AI slides, streaming, and media from one control surface."
+        action={<Button className="rounded-2xl">Create Sunday Service</Button>}
+      />
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard title="Slides Ready" value="48" subtext="Sunday 9:00 AM service" icon={LayoutTemplate} />
+        <StatCard title="Live Collaborators" value="12" subtext="Synced across devices" icon={Users} />
+        <StatCard title="Media Assets" value="1,284" subtext="Images, videos, audio, backgrounds" icon={FolderOpen} />
+        <StatCard title="Streaming Status" value="Ready" subtext="YouTube + Facebook preconfigured" icon={Radio} />
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Live Service Builder</CardTitle>
+            <CardDescription>Prepare the entire service flow with editable slides, scriptures, media, and split-screen scenes.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {[
+              { title: "Sermon Slides", text: "Generate professional sermon slides from notes or photos.", icon: Wand2 },
+              { title: "Bible On Screen", text: "Project English, Swahili, or bilingual scripture instantly.", icon: Languages },
+              { title: "Split Screen", text: "Show scripture + video, image + notes, or dual-language content.", icon: SplitSquareHorizontal },
+              { title: "Go Live", text: "Publish from live window while editing in real time.", icon: Play },
+            ].map((item) => (
+              <div key={item.title} className="rounded-3xl border border-slate-200 p-4">
+                <div className="mb-3 inline-flex rounded-2xl bg-slate-100 p-3">
+                  <item.icon className="h-5 w-5" />
+                </div>
+                <h3 className="font-semibold">{item.title}</h3>
+                <p className="mt-2 text-sm text-slate-500">{item.text}</p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Team Activity</CardTitle>
+            <CardDescription>Live synchronized editing and production roles.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {liveTeam.map((person) => (
+              <div key={person.name} className="flex items-center justify-between rounded-2xl border border-slate-200 p-3">
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarFallback>{person.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{person.name}</p>
+                    <p className="text-sm text-slate-500">{person.role}</p>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="rounded-xl">Live</Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Upcoming Slides</CardTitle>
+            <CardDescription>Preview of the active presentation sequence.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {sampleSlides.map((slide) => (
+              <div key={slide.id} className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
+                <div>
+                  <div className="mb-1 flex items-center gap-2">
+                    <Badge className="rounded-xl">{slide.type}</Badge>
+                    <span className="text-xs text-slate-400">Slide {slide.id}</span>
+                  </div>
+                  <p className="font-semibold">{slide.title}</p>
+                  <p className="text-sm text-slate-500">{slide.subtitle}</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-slate-400" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Live Output Preview</CardTitle>
+            <CardDescription>Audience display and confidence monitor layout.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 lg:grid-cols-[1.4fr_0.6fr]">
+              <div className="min-h-[280px] rounded-3xl bg-gradient-to-br from-slate-950 via-slate-800 to-slate-700 p-6 text-white shadow-inner">
+                <div className="mb-5 flex items-center justify-between">
+                  <Badge className="rounded-xl bg-red-600 text-white hover:bg-red-600">GO LIVE</Badge>
+                  <div className="flex items-center gap-2 text-xs text-slate-300">
+                    <Tv className="h-4 w-4" /> Main Screen
+                  </div>
+                </div>
+                <p className="text-sm uppercase tracking-[0.25em] text-slate-300">Romans 8:28</p>
+                <h3 className="mt-6 max-w-xl text-3xl font-semibold leading-tight">
+                  And we know that in all things God works for the good of those who love Him.
+                </h3>
+                <p className="mt-5 max-w-xl text-lg text-slate-200">
+                  Nasi twajua ya kuwa katika mambo yote Mungu hufanya kazi pamoja kwa wema wa wale wampendao.
+                </p>
+              </div>
+              <div className="space-y-4">
+                <div className="rounded-3xl border border-slate-200 p-4">
+                  <p className="text-sm font-medium">Confidence Monitor</p>
+                  <p className="mt-2 text-sm text-slate-500">Pastor notes, timer, next slide, and cue markers.</p>
+                  <Progress value={68} className="mt-4" />
+                  <p className="mt-2 text-xs text-slate-400">Service progress: 68%</p>
+                </div>
+                <div className="rounded-3xl border border-slate-200 p-4">
+                  <p className="text-sm font-medium">Split-Screen Ready</p>
+                  <p className="mt-2 text-sm text-slate-500">Dual-language scripture + background video scene saved.</p>
+                  <Button variant="outline" className="mt-4 w-full rounded-2xl">Activate Layout</Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function PresentationsView() {
+  const [sermonTitle, setSermonTitle] = useState("God's Promise Stands");
+  const [preacher, setPreacher] = useState("Pastor Grace Kipendo");
+  const [notes, setNotes] = useState(
+    "Main theme: God remains faithful.\nPoint 1: His promises do not fail.\nPoint 2: Faith requires obedience.\nPoint 3: Hope grows in hardship."
+  );
+
+  return (
+    <div className="space-y-6">
+      <SectionTitle
+        title="Presentation Builder"
+        description="Create sermon slides, announcement decks, bilingual scripture screens, and live service scenes."
+        action={<Button className="rounded-2xl gap-2"><Plus className="h-4 w-4" /> New Deck</Button>}
+      />
+
+      <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>AI Slide Generator</CardTitle>
+            <CardDescription>Turn sermon notes or structured outlines into polished projection-ready slides.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input value={sermonTitle} onChange={(e) => setSermonTitle(e.target.value)} placeholder="Sermon title" className="rounded-2xl" />
+            <Input value={preacher} onChange={(e) => setPreacher(e.target.value)} placeholder="Preacher name" className="rounded-2xl" />
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={10} className="rounded-2xl" />
+            <div className="grid gap-3 md:grid-cols-3">
+              <Button className="rounded-2xl gap-2"><Sparkles className="h-4 w-4" /> Generate Slides</Button>
+              <Button variant="outline" className="rounded-2xl gap-2"><Pencil className="h-4 w-4" /> Summarize Points</Button>
+              <Button variant="outline" className="rounded-2xl gap-2"><Save className="h-4 w-4" /> Save Draft</Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Generated Slide Themes</CardTitle>
+            <CardDescription>AI recommends visual direction, font pairing, and contrast balance.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            {[
+              "Modern Dark Worship",
+              "Warm Scripture Focus",
+              "Conference Broadcast Style",
+              "Minimal Bilingual Layout",
+            ].map((theme, idx) => (
+              <motion.div
+                whileHover={{ y: -3 }}
+                key={theme}
+                className="rounded-3xl border border-slate-200 p-4"
+              >
+                <div className={`mb-4 h-28 rounded-2xl ${idx % 2 === 0 ? "bg-gradient-to-br from-slate-900 to-slate-600" : "bg-gradient-to-br from-amber-200 to-orange-400"}`} />
+                <p className="font-medium">{theme}</p>
+                <p className="mt-1 text-sm text-slate-500">Optimized for readability and projector contrast.</p>
+                <Button variant="outline" className="mt-3 rounded-2xl w-full">Use Theme</Button>
+              </motion.div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="rounded-3xl border-0 shadow-sm">
+        <CardHeader>
+          <CardTitle>Slide Sequence Editor</CardTitle>
+          <CardDescription>Live window and edit window workflow for service-time updates.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+            <div className="space-y-3">
+              {sampleSlides.map((slide) => (
+                <div key={slide.id} className="rounded-2xl border border-slate-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium">{slide.title}</p>
+                      <p className="text-sm text-slate-500">{slide.type}</p>
+                    </div>
+                    <Button size="sm" variant="ghost" className="rounded-xl">Edit</Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="rounded-3xl border border-slate-200 p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <Badge className="rounded-xl">Edit Window</Badge>
+                <div className="flex gap-2">
+                  <Button variant="outline" className="rounded-2xl">Preview</Button>
+                  <Button className="rounded-2xl">Push Live</Button>
+                </div>
+              </div>
+              <div className="min-h-[280px] rounded-3xl bg-slate-50 p-6">
+                <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Sermon Point</p>
+                <h3 className="mt-6 text-3xl font-semibold">Faith requires obedience before visible evidence.</h3>
+                <p className="mt-4 text-slate-600">AI formatting suggests shorter lines, larger title font, and stronger contrast background.</p>
+                <div className="mt-6 grid gap-3 md:grid-cols-3">
+                  <Button variant="outline" className="rounded-2xl">Make Slide Better</Button>
+                  <Button variant="outline" className="rounded-2xl">Duplicate</Button>
+                  <Button variant="outline" className="rounded-2xl">Add Scripture</Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function BibleView() {
+  const [search, setSearch] = useState("Romans 8:28");
+  const currentVerse = useMemo(() => bilingualVerses[0], []);
+
+  return (
+    <div className="space-y-6">
+      <SectionTitle
+        title="Bible Studio"
+        description="Search, preview, and project scripture in English, Swahili, or bilingual layouts."
+        action={<Button className="rounded-2xl gap-2"><BookOpen className="h-4 w-4" /> Add to Presentation</Button>}
+      />
+
+      <Card className="rounded-3xl border-0 shadow-sm">
+        <CardContent className="p-5">
+          <div className="flex flex-col gap-3 md:flex-row">
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input value={search} onChange={(e) => setSearch(e.target.value)} className="rounded-2xl pl-10" placeholder="Search reference or verse..." />
+            </div>
+            <Button variant="outline" className="rounded-2xl">English</Button>
+            <Button variant="outline" className="rounded-2xl">Swahili</Button>
+            <Button className="rounded-2xl">Bilingual</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>{currentVerse.ref}</CardTitle>
+            <CardDescription>Dual-language scripture preview optimized for live projection.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-3xl bg-slate-950 p-6 text-white">
+                <p className="mb-3 text-xs uppercase tracking-[0.25em] text-slate-400">English</p>
+                <p className="text-xl leading-8">{currentVerse.en}</p>
+              </div>
+              <div className="rounded-3xl bg-amber-50 p-6 text-slate-900">
+                <p className="mb-3 text-xs uppercase tracking-[0.25em] text-slate-400">Swahili</p>
+                <p className="text-xl leading-8">{currentVerse.sw}</p>
+              </div>
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-3">
+              <Button className="rounded-2xl">Project Now</Button>
+              <Button variant="outline" className="rounded-2xl">Create Slide</Button>
+              <Button variant="outline" className="rounded-2xl">Split Screen</Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Bible Templates</CardTitle>
+            <CardDescription>Preset verse layouts for screens, livestream overlays, and bilingual projection.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {[
+              "Full Screen Scripture",
+              "Lower Third Verse Overlay",
+              "Side-by-Side Bilingual",
+              "Split Screen Verse + Background Video",
+            ].map((item) => (
+              <div key={item} className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
+                <div>
+                  <p className="font-medium">{item}</p>
+                  <p className="text-sm text-slate-500">AI sizes text to fit the selected verse length.</p>
+                </div>
+                <Button size="sm" variant="outline" className="rounded-xl">Use</Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function NotesView() {
+  return (
+    <div className="space-y-6">
+      <SectionTitle
+        title="Live Notes + Photo to Slides"
+        description="Capture handwritten notes, extract text, and generate sermon slides with AI."
+        action={<Button className="rounded-2xl gap-2"><Camera className="h-4 w-4" /> Scan Notes</Button>}
+      />
+
+      <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Handwritten Notes Upload</CardTitle>
+            <CardDescription>Pastor can take a picture of notes and convert them into presentation-ready sermon slides.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex min-h-[220px] items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
+              <div>
+                <Camera className="mx-auto h-10 w-10 text-slate-400" />
+                <p className="mt-4 font-medium">Drop photo here or capture from tablet/phone</p>
+                <p className="mt-1 text-sm text-slate-500">OCR + AI sermon structure extraction</p>
+                <Button className="mt-4 rounded-2xl">Select Image</Button>
+              </div>
+            </div>
+            <div className="grid gap-3 md:grid-cols-2">
+              <Button className="rounded-2xl gap-2"><Sparkles className="h-4 w-4" /> Auto-generate Full Slides</Button>
+              <Button variant="outline" className="rounded-2xl">Summarize Key Points</Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Live Notes Workspace</CardTitle>
+            <CardDescription>Google Docs-style collaborative notes that update service content in real time.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Textarea
+              rows={15}
+              className="rounded-3xl"
+              defaultValue={`Sermon Flow\n\nOpening Scripture: Romans 8:28\nMain Point 1: God's promises remain true\nMain Point 2: Obedience is proof of faith\nMain Point 3: Endurance reveals hope\n\nCue: Add prayer moment slide\nCue: Show bilingual scripture on screen`}
+            />
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Button className="rounded-2xl">Sync to Slides</Button>
+              <Button variant="outline" className="rounded-2xl">Share with Team</Button>
+              <Button variant="outline" className="rounded-2xl">Track Changes</Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function ThumbnailView() {
+  const [title, setTitle] = useState("God's Promise Stands");
+  const [speaker, setSpeaker] = useState("Pastor Grace Kipendo");
+
+  return (
+    <div className="space-y-6">
+      <SectionTitle
+        title="AI Thumbnail Generator"
+        description="Generate sermon, livestream, and event thumbnails with AI-selected layouts based on performance patterns."
+        action={<Button className="rounded-2xl gap-2"><Sparkles className="h-4 w-4" /> Generate High-Performance Thumbnail</Button>}
+      />
+
+      <div className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Thumbnail Inputs</CardTitle>
+            <CardDescription>Select image, enter title and preacher, then let AI build a ready-to-use design.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex min-h-[180px] items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
+              <div>
+                <Upload className="mx-auto h-8 w-8 text-slate-400" />
+                <p className="mt-3 font-medium">Upload preacher or event image</p>
+                <p className="text-sm text-slate-500">AI auto-crops and applies best framing</p>
+              </div>
+            </div>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Sermon title" className="rounded-2xl" />
+            <Input value={speaker} onChange={(e) => setSpeaker(e.target.value)} placeholder="Preacher name" className="rounded-2xl" />
+            <div className="grid gap-3 md:grid-cols-2">
+              <Button className="rounded-2xl">Best for YouTube</Button>
+              <Button variant="outline" className="rounded-2xl">Best for Facebook</Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>AI Suggested Templates</CardTitle>
+            <CardDescription>Layouts ranked by likely engagement and readability for ministry content.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 lg:grid-cols-2">
+            {[
+              "High Contrast YouTube Sermon",
+              "Conference Broadcast Promo",
+              "Revival Night Event Thumbnail",
+              "Scripture Teaching Minimal Style",
+            ].map((template, i) => (
+              <div key={template} className="overflow-hidden rounded-3xl border border-slate-200">
+                <div className={`h-40 p-5 text-white ${i % 2 === 0 ? "bg-gradient-to-br from-indigo-700 via-slate-900 to-black" : "bg-gradient-to-br from-emerald-500 via-teal-700 to-slate-900"}`}>
+                  <Badge className="rounded-xl bg-white/20 text-white hover:bg-white/20">AI Suggested</Badge>
+                  <h3 className="mt-5 text-2xl font-bold leading-tight">{title}</h3>
+                  <p className="mt-2 text-sm text-white/80">{speaker}</p>
+                </div>
+                <div className="p-4">
+                  <p className="font-medium">{template}</p>
+                  <p className="mt-1 text-sm text-slate-500">Chosen for strong visual hierarchy and sermon thumbnail performance.</p>
+                  <Button variant="outline" className="mt-3 w-full rounded-2xl">Use Template</Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function StreamView() {
+  return (
+    <div className="space-y-6">
+      <SectionTitle
+        title="Live Stream Studio"
+        description="Sync slides with camera feeds, overlays, and local recording from the active device."
+        action={<Button className="rounded-2xl gap-2"><Radio className="h-4 w-4" /> Start Stream</Button>}
+      />
+
+      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Program Output</CardTitle>
+            <CardDescription>Camera feed, lower thirds, scriptures, and slide overlays synchronized in one scene.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="min-h-[320px] rounded-3xl bg-gradient-to-br from-slate-950 via-slate-800 to-slate-700 p-6 text-white">
+              <div className="flex items-center justify-between">
+                <Badge className="rounded-xl bg-red-600 text-white hover:bg-red-600">LIVE</Badge>
+                <div className="flex gap-2">
+                  <Badge variant="secondary" className="rounded-xl">Camera 1</Badge>
+                  <Badge variant="secondary" className="rounded-xl">Scripture Overlay</Badge>
+                </div>
+              </div>
+              <div className="mt-10 flex h-44 items-end rounded-3xl border border-white/10 bg-white/5 p-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.25em] text-slate-300">Lower Third</p>
+                  <h3 className="mt-2 text-2xl font-semibold">God's Promise Stands</h3>
+                  <p className="text-slate-300">Mount of Olives Ministry</p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 grid gap-3 md:grid-cols-4">
+              <Button variant="outline" className="rounded-2xl">Camera 1</Button>
+              <Button variant="outline" className="rounded-2xl">Camera 2</Button>
+              <Button variant="outline" className="rounded-2xl">Slides</Button>
+              <Button variant="outline" className="rounded-2xl">Split View</Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="space-y-6">
+          <Card className="rounded-3xl border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle>Streaming Destinations</CardTitle>
+              <CardDescription>Preconfigured church platforms and social channels.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {[
+                "YouTube Live",
+                "Facebook Live",
+                "Church Web Player",
+              ].map((dest) => (
+                <div key={dest} className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
+                  <p className="font-medium">{dest}</p>
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-3xl border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle>Recording</CardTitle>
+              <CardDescription>Save service output directly on the active production device.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="rounded-2xl border border-slate-200 p-4">
+                <p className="font-medium">Active Capture</p>
+                <p className="mt-1 text-sm text-slate-500">Video + overlays + audio + synced presentation scenes</p>
+              </div>
+              <Button className="w-full rounded-2xl gap-2"><Clapperboard className="h-4 w-4" /> Start Recording</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MediaView() {
+  return (
+    <div className="space-y-6">
+      <SectionTitle
+        title="Media Library"
+        description="Store and organize videos, images, backgrounds, logos, and audio for presentations and streaming."
+        action={<Button className="rounded-2xl gap-2"><Upload className="h-4 w-4" /> Upload Media</Button>}
+      />
+
+      <Card className="rounded-3xl border-0 shadow-sm">
+        <CardContent className="p-5">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {recentMedia.map((item) => (
+              <div key={item.name} className="rounded-3xl border border-slate-200 p-4">
+                <div className="mb-4 inline-flex rounded-2xl bg-slate-100 p-3">
+                  <item.icon className="h-5 w-5" />
+                </div>
+                <p className="font-medium break-all">{item.name}</p>
+                <p className="mt-1 text-sm text-slate-500">{item.kind}</p>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function MobileView() {
+  return (
+    <div className="space-y-6">
+      <SectionTitle
+        title="Mobile Control + Congregation Experience"
+        description="Pastor tablet control and member live-follow app in one connected system."
+      />
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Pastor Control Center</CardTitle>
+            <CardDescription>Control slides, view confidence notes, and trigger scripture from tablet or phone.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {[
+              "Next / previous slide",
+              "Confidence monitor notes",
+              "Live scripture projection",
+              "Service flow controls",
+            ].map((item) => (
+              <div key={item} className="rounded-2xl border border-slate-200 p-4 text-sm">{item}</div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Congregation App</CardTitle>
+            <CardDescription>Members follow live notes, bilingual scripture, and announcements in real time.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {[
+              "Live synchronized notes",
+              "English + Swahili Bible feed",
+              "Announcements and event links",
+              "Sermon outline and follow-along mode",
+            ].map((item) => (
+              <div key={item} className="rounded-2xl border border-slate-200 p-4 text-sm">{item}</div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function BrandingView() {
+  return (
+    <div className="space-y-6">
+      <SectionTitle
+        title="Branding + Personalization"
+        description="Customize your church account with logo, theme colors, reusable templates, and ministry identity."
+      />
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {[
+          "Upload church logo",
+          "Create ministry color system",
+          "Set sermon slide templates",
+          "Build conference event branding",
+          "Configure recurring lower thirds",
+          "Save worship lyric theme packs",
+        ].map((item) => (
+          <Card key={item} className="rounded-3xl border-0 shadow-sm">
+            <CardContent className="p-5">
+              <p className="font-medium">{item}</p>
+              <p className="mt-2 text-sm text-slate-500">Reusable branding tools for presentations, streaming, and thumbnails.</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function ChurchPresentationFrontend() {
+  const [active, setActive] = useState("dashboard");
+
+  const renderView = () => {
+    switch (active) {
+      case "dashboard":
+        return <DashboardView />;
+      case "presentations":
+        return <PresentationsView />;
+      case "bible":
+        return <BibleView />;
+      case "notes":
+        return <NotesView />;
+      case "thumbnails":
+        return <ThumbnailView />;
+      case "stream":
+        return <StreamView />;
+      case "media":
+        return <MediaView />;
+      case "control":
+        return <MobileView />;
+      case "settings":
+        return <BrandingView />;
+      default:
+        return <DashboardView />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 text-slate-900">
+      <div className="grid min-h-screen lg:grid-cols-[280px_1fr]">
+        <aside className="border-r border-slate-200 bg-white p-4 lg:p-5">
+          <div className="mb-6 flex items-center gap-3 rounded-3xl bg-slate-950 p-4 text-white">
+            <div className="rounded-2xl bg-white/10 p-2">
+              <Monitor className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm text-slate-300">MOOM Suite</p>
+              <h1 className="text-lg font-semibold">Church AI Studio</h1>
+            </div>
+          </div>
+
+          <nav className="space-y-2">
+            {sidebar.map((item) => {
+              const Icon = item.icon;
+              const isActive = active === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActive(item.id)}
+                  className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left transition ${
+                    isActive ? "bg-slate-950 text-white shadow-sm" : "bg-transparent hover:bg-slate-100"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+          <Separator className="my-5" />
+
+          <Card className="rounded-3xl border-0 bg-slate-50 shadow-none">
+            <CardContent className="p-4">
+              <p className="text-sm font-medium">Service Status</p>
+              <p className="mt-1 text-sm text-slate-500">Sunday Main Service</p>
+              <div className="mt-4 flex items-center justify-between text-sm">
+                <span>Preflight checks</span>
+                <span className="font-medium">92%</span>
+              </div>
+              <Progress value={92} className="mt-2" />
+              <Button className="mt-4 w-full rounded-2xl">Open Go Live</Button>
+            </CardContent>
+          </Card>
+        </aside>
+
+        <main className="min-w-0">
+          <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur">
+            <div className="flex items-center justify-between gap-4 px-4 py-4 lg:px-8">
+              <div className="flex items-center gap-3">
+                <Button variant="outline" size="icon" className="rounded-2xl lg:hidden">
+                  <Menu className="h-4 w-4" />
+                </Button>
+                <div>
+                  <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Frontend MVP</p>
+                  <h2 className="text-xl font-semibold tracking-tight">All-in-One Church Presentation Platform</h2>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="hidden md:block">
+                  <Input placeholder="Search slides, scripture, media..." className="w-72 rounded-2xl" />
+                </div>
+                <Button variant="outline" size="icon" className="rounded-2xl">
+                  <Bell className="h-4 w-4" />
+                </Button>
+                <Avatar>
+                  <AvatarFallback>GK</AvatarFallback>
+                </Avatar>
+              </div>
+            </div>
+          </header>
+
+          <ScrollArea className="h-[calc(100vh-81px)]">
+            <div className="px-4 py-6 lg:px-8">{renderView()}</div>
+          </ScrollArea>
+        </main>
+      </div>
+    </div>
+  );
+}

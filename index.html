@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,33 +7,97 @@
   <title>ChurchFlow AI — Clickable Proclaim-style Frontend</title>
   <style>
     :root{
-      --bg:#2d2c39;--panel:#2b2a3a;--line:#4a4858;--text:#f0f0f5;--muted:#b8b7c5;
-      --green:#60d394;--shadow:0 10px 30px rgba(0,0,0,.24)
+      --bg:#020617;
+      --bg-2:#020c2b;
+      --bg-3:#021238;
+      --bg-4:#010a1f;
+      --panel:#0f1837;
+      --panel-2:#121d43;
+      --panel-3:#162452;
+      --line:rgba(140,170,255,.16);
+      --text:#f4f7ff;
+      --muted:#b7c6f3;
+      --green:#60d394;
+      --accent:#7da2ff;
+      --shadow:0 18px 45px rgba(0,0,0,.35)
     }
-    *{box-sizing:border-box} html,body{margin:0;height:100%;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    *{box-sizing:border-box} html,body{margin:0;height:100%;font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,var(--bg) 0%, var(--bg-2) 35%, var(--bg-3) 65%, var(--bg-4) 100%);color:var(--text)}
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(59,130,246,.14), transparent 30%),
+        radial-gradient(circle at 82% 26%, rgba(99,102,241,.12), transparent 28%),
+        radial-gradient(circle at 50% 85%, rgba(14,165,233,.08), transparent 35%);
+      pointer-events:none;
+      z-index:-1;
+    }
     body{overflow:hidden} button,input,select,textarea{font:inherit}
-    .app{display:grid;grid-template-rows:50px 28px 1fr 150px;height:100vh}
-    .topbar{background:#4b4958;border-bottom:1px solid #5e5c6a;display:flex;align-items:center;justify-content:space-between;padding:0 12px;gap:14px}
+    .app{display:grid;grid-template-rows:50px 28px 46px 1fr 150px;height:100vh}
+    .topbar{background:rgba(10,18,45,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 12px;gap:14px}
     .menu,.top-actions{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
     .menu button,.top-actions button,.toggle-wrap,.status-pill{background:transparent;border:0;color:#f6f6fa;padding:10px 12px;cursor:pointer}
-    .menu button:hover,.menu button.active,.top-actions button:hover{background:rgba(255,255,255,.08)}
+    .menu button:hover,.menu button.active,.top-actions button:hover{background:rgba(125,162,255,.14)}
     .toggle-wrap{display:flex;align-items:center;gap:10px;color:#fff}
-    .switch{width:48px;height:24px;border-radius:999px;background:#1c1b22;position:relative;border:1px solid rgba(255,255,255,.18)}
+    .switch{width:48px;height:24px;border-radius:999px;background:#111a36;position:relative;border:1px solid rgba(160,185,255,.22)}
     .switch::after{content:"";width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;left:3px;top:2px}
-    .status-pill{padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.18);font-weight:700}.status-pill.live{background:#59525f}
+    .status-pill{padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.18);font-weight:700}.status-pill.live{background:rgba(125,162,255,.18)}
     .light{width:11px;height:11px;border-radius:50%;background:var(--green);display:inline-block;margin-right:8px;box-shadow:0 0 0 4px rgba(96,211,148,.18)}
-    .update-bar{background:#a8d2f3;color:#25435d;font-weight:600;display:flex;align-items:center;justify-content:center;position:relative}
+    .update-bar{background:linear-gradient(90deg,rgba(125,162,255,.22),rgba(62,95,190,.18));color:#dce8ff;font-weight:600;display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid var(--line)}
     .update-bar .close{position:absolute;right:10px;top:4px;background:transparent;border:0;font-size:18px;color:#547896;cursor:pointer}
-    .workspace{display:grid;grid-template-columns:290px 330px 1fr;min-height:0;background:var(--bg)}
-    .panel{border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column;background:var(--panel)} .panel:last-child{border-right:0}
-    .panel-head{min-height:40px;padding:8px 10px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px;background:#2d2c3d}
+
+    .command-bar{display:flex;gap:8px;align-items:center;padding:8px 12px;background:#3b3948;border-bottom:1px solid #565463}
+    .command-input{flex:1;padding:10px 12px;background:#2f2d3a;color:#fff;border:1px solid #666477;border-radius:4px}
+    .command-hint{font-size:12px;color:#c4c2d0}
+
+    .top-control{position:relative}
+    .top-control-panel{
+      position:absolute;top:100%;right:0;min-width:240px;background:#3b3948;border:1px solid #686674;
+      border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.28);padding:10px;display:none;z-index:30
+    }
+    .top-control-panel.active{display:block}
+    .top-control-panel h4{margin:0 0 8px;font-size:13px}
+    .top-control-panel p{margin:0;color:#cfcddb;font-size:12px;line-height:1.5}
+    .top-control-list{display:grid;gap:8px}
+    .top-control-item{padding:8px 10px;border:1px solid #5f5d6a;border-radius:4px;background:#444251;color:#fff;cursor:pointer}
+    .top-control-item:hover{background:#4d4b5a}
+    .top-status-chip{display:inline-block;padding:4px 8px;border-radius:999px;background:#2f6d57;color:#d9ffea;font-size:11px;margin-top:8px}
+
+    .strip.hidden{display:none}
+    .queue-toolbar{
+      position:fixed;
+      right:16px;
+      bottom:16px;
+      z-index:40;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .queue-badge{
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(12,22,55,.92);
+      border:1px solid rgba(140,170,255,.18);
+      color:#dfe8ff;
+      font-size:12px;
+      box-shadow:var(--shadow);
+    }
+
+
+    .style-preview{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .style-swatch{padding:12px;border:1px solid #595767;border-radius:4px;background:#3c3b4a}
+
+    .workspace{display:grid;grid-template-columns:290px 330px 1fr;min-height:0;background:transparent}
+    .panel{border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column;background:rgba(10,20,52,.72);backdrop-filter:blur(10px)} .panel:last-child{border-right:0}
+    .panel-head{min-height:40px;padding:8px 10px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(16,28,68,.85)}
     .panel-head h3{margin:0;font-size:14px;font-weight:600}
-    .mini-btn{border:1px solid #676577;background:#403f4f;color:#fff;border-radius:4px;padding:6px 9px;cursor:pointer}
-    .mini-btn:hover,.mini-btn.active{background:#4a495b}
+    .mini-btn{border:1px solid rgba(140,170,255,.18);background:rgba(125,162,255,.12);color:#fff;border-radius:6px;padding:6px 9px;cursor:pointer}
+    .mini-btn:hover,.mini-btn.active{background:rgba(125,162,255,.22)}
     .left-body,.settings-body,.preview-body{padding:8px;overflow:auto}
-    .presentation-card,.view-card{background:#292838;border:1px solid #3c3b4b;color:#f4f4f8;padding:8px 10px;border-radius:2px;font-size:13px}
+    .presentation-card,.view-card{background:rgba(18,30,73,.75);border:1px solid var(--line);color:#f4f7ff;padding:8px 10px;border-radius:10px;font-size:13px;box-shadow:var(--shadow)}
     .view-card{margin-bottom:10px}
-    .old-warning{margin-top:10px;background:#b3d7f3;color:#3a617e;padding:12px;border-radius:2px;line-height:1.35}
+    .old-warning{margin-top:10px;background:rgba(125,162,255,.16);color:#dce8ff;padding:12px;border-radius:10px;line-height:1.35;border:1px solid rgba(125,162,255,.16)}
     .group-title{margin:14px -8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 10px;font-size:12px;color:#ddd;text-transform:uppercase;background:#353444;font-weight:700}
     .slide-list{padding:6px 0}
     .slide-item{display:grid;grid-template-columns:38px 1fr 18px;gap:9px;align-items:center;padding:6px 8px;cursor:pointer;border-left:3px solid transparent}
@@ -43,23 +108,25 @@
     .thumb-sm.green{background:linear-gradient(135deg,#26705b,#63d39a)}
     .slide-meta b{display:block;font-weight:600}.slide-meta span{font-size:12px;color:var(--muted)}
     .play-dot{width:12px;height:12px;border-radius:50%;background:#4f8dfd;position:relative}.play-dot::after{content:"";position:absolute;left:4px;top:2px;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid #fff}
-    .settings-tabs,.preview-tabs,.subtabs{display:flex;gap:0;border-bottom:1px solid var(--line);background:#302f40;overflow:auto}
+    .settings-tabs,.preview-tabs,.subtabs{display:flex;gap:0;border-bottom:1px solid var(--line);background:rgba(15,24,55,.8);overflow:auto}
     .settings-tab,.preview-tab,.subtab{padding:10px 8px;font-size:12px;text-align:center;cursor:pointer;border-right:1px solid var(--line);color:#d0cedb;white-space:nowrap}
-    .settings-tab.active,.preview-tab.active,.subtab.active{background:#3a3949;color:#ffe66d;font-weight:700}
+    .settings-tab.active,.preview-tab.active,.subtab.active{background:rgba(125,162,255,.18);color:#dfe8ff;font-weight:700}
     .settings-pane,.menu-pane,.subpane,.preview-pane{display:none}.settings-pane.active,.menu-pane.active,.subpane.active,.preview-pane.active{display:block}
     .field{margin-top:10px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
-    .field input,.field textarea,.field select{width:100%;padding:9px 10px;background:#4d4b5a;color:#fff;border:1px solid #696776;border-radius:3px}
+    .field input,.field textarea,.field select{width:100%;padding:9px 10px;background:rgba(10,18,45,.86);color:#fff;border:1px solid rgba(140,170,255,.18);border-radius:8px}
     .field textarea{min-height:92px;resize:vertical}
     .small-actions,.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
     .chip{font-size:11px;padding:6px 8px;border-radius:999px;background:#3e4e67;border:1px solid #5a7493;color:#dce9f9}
     .note-shot{margin-top:12px;border:1px solid #6c6a79;background:#ede4cd;color:#2b2619;border-radius:4px;padding:12px;min-height:150px;position:relative;line-height:1.7;background-image:linear-gradient(to bottom, rgba(60,90,160,.08) 1px, transparent 1px);background-size:100% 28px}
     .note-shot::before{content:"";position:absolute;top:0;bottom:0;left:44px;width:2px;background:rgba(194,67,67,.2)} .note-shot p{margin:0;padding-left:56px}
-    .editor-block,.info-block{margin-top:12px;background:#343344;border:1px solid #595767;border-radius:4px;padding:10px}
-    .slide-card{padding:10px;border:1px solid #595767;border-radius:4px;background:#3c3b4a;margin-top:8px}.slide-card h4{margin:0 0 6px;font-size:13px}
+    .editor-block,.info-block{margin-top:12px;background:rgba(18,30,73,.72);border:1px solid var(--line);border-radius:10px;padding:10px}
+    .slide-card{padding:10px;border:1px solid var(--line);border-radius:10px;background:rgba(20,34,82,.76);margin-top:8px}.slide-card h4{margin:0 0 6px;font-size:13px}
     .slide-card p,.info-block p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
-    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.info-tile{background:#3c3b4a;border:1px solid #595767;border-radius:4px;padding:10px}.info-tile strong{display:block;margin-bottom:6px}
-    .preview-body{display:flex;flex-direction:column}.stage{flex:1;background:#2c2b3a;padding:10px;display:flex;flex-direction:column;min-height:0}
-    .screen{flex:1;border:1px solid #3f4f66;background:radial-gradient(circle at top center, rgba(255,255,255,.58), transparent 24%),radial-gradient(circle at 78% 22%, rgba(255,255,255,.28), transparent 16%),radial-gradient(circle at 22% 72%, rgba(255,255,255,.16), transparent 14%),linear-gradient(180deg, #5c90c9 0%, #9ed0ff 28%, #7db8e6 56%, #e8d6d3 77%, #f4e8ee 100%);position:relative;overflow:hidden;box-shadow:var(--shadow)}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.info-tile{background:rgba(20,34,82,.76);border:1px solid var(--line);border-radius:10px;padding:10px}.info-tile strong{display:block;margin-bottom:6px}
+    .file-action-tile{cursor:pointer;transition:background .15s ease,border-color .15s ease,transform .15s ease}
+    .file-action-tile:hover{background:#474655;border-color:#7a7890;transform:translateY(-1px)}
+    .preview-body{display:flex;flex-direction:column}.stage{flex:1;background:transparent;padding:10px;display:flex;flex-direction:column;min-height:0}
+    .screen{flex:1;border:1px solid rgba(140,170,255,.18);background:radial-gradient(circle at top center, rgba(255,255,255,.58), transparent 24%),radial-gradient(circle at 78% 22%, rgba(255,255,255,.28), transparent 16%),radial-gradient(circle at 22% 72%, rgba(255,255,255,.16), transparent 14%),linear-gradient(180deg, #5c90c9 0%, #9ed0ff 28%, #7db8e6 56%, #e8d6d3 77%, #f4e8ee 100%);position:relative;overflow:hidden;box-shadow:var(--shadow)}
     .cloud{position:absolute;border-radius:50%;background:rgba(255,255,255,.84);filter:blur(1px)} .cloud.one{width:230px;height:96px;left:220px;top:130px}
     .cloud.two{width:160px;height:74px;right:170px;top:92px}.cloud.three{width:250px;height:110px;right:70px;bottom:40px}
     .ray{position:absolute;left:50%;top:0;transform-origin:top center;background:linear-gradient(180deg, rgba(255,255,255,.55), transparent);width:20px;height:480px;filter:blur(1px);opacity:.62}
@@ -72,7 +139,7 @@
     .bilingual-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;text-align:left}.bilingual-grid div{background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.14);padding:12px;border-radius:4px}
     .video-bar{position:absolute;left:0;right:0;bottom:0;height:22px;background:rgba(48,53,68,.55);display:flex;align-items:center;padding:0 8px;gap:10px}.video-progress{flex:1;height:4px;background:rgba(255,255,255,.28);border-radius:999px;position:relative}
     .video-progress span{position:absolute;left:0;top:0;bottom:0;width:87%;background:#75b7ff;border-radius:999px}.video-time{font-size:12px;color:#ddd}
-    .strip{border-top:1px solid var(--line);background:#43414f;display:flex;overflow:auto;gap:8px;padding:8px}
+    .strip{border-top:1px solid var(--line);background:rgba(12,22,55,.86);display:flex;overflow:auto;gap:8px;padding:8px}
     .film{min-width:170px;max-width:170px;border-radius:2px;cursor:pointer}.film.active .film-label{color:#ffe66d}
     .film-label{font-size:13px;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.film-thumb{height:95px;border:1px solid #5c5968;border-radius:2px;position:relative;overflow:hidden}
     .film-thumb.blue{background:linear-gradient(135deg,#9fd8ff,#5ea6df)} .film-thumb.welcome{background:linear-gradient(135deg,#871cff,#ff6aaa)}
@@ -84,8 +151,70 @@
     .slide-item.dragging{opacity:.45}
     .slide-item.drag-over-top{box-shadow:inset 0 3px 0 #8db4ff}
     .slide-item.drag-over-bottom{box-shadow:inset 0 -3px 0 #8db4ff}
+    .section-dropzone{min-height:36px;padding:4px 0 8px}
+    .section-dropzone.empty::before{
+      content:"Drag slides here";
+      display:block;
+      color:#b8b7c5;
+      font-size:12px;
+      padding:8px 28px;
+      opacity:.8
+    }
+    .section-label-active{box-shadow:inset 0 0 0 1px #7ea6ff}
 
-    @media (max-width:1250px){body{overflow:auto}.app{height:auto;min-height:100vh;grid-template-rows:50px 28px auto 150px}.workspace{grid-template-columns:1fr}.panel{min-height:320px;border-right:0;border-bottom:1px solid var(--line)}}
+    .popup-panel{
+      position:absolute;top:100%;left:0;margin-top:6px;min-width:260px;background:#3b3948;border:1px solid #686674;
+      border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.28);padding:10px;display:none;z-index:25
+    }
+    .popup-panel.active{display:block}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:8px}
+    .calendar-day,.calendar-head{
+      text-align:center;padding:7px 0;border-radius:4px;font-size:12px
+    }
+    .calendar-head{color:#cfcddb;background:#444251}
+    .calendar-day{background:#4b4958;cursor:pointer;border:1px solid #5d5b68}
+    .calendar-day:hover{background:#565463}
+    .calendar-day.selected{background:#6b7fd6;border-color:#8fa0ef}
+    .share-dest{display:grid;gap:8px;margin-top:8px}
+    .share-item{padding:8px 10px;border:1px solid #5f5d6a;border-radius:4px;background:#444251;color:#fff}
+
+
+    
+    .stage{min-height:620px !important}
+    .screen{min-height:560px !important; display:block !important}
+    #projectorPreview{display:block !important}
+
+    
+    .workspace{height:calc(100vh - 50px - 28px - 46px - 150px);min-height:0}
+    .left-body{overflow-y:auto !important; overflow-x:hidden !important; max-height:100%}
+    #serviceSlideList,#preServiceSlideList,#warmupSlideList{overflow:visible}
+    .panel{min-height:0}
+    .preview-body,.stage,#projectorPreview{display:block !important}
+    #projectorPreview.active{display:block !important}
+    #mainScreen{display:block !important; min-height:560px !important}
+
+    
+    html,body{overflow:hidden}
+    .app{overflow:hidden}
+    .topbar{position:relative;z-index:200}
+    .workspace{position:relative;z-index:1;overflow:hidden}
+    .panel,.left-body,.settings-body,.preview-body,.stage{overflow:visible}
+    .left-body{overflow-y:auto !important;overflow-x:hidden !important}
+    .top-actions{position:relative;z-index:260}
+    .top-control{position:relative;z-index:270}
+    .top-control-panel{
+      z-index:9999 !important;
+      overflow:visible !important;
+    }
+    .popup-panel{
+      z-index:9999 !important;
+      overflow:visible !important;
+    }
+    #projectorPreview,#projectorPreview.active{display:block !important}
+    #mainScreen{display:block !important;min-height:560px !important;visibility:visible !important}
+    #overlayText{display:block}
+
+    @media (max-width:1250px){body{overflow:auto}.app{height:auto;min-height:100vh;grid-template-rows:50px 28px 46px auto 150px}.workspace{grid-template-columns:1fr}.panel{min-height:320px;border-right:0;border-bottom:1px solid var(--line)}}
     @media (max-width:700px){.bilingual-grid,.info-grid{grid-template-columns:1fr}.overlay-text{left:20px;right:20px}.overlay-text h1{font-size:28px}.overlay-text p{font-size:16px}}
   </style>
 </head>
@@ -104,43 +233,141 @@
         <button class="menu-btn" data-menu="viewMenu">View</button>
         <button class="menu-btn" data-menu="helpMenu">Help</button>
       </div>
-      <div class="top-actions">
-        <button type="button">↶</button><button type="button">↷</button><button type="button">Team ▾</button><button type="button">🎙 Recordings ▾</button>
-        <div class="toggle-wrap"><strong>EDIT</strong><div class="switch"></div><span style="opacity:.75">PREVIEW</span></div>
-        <div class="status-pill live">ON AIR</div><div><span class="light"></span></div>
+      
+<div class="top-actions" id="topActionsBar">
+        <div class="top-control">
+          <button type="button" id="undoTopBtn">↶</button>
+          <div class="top-control-panel" id="undoTopPanel">
+            <h4>Undo</h4>
+            <p>Mock frontend control to reverse the last slide or menu action.</p>
+            <div class="top-control-list" style="margin-top:8px">
+              <div class="top-control-item" id="undoActionItem">Undo last visual change</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="top-control">
+          <button type="button" id="redoTopBtn">↷</button>
+          <div class="top-control-panel" id="redoTopPanel">
+            <h4>Redo</h4>
+            <p>Mock frontend control to re-apply the most recent undone action.</p>
+            <div class="top-control-list" style="margin-top:8px">
+              <div class="top-control-item" id="redoActionItem">Redo last visual change</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="top-control">
+          <button type="button" id="teamTopBtn">Team ▾</button>
+          <div class="top-control-panel" id="teamTopPanel">
+            <h4>Team Workspace</h4>
+            <div class="top-control-list">
+              <div class="top-control-item">Pastor — editing notes</div>
+              <div class="top-control-item">Media Team — preparing slides</div>
+              <div class="top-control-item">Admin — service publishing</div>
+            </div>
+            <span class="top-status-chip">Collaboration Ready</span>
+          </div>
+        </div>
+
+        <div class="top-control">
+          <button type="button" id="recordingsTopBtn">🎙 Recordings ▾</button>
+          <div class="top-control-panel" id="recordingsTopPanel">
+            <h4>Recordings</h4>
+            <div class="top-control-list">
+              <div class="top-control-item" id="startRecordingMock">Start local recording</div>
+              <div class="top-control-item" id="markRecordingReadyMock">Mark recording ready</div>
+            </div>
+            <span class="top-status-chip" id="recordingStatusChip">Standby</span>
+          </div>
+        </div>
+
+        <div class="top-control">
+          <div class="toggle-wrap" id="editToggleWrap" style="cursor:pointer"><strong>EDIT</strong><div class="switch" id="editPreviewSwitch"></div><span id="previewModeLabel" style="opacity:.75">PREVIEW</span></div>
+        </div>
+
+        <div class="top-control">
+          <button type="button" class="status-pill live" id="onAirBtn">ON AIR</button>
+          <div class="top-control-panel" id="onAirPanel">
+            <h4>Broadcast Status</h4>
+            <div class="top-control-list">
+              <div class="top-control-item" id="toggleAirStateItem">Toggle live status</div>
+              <div class="top-control-item" id="pushCurrentSlideLiveItem">Push current slide live</div>
+            </div>
+            <span class="top-status-chip" id="airStatusChip">Live output ready</span>
+          </div>
+        </div>
+
+        <div class="top-control">
+          <div style="padding:10px 6px;display:flex;align-items:center"><span class="light" id="readyLight"></span></div>
+        </div>
       </div>
     </header>
 
+
     <div class="update-bar">Every main menu, panel, and section is now clickable so you can explore what is under each item.<button class="close" type="button">×</button></div>
+
+    <div class="command-bar">
+      <input id="globalCommandInput" class="command-input" placeholder='AI command: "add worship slide with Psalm 23" or "build service worship offering sermon"' />
+      <button id="runCommandBtn" class="mini-btn" type="button">Run Command</button>
+      <span class="command-hint">Command editing • Service builder • Bible lookup • Beautify current slide</span>
+    </div>
 
     <div class="workspace">
       
-<aside class="panel" style="background:#4a4856;">
-        <div class="panel-head" style="background:#4a4856;border-bottom:1px solid #5a5866;padding:8px 10px;">
+<aside class="panel" style="background:transparent;">
+        <div class="panel-head" style="background:rgba(12,22,55,.88);border-bottom:1px solid var(--line);padding:8px 10px;">
           <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
-            <div style="background:#323141;border:1px solid #4a4858;border-radius:3px;padding:8px 10px;font-size:13px;min-width:0;flex:1;margin-right:10px;">
+            <div style="background:rgba(18,30,73,.76);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px;min-width:0;flex:1;margin-right:10px;">
               Sunday Service 22FEB26 2.0
             </div>
             <button class="mini-btn" type="button" style="background:transparent;border:0;padding:4px 6px;font-size:22px;line-height:1;">◫</button>
           </div>
         </div>
-        <div class="left-body" style="padding:0;overflow:auto;background:#4a4856;">
-          <div style="padding:14px 12px;border-bottom:1px solid #5a5866;display:flex;align-items:center;justify-content:space-between;font-size:16px;">
-            <div>🗓️ <span style="margin-left:6px;">Sunday, March 22</span> <span style="font-size:12px;">▾</span></div>
-            <div style="font-size:15px;">⤴ <span style="margin-left:4px;">Share</span> <span style="font-size:12px;">▾</span></div>
+        <div class="left-body" style="padding:0;overflow:auto;background:transparent;">
+          <div style="padding:14px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;font-size:16px;position:relative;background:rgba(12,22,55,.5);">
+            <div style="position:relative;">
+              <button id="calendarOpenBtn" type="button" style="background:transparent;border:0;color:#fff;font-size:16px;cursor:pointer;padding:0;">🗓️ <span id="selectedServiceDate" style="margin-left:6px;">Sunday, March 22</span> <span style="font-size:12px;">▾</span></button>
+              <div class="popup-panel" id="calendarPopup">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                  <strong id="calendarMonthLabel">March 2026</strong>
+                  <div>
+                    <button id="calendarPrevBtn" type="button" class="mini-btn" style="padding:4px 8px;">◀</button>
+                    <button id="calendarNextBtn" type="button" class="mini-btn" style="padding:4px 8px;">▶</button>
+                  </div>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+              </div>
+            </div>
+            <div style="position:relative;">
+              <button id="shareOpenBtn" type="button" style="background:transparent;border:0;color:#fff;font-size:15px;cursor:pointer;padding:0;">⤴ <span style="margin-left:4px;">Share</span> <span style="font-size:12px;">▾</span></button>
+              <div class="popup-panel" id="sharePopup" style="right:0;left:auto;min-width:280px;">
+                <strong>Share destinations</strong>
+                <div class="share-dest">
+                  <div class="share-item">Confidence Screen</div>
+                  <div class="share-item">Main Projector</div>
+                  <div class="share-item">Livestream Output</div>
+                  <div class="share-item">Media Team Workspace</div>
+                  <div class="share-item">Church Mobile Viewer</div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="group-title" style="margin:0;padding:9px 14px;background:#4a4856;border-top:0;border-bottom:1px solid #5a5866;color:#f1f1f5;font-size:12px;">▼ PRE-SERVICE LOOP</div>
-          <div class="group-title" style="margin:0;padding:9px 14px;background:#4a4856;border-top:0;border-bottom:1px solid #5a5866;color:#f1f1f5;font-size:12px;">▼ WARM-UP</div>
+          <div class="group-title" id="preServiceHeader" style="margin:0;padding:9px 14px;background:transparent;border-top:0;border-bottom:1px solid #5a5866;color:#f1f1f5;font-size:12px;">▼ PRE-SERVICE LOOP</div>
+          <div class="slide-list section-dropzone empty" id="preServiceSlideList" style="background:transparent;"></div>
 
-          <div style="border-top:1px solid #668cff;border-bottom:1px solid #5a5866;">
-            <div style="padding:9px 14px;background:#4a4856;color:#fff;font-size:13px;display:flex;justify-content:space-between;align-items:center;">
+          <div class="group-title" id="warmupHeader" style="margin:0;padding:9px 14px;background:transparent;border-top:0;border-bottom:1px solid #5a5866;color:#f1f1f5;font-size:12px;">▼ WARM-UP</div>
+          <div class="slide-list section-dropzone empty" id="warmupSlideList" style="background:transparent;"></div>
+
+          <div style="border-top:1px solid rgba(125,162,255,.42);border-bottom:1px solid var(--line);">
+            <div id="serviceHeader" style="padding:9px 14px;background:rgba(12,22,55,.45);color:#fff;font-size:13px;display:flex;justify-content:space-between;align-items:center;">
               <span>▼ SERVICE</span>
               <span style="font-size:16px;">11:00 AM</span>
             </div>
 
-            <div class="slide-list" id="serviceSlideList" style="padding:4px 0 8px;">
-              <div class="slide-item active draggable" data-style="sky" data-title="Levites" data-body="" data-type="Video" style="grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 12px;border-left:4px solid #ffdf5a;background:#4a4856;">
+            <div class="slide-list section-dropzone" id="serviceSlideList" style="padding:4px 0 8px;">
+              <div class="slide-item active draggable" data-style="sky" data-title="Levites" data-body="" data-type="Video" style="grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 12px;border-left:4px solid #ffdf5a;background:transparent;">
                 <div class="thumb-sm blue" style="height:28px;"></div>
                 <div class="slide-meta"><b style="color:#ffe75c;font-weight:500;">Levites <span style="color:#c8bfd5;font-weight:400;margin-left:6px;">3:12</span></b></div>
                 <div class="play-dot"></div>
@@ -196,10 +423,10 @@
             </div>
           </div>
 
-          <div class="group-title" style="margin:0;padding:9px 14px;background:#4a4856;border-top:0;border-bottom:1px solid #5a5866;color:#f1f1f5;font-size:12px;">▼ POST-SERVICE LOOP</div>
+          <div class="group-title" style="margin:0;padding:9px 14px;background:transparent;border-top:0;border-bottom:1px solid #5a5866;color:#f1f1f5;font-size:12px;">▼ POST-SERVICE LOOP</div>
 
-          <div style="padding:10px 12px 18px;">
-            <button id="newPresentationBtn" class="mini-btn" type="button" style="width:100%;padding:10px 12px;background:#343342;border:1px solid #61606c;border-radius:4px;text-align:left;">
+          <div style="padding:10px 12px 18px;background:transparent;">
+            <button id="newPresentationBtn" class="mini-btn" type="button" style="width:100%;padding:10px 12px;background:rgba(125,162,255,.12);border:1px solid var(--line);border-radius:10px;text-align:left;">
               + Create New Presentation
             </button>
           </div>
@@ -218,12 +445,13 @@
         <div class="settings-body">
           <div id="menuMain" class="subpane active">
             <div id="fileMenu" class="menu-pane active">
-              <div class="view-card"><strong>File actions</strong><br><span style="color:#b8b7c5">Create new service, duplicate existing order, save, export, and publish.</span></div>
+              <div class="view-card"><strong>File actions</strong><br><span style="color:#b8b7c5">Create new service, duplicate existing order, save, export, publish, or clear the current slides.</span></div>
               <div class="info-grid">
-                <div class="info-tile"><strong>New Presentation</strong><span style="color:#b8b7c5">Start a fresh Sunday service layout.</span></div>
-                <div class="info-tile"><strong>Duplicate Week</strong><span style="color:#b8b7c5">Copy last week and update content quickly.</span></div>
-                <div class="info-tile"><strong>Save</strong><span style="color:#b8b7c5">Save the current service structure.</span></div>
-                <div class="info-tile"><strong>Publish</strong><span style="color:#b8b7c5">Send approved presentation to church devices.</span></div>
+                <div class="info-tile file-action-tile" id="fileNewPresentation"><strong>New Presentation</strong><span style="color:#b8b7c5">Start a fresh Sunday service layout.</span></div>
+                <div class="info-tile file-action-tile" id="fileDuplicateWeek"><strong>Duplicate Week</strong><span style="color:#b8b7c5">Copy last week and update content quickly.</span></div>
+                <div class="info-tile file-action-tile" id="fileSavePresentation"><strong>Save</strong><span style="color:#b8b7c5">Save the current service structure.</span></div>
+                <div class="info-tile file-action-tile" id="filePublishPresentation"><strong>Publish</strong><span style="color:#b8b7c5">Send approved presentation to church devices.</span></div>
+                <div class="info-tile file-action-tile" id="fileClearSlides"><strong>Clear Current Slides</strong><span style="color:#b8b7c5">Delete the current service slides and leave the presentation blank.</span></div>
               </div>
             </div>
             
@@ -335,19 +563,32 @@
 </div>
 <div id="mediaMenu" class="menu-pane"><div class="view-card"><strong>Media Library</strong><br><span style="color:#b8b7c5">Upload images, videos, motion backgrounds, and speaker graphics.</span></div><div class="field"><label>Upload media</label><input type="file" multiple></div><div class="info-block"><p>In the real app, this area would show folders, tags, search, recent uploads, and favorite backgrounds.</p></div></div>
             <div id="songsMenu" class="menu-pane"><div class="view-card"><strong>Song Library</strong><br><span style="color:#b8b7c5">Store worship songs, verses, language versions, and reusable lyric templates.</span></div><div class="slide-card"><h4>Sala Ya Baba</h4><p>Swahili lyrics available for projection.</p></div><div class="slide-card"><h4>Your Grace Is Enough</h4><p>English lyric layout with chorus breaks.</p></div></div>
-            <div id="bibleMenu" class="menu-pane">
-              <div class="view-card"><strong>Bible Projection</strong><br><span style="color:#b8b7c5">Show English, Swahili, or bilingual scriptures on screen.</span></div>
+            
+<div id="bibleMenu" class="menu-pane">
+              <div class="view-card"><strong>Smart Bible Projection</strong><br><span style="color:#b8b7c5">Show English, Swahili, or bilingual scriptures with AI formatting, emphasis, and projection modes.</span></div>
               <div class="field"><label for="bibleRef">Bible reference</label><input id="bibleRef" value="Genesis 1:1"></div>
               <div class="field"><label for="englishVerse">English verse</label><textarea id="englishVerse">In the beginning God created the heaven and the earth.</textarea></div>
               <div class="field"><label for="swahiliVerse">Swahili verse</label><textarea id="swahiliVerse">Hapo mwanzo Mungu aliziumba mbingu na nchi.</textarea></div>
+              <div class="field"><label for="bibleProjectionMode">Projection layout</label>
+                <select id="bibleProjectionMode">
+                  <option value="bilingual">Bilingual split</option>
+                  <option value="english">English only</option>
+                  <option value="swahili">Swahili only</option>
+                  <option value="stacked">Bilingual stacked</option>
+                </select>
+              </div>
+              <div class="field"><label for="bibleKeywords">Highlight keywords</label><input id="bibleKeywords" value="God, beginning, earth"></div>
               <div class="small-actions">
                 <button class="mini-btn" id="showEnglishBtn" type="button">English only</button>
                 <button class="mini-btn" id="showSwahiliBtn" type="button">Swahili only</button>
                 <button class="mini-btn" id="showBilingualBtn" type="button">Bilingual</button>
+                <button class="mini-btn" id="smartBibleFormatBtn" type="button">AI format verse</button>
               </div>
+              <div class="info-block" id="bibleFormatResults"><p>AI can restructure the verse for projector readability, livestream readability, and keyword emphasis.</p></div>
             </div>
 
             <div id="songsLiveMenu" class="menu-pane">
+
               <div class="view-card"><strong>Songs</strong><br><span style="color:#b8b7c5">Project Wokovu and Tenzi lyrics live, choose their slide design, and let AI help style the layout in real time.</span></div>
 
               <div class="settings-tabs">
@@ -483,18 +724,45 @@ Nikaribie kiti cha neema.</textarea>
                 </div>
               </div>
             </div>
-            <div id="aiMenu" class="menu-pane">
-              <div class="view-card"><strong>AI Tools</strong><br><span style="color:#b8b7c5">Generate sermon slides, polish notes, suggest thumbnails, and convert note photos into editable content.</span></div>
-              <div class="settings-tabs"><button class="settings-tab active" data-pane="notesPane" type="button">Pastor Notes</button><button class="settings-tab" data-pane="thumbPane" type="button">Thumbnail</button><button class="settings-tab" data-pane="gammaPane" type="button">Gamma Design</button></div>
-              <div class="settings-pane active" id="notesPane">
-                <div class="chip-row"><div class="chip">Photo upload mock</div><div class="chip">OCR extraction mock</div><div class="chip">AI slide outline</div><div class="chip">Media team editing</div></div>
-                <div class="field"><label for="notePhotoInput">Take or upload a note picture</label><input id="notePhotoInput" type="file" accept="image/*"></div>
+            
+<div id="aiMenu" class="menu-pane">
+              <div class="view-card"><strong>AI Tools</strong><br><span style="color:#b8b7c5">Build services, convert sermons into slides, beautify designs, generate thumbnails, and use Gamma-style deck planning.</span></div>
+              <div class="settings-tabs">
+                <button class="settings-tab active" data-pane="serviceBuilderPane" type="button">Service Builder</button>
+                <button class="settings-tab" data-pane="sermonSlidesPane" type="button">Sermon → Slides</button>
+                <button class="settings-tab" data-pane="designEnginePane" type="button">Design Engine</button>
+                <button class="settings-tab" data-pane="thumbPane" type="button">Thumbnail</button>
+                <button class="settings-tab" data-pane="gammaPane" type="button">Gamma Design</button>
+              </div>
+
+              <div class="settings-pane active" id="serviceBuilderPane">
+                <div class="field"><label for="serviceThemeInput">Service theme</label><input id="serviceThemeInput" value="God's Promise Stands"></div>
+                <div class="field"><label for="serviceBlocksInput">Service elements</label><textarea id="serviceBlocksInput">Opening prayer
+Worship
+Offering
+Sermon
+Altar call
+Closing blessing</textarea></div>
+                <div class="field"><label for="serviceDurationInput">Target duration</label><input id="serviceDurationInput" value="90 minutes"></div>
+                <div class="small-actions">
+                  <button class="mini-btn" id="generateServiceBuilderBtn" type="button">Generate service order</button>
+                  <button class="mini-btn" id="addServiceOrderBtn" type="button">Add order to left panel</button>
+                </div>
+                <div id="serviceBuilderResults" class="editor-block">
+                  <div class="slide-card"><h4>AI service builder</h4><p>No service order generated yet.</p></div>
+                </div>
+              </div>
+
+              <div class="settings-pane" id="sermonSlidesPane">
+                <div class="chip-row"><div class="chip">Photo upload mock</div><div class="chip">OCR extraction mock</div><div class="chip">Slide outline</div><div class="chip">Media team editing</div></div>
+                <div class="field"><label for="notePhotoInput">Take or upload a note picture</label><input id="notePhotoInput" type="file" accept="image/*,.pdf,audio/*"></div>
                 <div class="note-shot" id="noteShotBox">
                   <p>Theme: God's Promise Stands</p><p>1. God speaks before results appear</p><p>2. Faith stays steady in process</p><p>3. Promise is bigger than pain</p><p>4. Obedience prepares the way</p>
                 </div>
                 <div class="small-actions">
-                  <button class="mini-btn" id="extractNotesBtn" type="button">Extract note text</button>
+                  <button class="mini-btn" id="extractNotesBtn" type="button">Extract sermon content</button>
                   <button class="mini-btn" id="generateSlidesBtn" type="button">Turn into slides</button>
+                  <button class="mini-btn" id="simplifySlidesBtn" type="button">Simplify for audience</button>
                 </div>
                 <div class="editor-block">
                   <div class="field"><label for="ocrText">Extracted sermon text</label><textarea id="ocrText">Theme: God's Promise Stands
@@ -514,12 +782,57 @@ Nikaribie kiti cha neema.</textarea>
                   </div>
                 </div>
               </div>
+
+              <div class="settings-pane" id="designEnginePane">
+                <div class="view-card"><strong>AI Design Engine</strong><br><span style="color:#b8b7c5">Make the current slide beautiful, more readable, more modern, or more suitable for livestream.</span></div>
+                <div class="field"><label for="designGoalInput">Design goal</label>
+                  <select id="designGoalInput">
+                    <option value="teal">Readable live worship</option>
+                    <option value="cross">Warm worship gold</option>
+                    <option value="green">Modern sermon theme</option>
+                    <option value="welcome">Bold announcement look</option>
+                  </select>
+                </div>
+                <div class="field"><label for="designInstructionInput">Extra instruction</label><textarea id="designInstructionInput">Make the current slide beautiful, highly readable from a projector, and suitable for livestream viewing.</textarea></div>
+                <div class="small-actions">
+                  <button class="mini-btn" id="beautifyCurrentSlideBtn" type="button">Beautify current slide</button>
+                  <button class="mini-btn" id="generateDesignSuggestionsBtn" type="button">Generate design ideas</button>
+                </div>
+                <div id="designSuggestionsResults" class="style-preview">
+                  <div class="style-swatch"><strong>Readability</strong><p style="color:#b8b7c5;margin:6px 0 0">Large type, high contrast, fewer words per slide.</p></div>
+                  <div class="style-swatch"><strong>Livestream</strong><p style="color:#b8b7c5;margin:6px 0 0">More padding, cleaner title line, safe margins.</p></div>
+                </div>
+              </div>
+
               <div class="settings-pane" id="thumbPane">
-                <div class="slide-card"><h4>Thumbnail Suggestion 1</h4><p>God's Promise Stands — clean dramatic worship background.</p></div>
-                <div class="slide-card"><h4>Thumbnail Suggestion 2</h4><p>Faith Through the Process — bold text and light rays.</p></div>
+                <div class="field"><label for="thumbnailTopicInput">Thumbnail topic</label><input id="thumbnailTopicInput" value="God's Promise Stands"></div>
+                <div class="field"><label for="thumbnailPromptInput">Thumbnail prompt</label><textarea id="thumbnailPromptInput">Create a bold church livestream thumbnail with dramatic light, strong title hierarchy, and modern worship energy.</textarea></div>
+                <div class="small-actions">
+                  <button class="mini-btn" id="generateThumbnailBtn" type="button">Generate thumbnail ideas</button>
+                  <button class="mini-btn" id="applyThumbnailStyleBtn" type="button">Apply thumbnail style</button>
+                </div>
+                <div id="thumbnailResults" class="editor-block">
+                  <div class="slide-card"><h4>Thumbnail concept</h4><p>No thumbnail concept generated yet.</p></div>
+                </div>
+              </div>
+
+              <div class="settings-pane" id="gammaPane">
+                <div class="view-card"><strong>Gamma Slide Design Tool</strong><br><span style="color:#b8b7c5">Generate presentation structure and cleaner, modern slide design concepts in a Gamma-style workflow.</span></div>
+                <div class="field"><label for="gammaTopic">Presentation topic</label><input id="gammaTopic" value="God's Promise Stands"></div>
+                <div class="field"><label for="gammaAudience">Audience / use</label><input id="gammaAudience" value="Sunday sermon projection and livestream"></div>
+                <div class="field"><label for="gammaPrompt">Design brief</label><textarea id="gammaPrompt">Create a 5-slide sermon deck with a modern church aesthetic, bold headings, readable body text, one scripture slide, one key-point slide, and one closing response slide.</textarea></div>
+                <div class="small-actions">
+                  <button class="mini-btn" id="generateGammaBtn" type="button">Generate Gamma design</button>
+                  <button class="mini-btn" id="sendGammaBtn" type="button">Send Gamma idea to preview</button>
+                </div>
+                <div id="gammaResults" class="editor-block">
+                  <div class="slide-card"><h4>Gamma outline</h4><p>No Gamma design generated yet.</p></div>
+                </div>
               </div>
             </div>
-            <div id="settingsMenu" class="menu-pane"><div class="view-card"><strong>Settings</strong><br><span style="color:#b8b7c5">Configure projection, stream output, save behavior, and team workflow defaults.</span></div><div class="field"><label>Default output</label><select><option>Main screen</option><option>Confidence monitor</option><option>Stream overlay</option></select></div><div class="field"><label>Primary Bible mode</label><select><option>Bilingual</option><option>English</option><option>Swahili</option></select></div></div>
+
+            <div id="settingsMenu" class="menu-pane">
+<div class="view-card"><strong>Settings</strong><br><span style="color:#b8b7c5">Configure projection, stream output, save behavior, and team workflow defaults.</span></div><div class="field"><label>Default output</label><select><option>Main screen</option><option>Confidence monitor</option><option>Stream overlay</option></select></div><div class="field"><label>Primary Bible mode</label><select><option>Bilingual</option><option>English</option><option>Swahili</option></select></div></div>
             <div id="viewMenu" class="menu-pane"><div class="view-card"><strong>View Options</strong><br><span style="color:#b8b7c5">Switch between edit, preview, confidence screen, notes, and signal monitoring.</span></div><div class="chip-row"><div class="chip">Edit mode</div><div class="chip">Preview mode</div><div class="chip">Confidence</div><div class="chip">Notes</div><div class="chip">Signals</div></div></div>
             <div id="helpMenu" class="menu-pane"><div class="view-card"><strong>Help</strong><br><span style="color:#b8b7c5">Show onboarding, feature guides, keyboard shortcuts, and support links.</span></div><div class="slide-card"><h4>Getting Started</h4><p>Create a weekly service, add media, add Bible verses, and preview on the right panel.</p></div><div class="slide-card"><h4>Pastor Note Capture</h4><p>Upload a note photo, extract text, generate slides, and let the media team edit.</p></div></div>
           </div>
@@ -555,15 +868,14 @@ Nikaribie kiti cha neema.</textarea>
       </main>
     </div>
 
-    <footer class="strip">
-      <div class="film active" data-style="sky" data-title="Levites" data-body=""><div class="film-label">Levites</div><div class="film-thumb sky"></div></div>
-      <div class="film" data-style="welcome" data-title="WELCOME" data-body="TO MOUNT OF OLIVES MINISTRY"><div class="film-label">Welcome Slide</div><div class="film-thumb welcome"></div></div>
-      <div class="film" data-style="form" data-title="TITHE & OFFERING" data-body="Simple form layout preview"><div class="film-label">Tithe Form</div><div class="film-thumb form"></div></div>
-      <div class="film" data-style="cross" data-title="WORSHIP" data-body="Come before the Lord with thanksgiving"><div class="film-label">Worship</div><div class="film-thumb cross"></div></div>
-      <div class="film" data-style="teal" data-title="PREACHER" data-body="Speaker introduction slide"><div class="film-label">Preacher</div><div class="film-thumb teal"></div></div>
-      <div class="film" data-style="teal" data-title="SALA YA BABA" data-body="Baba yetu uliye mbinguni, jina lako litukuzwe..."><div class="film-label">Sala Ya Baba</div><div class="film-thumb teal"></div></div>
-      <div class="film" data-style="green" data-title="PASTOR NOTE CAPTURE" data-body="Photo note converted into editable sermon slides for the media team."><div class="film-label">Pastor Note Capture</div><div class="film-thumb green"></div></div>
-    </footer>
+    
+    <footer class="strip hidden" id="promptedSlideStrip"></footer>
+    <div class="queue-toolbar">
+      <span class="queue-badge" id="queueHintBadge">Single click = display • Double click = add to prompted queue</span>
+      <button class="mini-btn" id="toggleQueueBtn" type="button">Show Prompted Slides</button>
+      <button class="mini-btn" id="clearQueueBtn" type="button">Clear Queue</button>
+    </div>
+
   </div>
 
   <script>
@@ -706,26 +1018,87 @@ Nikaribie kiti cha neema.</textarea>
     function bindSlideItem(item){
       item.classList.add('draggable');
       attachDragHandlers(item);
+
+      const showInDisplay = () => {
+        const title = item.dataset.title || 'Slide';
+        const body = item.dataset.body || '';
+        const style = item.dataset.style || 'blue';
+
+        try {
+          if (typeof applyStyle === 'function') {
+            applyStyle(style, title, body);
+          }
+        } catch(err) {
+          console.error('applyStyle failed', err);
+        }
+
+        try {
+          if (typeof activatePreview === 'function') {
+            activatePreview('projector');
+          }
+        } catch(err) {
+          console.error('activatePreview failed', err);
+        }
+
+        const projector = document.getElementById('projectorPreview');
+        const screen = document.getElementById('mainScreen');
+        const overlay = document.getElementById('overlayText');
+        const titleEl = document.getElementById('overlayTitle');
+        const bodyEl = document.getElementById('overlayBody');
+        const centerOverlay = document.getElementById('centerOverlay');
+
+        if (projector) {
+          projector.style.display = 'block';
+          projector.classList.add('active');
+        }
+        if (screen) {
+          screen.style.display = 'block';
+          screen.style.minHeight = '560px';
+          screen.style.visibility = 'visible';
+        }
+        if (overlay) {
+          overlay.style.display = 'block';
+          overlay.style.visibility = 'visible';
+        }
+        if (titleEl) titleEl.textContent = title;
+        if (bodyEl) bodyEl.innerHTML = body;
+        if (centerOverlay) centerOverlay.style.display = (title || body) ? 'none' : 'grid';
+      };
+
+      item.onclick = null;
+      item.ondblclick = null;
+
       item.addEventListener('click', () => {
         setActive([...document.querySelectorAll('.slide-item')], item);
-        applyStyle(item.dataset.style, item.dataset.title, item.dataset.body);
-        activatePreview('projector');
+        showInDisplay();
 
         if(item.dataset.type === 'AI OCR'){
           activateMenu('aiMenu');
-          detailText.textContent = 'Pastor Note Capture selected. Use AI Tools to upload a note photo, extract text, generate slides, and prepare it for the media team.';
+          detailText.textContent = 'Pastor Note Capture selected. Single click previews it. Double click adds it to the prompted queue.';
         } else if(item.dataset.type === 'Lyrics' || item.dataset.type === 'Wokovu Song' || item.dataset.type === 'Tenzi Song'){
           activateMenu('songsLiveMenu');
-          detailText.textContent = 'Song item selected. Use Songs to preview, go live, and style lyrics.';
-        } else if(item.dataset.type === 'Video' || item.dataset.type === 'Background' || item.dataset.type === 'Graphic' || item.dataset.type === 'Form' || item.dataset.type === 'Canva Slide' || item.dataset.type === 'Announcement' || item.dataset.type === 'Scripture' || item.dataset.type === 'Sermon Point' || item.dataset.type === 'Offering' || item.dataset.type === 'Image Slide Show' || item.dataset.type === 'Import'){
+          detailText.textContent = 'Song item selected. Single click previews it. Double click adds it to the prompted queue.';
+        } else if(item.dataset.type === 'Video' || item.dataset.type === 'Background' || item.dataset.type === 'Graphic' || item.dataset.type === 'Form' || item.dataset.type === 'Canva Slide' || item.dataset.type === 'Announcement' || item.dataset.type === 'Scripture' || item.dataset.type === 'Sermon Point' || item.dataset.type === 'Offering' || item.dataset.type === 'Image Slide Show' || item.dataset.type === 'Import' || item.dataset.type === 'Service Item'){
           activateMenu('mediaMenu');
-          detailText.textContent = 'Service item selected. The center panel shows controls related to that content.';
+          detailText.textContent = 'Service item selected. Single click previews it. Double click adds it to the prompted queue.';
+        } else {
+          detailText.textContent = 'Slide preview updated. Double click the slide to add it to the prompted queue.';
+        }
+      });
+
+      item.addEventListener('dblclick', () => {
+        setActive([...document.querySelectorAll('.slide-item')], item);
+        showInDisplay();
+        if (typeof addSlideToPromptedQueue === 'function') {
+          addSlideToPromptedQueue(item);
         }
       });
     }
 
     document.querySelectorAll('.slide-item').forEach(bindSlideItem);
     bindAllDragHandlers();
+    ['preServiceSlideList','warmupSlideList','serviceSlideList'].forEach(id => attachContainerDropzone(document.getElementById(id)));
+    refreshEmptyStates();
 
     document.getElementById('newPresentationBtn')?.addEventListener('click', () => {
       const list = document.getElementById('serviceSlideList');
@@ -742,18 +1115,6 @@ Nikaribie kiti cha neema.</textarea>
       item.click();
       detailText.textContent = 'New Presentation was created in the left service panel.';
     });
-
-
-    films.forEach((film, index) => {
-      film.addEventListener('click', () => {
-        setActive(films, film);
-        if(slideItems[index]) {
-          slideItems[index].click();
-        } else {
-          applyStyle(film.dataset.style, film.dataset.title, film.dataset.body);
-          activatePreview('projector');
-        }
-      });
     });
 
     $('#showEnglishBtn').addEventListener('click', () => renderBible('english'));
@@ -807,19 +1168,7 @@ Nikaribie kiti cha neema.</textarea>
         detailText.textContent = `${title} was added from Add Item and opened in the preview.`;
       });
 
-      const strip = document.querySelector('.strip');
-      const film = document.createElement('div');
-      film.className = 'film';
-      film.dataset.style = style;
-      film.dataset.title = title;
-      film.dataset.body = subtitle;
-      film.innerHTML = `<div class="film-label">${title}</div><div class="film-thumb ${style === 'welcome' ? 'welcome' : style === 'cross' ? 'cross' : style === 'green' ? 'green' : style === 'teal' ? 'teal' : style === 'form' ? 'form' : 'blue'}"></div>`;
-      strip.appendChild(film);
-      film.addEventListener('click', () => {
-        setActive([...document.querySelectorAll('.film')], film);
-        applyStyle(film.dataset.style, film.dataset.title, film.dataset.body);
-        activatePreview('projector');
-      });
+
     }
 
     document.getElementById('applyCanvaBtn')?.addEventListener('click', () => {
@@ -1054,12 +1403,349 @@ Nikaribie kiti cha neema.</textarea>
     });
 
 
+
+
+    function toggleTopPanel(panelId){
+      document.querySelectorAll('.top-control-panel').forEach(p => {
+        if(p.id !== panelId) p.classList.remove('active');
+      });
+      const panel = document.getElementById(panelId);
+      if(panel) panel.classList.toggle('active');
+    }
+
+    document.getElementById('undoTopBtn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleTopPanel('undoTopPanel');
+    });
+    document.getElementById('redoTopBtn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleTopPanel('redoTopPanel');
+    });
+    document.getElementById('teamTopBtn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleTopPanel('teamTopPanel');
+      detailText.textContent = 'Team panel opened. This is where role-based collaboration can be surfaced.';
+    });
+    document.getElementById('recordingsTopBtn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleTopPanel('recordingsTopPanel');
+      detailText.textContent = 'Recordings panel opened.';
+    });
+    document.getElementById('onAirBtn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleTopPanel('onAirPanel');
+      detailText.textContent = 'Broadcast status panel opened.';
+    });
+
+    document.getElementById('undoActionItem')?.addEventListener('click', () => {
+      detailText.textContent = 'Undo clicked. In a real build this would reverse the last editor action.';
+      document.getElementById('undoTopPanel')?.classList.remove('active');
+    });
+    document.getElementById('redoActionItem')?.addEventListener('click', () => {
+      detailText.textContent = 'Redo clicked. In a real build this would restore the last undone action.';
+      document.getElementById('redoTopPanel')?.classList.remove('active');
+    });
+
+    let recordingActiveMock = false;
+    document.getElementById('startRecordingMock')?.addEventListener('click', () => {
+      recordingActiveMock = !recordingActiveMock;
+      document.getElementById('recordingStatusChip').textContent = recordingActiveMock ? 'Recording Active' : 'Standby';
+      detailText.textContent = recordingActiveMock ? 'Recording started.' : 'Recording stopped.';
+    });
+    document.getElementById('markRecordingReadyMock')?.addEventListener('click', () => {
+      document.getElementById('recordingStatusChip').textContent = 'Recording Ready';
+      detailText.textContent = 'Recording marked ready.';
+    });
+
+    let editModeActive = true;
+    document.getElementById('editToggleWrap')?.addEventListener('click', () => {
+      editModeActive = !editModeActive;
+      document.getElementById('previewModeLabel').textContent = editModeActive ? 'PREVIEW' : 'LIVE VIEW';
+      const switchEl = document.getElementById('editPreviewSwitch');
+      switchEl.style.position = 'relative';
+      let knob = switchEl.querySelector('span');
+      if(!knob){
+        knob = document.createElement('span');
+        knob.style.cssText = 'position:absolute;top:2px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .18s ease;';
+        switchEl.appendChild(knob);
+      }
+      if(editModeActive){
+        switchEl.style.background = '#1c1b22';
+        switchEl.style.borderColor = 'rgba(255,255,255,.18)';
+        knob.style.left = '3px';
+      } else {
+        switchEl.style.background = '#2c6f58';
+        switchEl.style.borderColor = '#4caf7a';
+        knob.style.left = '26px';
+      }
+      detailText.textContent = editModeActive ? 'Edit mode active.' : 'Preview mode active.';
+    });
+    (() => {
+      const switchEl = document.getElementById('editPreviewSwitch');
+      if(switchEl && !switchEl.querySelector('span')){
+        switchEl.style.position = 'relative';
+        const knob = document.createElement('span');
+        knob.style.cssText = 'position:absolute;top:2px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .18s ease;';
+        switchEl.appendChild(knob);
+      }
+    })();
+
+    let onAirActive = true;
+    function refreshOnAirUi(){
+      const btn = document.getElementById('onAirBtn');
+      const chip = document.getElementById('airStatusChip');
+      const light = document.getElementById('readyLight');
+      if(onAirActive){
+        btn.textContent = 'ON AIR';
+        btn.style.background = '#59525f';
+        chip.textContent = 'Live output ready';
+        light.style.background = '#60d394';
+        light.style.boxShadow = '0 0 0 4px rgba(96,211,148,.18)';
+      } else {
+        btn.textContent = 'OFF AIR';
+        btn.style.background = '#4b4958';
+        chip.textContent = 'Not live';
+        light.style.background = '#c9b96b';
+        light.style.boxShadow = '0 0 0 4px rgba(201,185,107,.18)';
+      }
+    }
+    document.getElementById('toggleAirStateItem')?.addEventListener('click', () => {
+      onAirActive = !onAirActive;
+      refreshOnAirUi();
+      detailText.textContent = onAirActive ? 'Software switched to live output.' : 'Software switched off air.';
+    });
+    document.getElementById('pushCurrentSlideLiveItem')?.addEventListener('click', () => {
+      detailText.textContent = 'Current slide pushed live from the top broadcast controls.';
+      document.getElementById('onAirPanel')?.classList.remove('active');
+    });
+    refreshOnAirUi();
+
+    document.addEventListener('click', (e) => {
+      if(!e.target.closest('.top-control')){
+        document.querySelectorAll('.top-control-panel').forEach(p => p.classList.remove('active'));
+      }
+    });
+
+    let currentSlideTitle = 'Levites';
+    let currentSlideBody = '';
+
+    const originalApplyStyle = applyStyle;
+    applyStyle = function(style, title='', body=''){
+      currentSlideTitle = title || currentSlideTitle;
+      currentSlideBody = body || currentSlideBody;
+      return originalApplyStyle(style, title, body);
+    };
+
+    function buildServiceOrderText(theme, blocks, duration){
+      const parts = blocks.split('\n').map(x => x.trim()).filter(Boolean);
+      const minutes = Math.max(5, Math.floor(90 / Math.max(parts.length,1)));
+      return parts.map((part, i) => `${i+1}. ${part} — ${minutes} min`).join('<br>');
+    }
+
+    document.getElementById('generateServiceBuilderBtn')?.addEventListener('click', () => {
+      const theme = document.getElementById('serviceThemeInput').value.trim();
+      const blocks = document.getElementById('serviceBlocksInput').value.trim();
+      const duration = document.getElementById('serviceDurationInput').value.trim();
+      const htmlText = buildServiceOrderText(theme, blocks, duration);
+      document.getElementById('serviceBuilderResults').innerHTML = `
+        <div class="slide-card"><h4>${theme}</h4><p>Target duration: ${duration}</p></div>
+        <div class="slide-card"><h4>Proposed order</h4><p>${htmlText}</p></div>
+      `;
+      detailText.textContent = 'AI service order generated.';
+    });
+
+    document.getElementById('addServiceOrderBtn')?.addEventListener('click', () => {
+      const blocks = document.getElementById('serviceBlocksInput').value.trim().split('\n').map(x => x.trim()).filter(Boolean);
+      blocks.forEach(block => addPlaylistItem(block, 'Generated by AI Service Builder', 'green', 'Service Item'));
+      detailText.textContent = 'Generated service order added to the left panel.';
+    });
+
+    document.getElementById('simplifySlidesBtn')?.addEventListener('click', () => {
+      const area = document.getElementById('ocrText');
+      const simplified = area.value
+        .replace(/results appear/gi, 'results show')
+        .replace(/Obedience prepares the way/gi, 'Obedience opens the door')
+        .replace(/Faith stays steady in process/gi, 'Keep faith during the process');
+      area.value = simplified;
+      detailText.textContent = 'Sermon slide content simplified for faster reading.';
+    });
+
+    document.getElementById('beautifyCurrentSlideBtn')?.addEventListener('click', () => {
+      const style = document.getElementById('designGoalInput').value;
+      const instruction = document.getElementById('designInstructionInput').value.trim();
+      applyStyle(style, currentSlideTitle || 'Beautiful Slide', currentSlideBody || 'Refined with AI design engine.');
+      detailText.textContent = 'Current slide beautified. ' + instruction;
+      activatePreview('projector');
+    });
+
+    document.getElementById('generateDesignSuggestionsBtn')?.addEventListener('click', () => {
+      const style = document.getElementById('designGoalInput').value;
+      document.getElementById('designSuggestionsResults').innerHTML = `
+        <div class="style-swatch"><strong>Style preset</strong><p style="color:#b8b7c5;margin:6px 0 0">${style} selected for readability, cleaner contrast, and stage-friendly visuals.</p></div>
+        <div class="style-swatch"><strong>AI advice</strong><p style="color:#b8b7c5;margin:6px 0 0">Use 1 headline, 1 support line, strong whitespace, and no more than 2 key ideas on one slide.</p></div>
+      `;
+      detailText.textContent = 'AI design suggestions generated.';
+    });
+
+    function smartHighlight(text, keywords){
+      let result = text;
+      keywords.split(',').map(k => k.trim()).filter(Boolean).forEach(k => {
+        const regex = new RegExp('(' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+        result = result.replace(regex, '<span style="color:#ffe66d;font-weight:700">$1</span>');
+      });
+      return result;
+    }
+
+    document.getElementById('smartBibleFormatBtn')?.addEventListener('click', () => {
+      const ref = document.getElementById('bibleRef').value.trim();
+      const eng = document.getElementById('englishVerse').value.trim();
+      const swa = document.getElementById('swahiliVerse').value.trim();
+      const mode = document.getElementById('bibleProjectionMode').value;
+      const keywords = document.getElementById('bibleKeywords').value;
+      document.getElementById('bibleFormatResults').innerHTML = `
+        <p><strong>${ref}</strong><br>Mode: ${mode}<br>AI emphasized keywords: ${keywords}</p>
+      `;
+      applyStyle('bible', ref, '');
+      overlayTitle.textContent = ref;
+      overlayBody.style.display = 'none';
+      if(mode === 'english'){
+        bilingualGrid.style.display = 'block';
+        bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+smartHighlight(eng, keywords)+'</div></div>';
+      } else if(mode === 'swahili'){
+        bilingualGrid.style.display = 'block';
+        bilingualGrid.innerHTML = '<div><strong>Swahili</strong><div style="margin-top:6px">'+smartHighlight(swa, keywords)+'</div></div>';
+      } else if(mode === 'stacked'){
+        bilingualGrid.style.display = 'block';
+        bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+smartHighlight(eng, keywords)+'</div><hr style="border-color:rgba(255,255,255,.15)"><strong>Swahili</strong><div style="margin-top:6px">'+smartHighlight(swa, keywords)+'</div></div>';
+      } else {
+        bilingualGrid.style.display = 'grid';
+        bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+smartHighlight(eng, keywords)+'</div></div><div><strong>Swahili</strong><div style="margin-top:6px">'+smartHighlight(swa, keywords)+'</div></div>';
+      }
+      detailText.textContent = 'Smart Bible formatting applied to preview.';
+      activatePreview('projector');
+    });
+
+    document.getElementById('generateThumbnailBtn')?.addEventListener('click', () => {
+      const topic = document.getElementById('thumbnailTopicInput').value.trim();
+      const prompt = document.getElementById('thumbnailPromptInput').value.trim();
+      document.getElementById('thumbnailResults').innerHTML = `
+        <div class="slide-card"><h4>${topic}</h4><p>Thumbnail concept: bold title, dramatic light, clean subtitle, and clear social-safe margins.</p></div>
+        <div class="slide-card"><h4>Media prompt summary</h4><p>${prompt.slice(0, 180)}${prompt.length > 180 ? '...' : ''}</p></div>
+      `;
+      detailText.textContent = 'AI thumbnail ideas generated.';
+    });
+
+    document.getElementById('applyThumbnailStyleBtn')?.addEventListener('click', () => {
+      const topic = document.getElementById('thumbnailTopicInput').value.trim() || 'Livestream Thumbnail';
+      applyStyle('welcome', topic, 'Thumbnail styling applied to the current preview layout.');
+      detailText.textContent = 'Thumbnail style applied to preview.';
+      activatePreview('projector');
+    });
+
+    function runCommand(command){
+      const cmd = command.toLowerCase().trim();
+      if(!cmd) return;
+      if(cmd.startsWith('add worship slide')){
+        const text = command.replace(/add worship slide with/i, '').trim() || 'Worship content';
+        addPlaylistItem('Worship Slide', text, 'cross', 'Graphic');
+        detailText.textContent = 'Command executed: added worship slide.';
+      } else if(cmd.startsWith('show bible')){
+        const ref = command.replace(/show bible/i, '').trim() || 'John 3:16';
+        document.getElementById('bibleRef').value = ref;
+        activateMenu('bibleMenu');
+        renderBible('bilingual');
+        detailText.textContent = 'Command executed: showing Bible reference ' + ref + '.';
+      } else if(cmd.startsWith('build service')){
+        const items = command.replace(/build service/i, '').split(/,| and /i).map(x => x.trim()).filter(Boolean);
+        document.getElementById('serviceBlocksInput').value = items.map(x => x.charAt(0).toUpperCase() + x.slice(1)).join('\n');
+        activateMenu('aiMenu');
+        document.getElementById('generateServiceBuilderBtn').click();
+        detailText.textContent = 'Command executed: service builder prepared a service order.';
+      } else if(cmd.startsWith('beautify current slide')){
+        activateMenu('aiMenu');
+        document.getElementById('beautifyCurrentSlideBtn').click();
+      } else if(cmd.startsWith('generate thumbnail')){
+        activateMenu('aiMenu');
+        document.getElementById('generateThumbnailBtn').click();
+      } else {
+        detailText.textContent = 'Command not recognized yet. Try: "add worship slide with Psalm 23", "show bible John 3:16", "build service worship offering sermon", or "beautify current slide".';
+      }
+    }
+
+    document.getElementById('runCommandBtn')?.addEventListener('click', () => {
+      runCommand(document.getElementById('globalCommandInput').value);
+    });
+    document.getElementById('globalCommandInput')?.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        runCommand(e.target.value);
+      }
+    });
+
+
+    function refreshEmptyStates(){
+      ['preServiceSlideList','warmupSlideList','serviceSlideList'].forEach(id => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        const hasSlides = !!el.querySelector('.slide-item');
+        el.classList.toggle('empty', !hasSlides && id !== 'serviceSlideList');
+      });
+    }
+
+    function attachContainerDropzone(container){
+      if(!container) return;
+      container.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        if(!draggedSlide) return;
+        container.classList.add('section-label-active');
+      });
+      container.addEventListener('dragleave', () => {
+        container.classList.remove('section-label-active');
+      });
+      container.addEventListener('drop', (e) => {
+        e.preventDefault();
+        container.classList.remove('section-label-active');
+        if(!draggedSlide) return;
+
+        const children = [...container.querySelectorAll('.slide-item:not(.dragging)')];
+        if(!children.length){
+          container.appendChild(draggedSlide);
+          refreshSlideOrderDetail();
+          refreshEmptyStates();
+          return;
+        }
+
+        let inserted = false;
+        for(const child of children){
+          const rect = child.getBoundingClientRect();
+          const halfway = rect.top + rect.height / 2;
+          if(e.clientY < halfway){
+            container.insertBefore(draggedSlide, child);
+            inserted = true;
+            break;
+          }
+        }
+        if(!inserted){
+          container.appendChild(draggedSlide);
+        }
+        refreshSlideOrderDetail();
+        refreshEmptyStates();
+      });
+    }
+
     let draggedSlide = null;
 
     function refreshSlideOrderDetail(){
-      const titles = [...document.querySelectorAll('#serviceSlideList .slide-item')]
-        .map(el => el.dataset.title || el.querySelector('.slide-meta b')?.textContent?.trim() || 'Untitled');
-      detailText.textContent = 'Service order updated: ' + titles.join(' → ');
+      const describe = (id, label) => {
+        const titles = [...document.querySelectorAll('#' + id + ' .slide-item')]
+          .map(el => el.dataset.title || el.querySelector('.slide-meta b')?.textContent?.trim() || 'Untitled');
+        return label + ': ' + (titles.length ? titles.join(' → ') : 'empty');
+      };
+      detailText.textContent = [
+        describe('preServiceSlideList', 'Pre-Service'),
+        describe('warmupSlideList', 'Warm-Up'),
+        describe('serviceSlideList', 'Service')
+      ].join(' | ');
     }
 
     function attachDragHandlers(item){
@@ -1074,10 +1760,14 @@ Nikaribie kiti cha neema.</textarea>
 
       item.addEventListener('dragend', () => {
         item.classList.remove('dragging');
-        document.querySelectorAll('#serviceSlideList .slide-item').forEach(el => {
+        document.querySelectorAll('.slide-item').forEach(el => {
           el.classList.remove('drag-over-top', 'drag-over-bottom');
         });
+        document.querySelectorAll('.section-dropzone').forEach(el => {
+          el.classList.remove('section-label-active');
+        });
         draggedSlide = null;
+        refreshEmptyStates();
       });
 
       item.addEventListener('dragover', (e) => {
@@ -1121,10 +1811,519 @@ Nikaribie kiti cha neema.</textarea>
 
         syncWokovuSelect();
     syncTenziSelect();
+
+    const calendarState = { year: 2026, month: 2, selectedDay: 22 }; // March
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const dayHeads = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+    function updateSelectedDateLabel(){
+      const d = new Date(calendarState.year, calendarState.month, calendarState.selectedDay);
+      document.getElementById('selectedServiceDate').textContent = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+    }
+
+    function renderCalendar(){
+      const grid = document.getElementById('calendarGrid');
+      const label = document.getElementById('calendarMonthLabel');
+      if(!grid || !label) return;
+      label.textContent = `${monthNames[calendarState.month]} ${calendarState.year}`;
+      grid.innerHTML = '';
+      dayHeads.forEach(h => {
+        const el = document.createElement('div');
+        el.className = 'calendar-head';
+        el.textContent = h;
+        grid.appendChild(el);
+      });
+
+      const first = new Date(calendarState.year, calendarState.month, 1);
+      const startDay = first.getDay();
+      const daysInMonth = new Date(calendarState.year, calendarState.month + 1, 0).getDate();
+
+      for(let i=0;i<startDay;i++){
+        const blank = document.createElement('div');
+        grid.appendChild(blank);
+      }
+      for(let day=1; day<=daysInMonth; day++){
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'calendar-day' + (day === calendarState.selectedDay ? ' selected' : '');
+        btn.textContent = day;
+        btn.addEventListener('click', () => {
+          calendarState.selectedDay = day;
+      
+    document.getElementById('toggleQueueBtn')?.addEventListener('click', () => {
+      const strip = document.getElementById('promptedSlideStrip');
+      if(!strip.querySelector('.film')){
+        detailText.textContent = 'The prompted queue is empty. Double click a slide in the left sidebar to add it.';
+        strip.classList.add('hidden');
+      } else {
+        strip.classList.toggle('hidden');
+      }
+      document.getElementById('toggleQueueBtn').textContent = strip.classList.contains('hidden') ? 'Show Prompted Slides' : 'Hide Prompted Slides';
+    });
+
+    document.getElementById('clearQueueBtn')?.addEventListener('click', () => {
+      const strip = document.getElementById('promptedSlideStrip');
+      strip.innerHTML = '';
+      ensurePromptedStripVisibility();
+      detailText.textContent = 'Prompted queue cleared.';
+    });
+
+
+        updateSelectedDateLabel();
+          renderCalendar();
+          detailText.textContent = 'Service date selected: ' + document.getElementById('selectedServiceDate').textContent;
+          document.getElementById('calendarPopup').classList.remove('active');
+        });
+        grid.appendChild(btn);
+      }
+    }
+
+    document.getElementById('calendarOpenBtn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('calendarPopup').classList.toggle('active');
+      document.getElementById('sharePopup')?.classList.remove('active');
+      renderCalendar();
+    });
+    document.getElementById('calendarPrevBtn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      calendarState.month -= 1;
+      if(calendarState.month < 0){ calendarState.month = 11; calendarState.year -= 1; }
+      renderCalendar();
+    });
+    document.getElementById('calendarNextBtn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      calendarState.month += 1;
+      if(calendarState.month > 11){ calendarState.month = 0; calendarState.year += 1; }
+      renderCalendar();
+    });
+
+    document.getElementById('shareOpenBtn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('sharePopup').classList.toggle('active');
+      document.getElementById('calendarPopup')?.classList.remove('active');
+      detailText.textContent = 'Share destinations opened.';
+    });
+
+    document.addEventListener('click', (e) => {
+      if(!e.target.closest('#calendarOpenBtn') && !e.target.closest('#calendarPopup')){
+        document.getElementById('calendarPopup')?.classList.remove('active');
+      }
+      if(!e.target.closest('#shareOpenBtn') && !e.target.closest('#sharePopup')){
+        document.getElementById('sharePopup')?.classList.remove('active');
+      }
+    });
+
+    updateSelectedDateLabel();
     activateMenu('fileMenu');
     activateSubpane('menuMain');
     activatePreview('projector');
     applyStyle('sky');
   </script>
+<script>
+
+    window.addEventListener('load', () => {
+      const projector = document.getElementById('projectorPreview');
+      const screen = document.getElementById('mainScreen');
+      if(projector){
+        projector.style.display = 'block';
+        projector.classList.add('active');
+      }
+      if(screen){
+        screen.style.display = 'block';
+        screen.style.minHeight = '560px';
+      }
+      const firstSlide = document.querySelector('#serviceSlideList .slide-item, #preServiceSlideList .slide-item, #warmupSlideList .slide-item, .slide-item');
+      if(firstSlide){
+        setTimeout(() => firstSlide.click(), 80);
+      }
+    });
+
+// FORCE SLIDE CLICK TO DISPLAY
+document.querySelectorAll('.slide-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    const title = item.dataset.title || 'Slide';
+    const body = item.dataset.body || '';
+    const style = item.dataset.style || 'blue';
+    applyStyle(style, title, body);
+    activatePreview('projector');
+    document.querySelectorAll('.slide-item').forEach(s=>s.classList.remove('active'));
+    item.classList.add('active');
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  try {
+    if (typeof activatePreview === 'function') {
+      activatePreview('projector');
+    }
+
+    const projector = document.getElementById('projectorPreview');
+    const screen = document.getElementById('mainScreen');
+    if (projector) {
+      projector.style.display = 'block';
+      projector.classList.add('active');
+    }
+    if (screen) {
+      screen.style.display = 'block';
+      screen.style.minHeight = '560px';
+    }
+
+    const firstSlide = document.querySelector('.slide-item');
+    if (firstSlide) {
+      firstSlide.click();
+    } else if (typeof applyStyle === 'function') {
+      applyStyle('welcome', 'Welcome', 'Select or create a slide to display it here.');
+    }
+  } catch (e) {
+    console.error('Preview init error:', e);
+    const screen = document.getElementById('mainScreen');
+    if (screen) {
+      screen.innerHTML = '<div style="padding:40px;color:white;font-size:28px;">Preview ready. Click a slide on the left.</div>';
+    }
+  }
+});
+</script>
+
+<script>
+    function initAllMenus(){
+      document.querySelectorAll('.menu-btn').forEach(btn => {
+        btn.onclick = () => {
+          activateMenu(btn.dataset.menu);
+          activateSubpane('menuMain');
+        };
+      });
+
+      document.querySelectorAll('.subtab').forEach(tab => {
+        tab.onclick = () => activateSubpane(tab.dataset.subpane);
+      });
+
+      document.querySelectorAll('.preview-tab').forEach(tab => {
+        tab.onclick = () => activatePreview(tab.dataset.preview);
+      });
+
+      document.querySelectorAll('.settings-tab').forEach(tab => {
+        tab.onclick = () => {
+          const wrapper = tab.closest('.menu-pane') || document;
+          wrapper.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+          wrapper.querySelectorAll('.settings-pane').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          const target = document.getElementById(tab.dataset.pane);
+          if(target) target.classList.add('active');
+        };
+      });
+    }
+
+    function initTopRightControls(){
+      const bindToggle = (buttonId, panelId, message) => {
+        const btn = document.getElementById(buttonId);
+        const panel = document.getElementById(panelId);
+        if(!btn || !panel) return;
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          document.querySelectorAll('.top-control-panel').forEach(p => {
+            if(p !== panel) p.classList.remove('active');
+          });
+          panel.classList.toggle('active');
+          if (typeof detailText !== 'undefined' && detailText) detailText.textContent = message;
+        };
+      };
+
+      bindToggle('undoTopBtn', 'undoTopPanel', 'Undo panel opened.');
+      bindToggle('redoTopBtn', 'redoTopPanel', 'Redo panel opened.');
+      bindToggle('teamTopBtn', 'teamTopPanel', 'Team panel opened.');
+      bindToggle('recordingsTopBtn', 'recordingsTopPanel', 'Recordings panel opened.');
+      bindToggle('onAirBtn', 'onAirPanel', 'Broadcast status panel opened.');
+
+      document.addEventListener('click', (e) => {
+        if(!e.target.closest('.top-control')){
+          document.querySelectorAll('.top-control-panel').forEach(p => p.classList.remove('active'));
+        }
+      });
+    }
+
+    window.addEventListener('load', () => {
+      initAllMenus();
+      initTopRightControls();
+      document.querySelectorAll('.slide-item').forEach(item => bindSlideItem(item));
+
+      const projector = document.getElementById('projectorPreview');
+      const screen = document.getElementById('mainScreen');
+      if(projector){
+        projector.style.display = 'block';
+        projector.classList.add('active');
+      }
+      if(screen){
+        screen.style.display = 'block';
+        screen.style.minHeight = '560px';
+        screen.style.visibility = 'visible';
+      }
+
+      const firstSlide = document.querySelector('#serviceSlideList .slide-item, #preServiceSlideList .slide-item, #warmupSlideList .slide-item, .slide-item');
+      if(firstSlide){
+        setTimeout(() => firstSlide.click(), 120);
+      }
+    });
+</script>
+
+<script>
+(function(){
+  function $(s, r){ return (r||document).querySelector(s); }
+  function $$(s, r){ return Array.from((r||document).querySelectorAll(s)); }
+
+  function safeText(v){ return (v ?? '').toString(); }
+
+  function forceProjectorVisible(){
+    const projector = document.getElementById('projectorPreview');
+    const screen = document.getElementById('mainScreen');
+    const overlay = document.getElementById('overlayText');
+    if(projector){
+      projector.style.display = 'block';
+      projector.classList.add('active');
+    }
+    if(screen){
+      screen.style.display = 'block';
+      screen.style.visibility = 'visible';
+      screen.style.minHeight = '560px';
+    }
+    if(overlay){
+      overlay.style.display = 'block';
+      overlay.style.visibility = 'visible';
+    }
+  }
+
+  function showSlideFromItem(item){
+    if(!item) return;
+    const title = safeText(item.dataset.title || item.querySelector('.slide-meta b')?.textContent || 'Slide');
+    const body = safeText(item.dataset.body || '');
+    const style = safeText(item.dataset.style || 'blue');
+
+    try {
+      if (typeof applyStyle === 'function') {
+        applyStyle(style, title, body);
+      }
+    } catch(e) {
+      console.error('applyStyle failed', e);
+    }
+
+    forceProjectorVisible();
+
+    const titleEl = document.getElementById('overlayTitle');
+    const bodyEl = document.getElementById('overlayBody');
+    const centerOverlay = document.getElementById('centerOverlay');
+    if(titleEl) titleEl.textContent = title;
+    if(bodyEl) bodyEl.innerHTML = body;
+    if(centerOverlay) centerOverlay.style.display = (title || body) ? 'none' : 'grid';
+
+    $$('.slide-item').forEach(el => el.classList.remove('active'));
+    item.classList.add('active');
+
+    try {
+      if (typeof activatePreview === 'function') activatePreview('projector');
+    } catch(e) {
+      console.error('activatePreview failed', e);
+    }
+  }
+
+  function bindSlides(){
+    $$('.slide-item').forEach((item) => {
+      if(item.dataset.boundClick === '1') return;
+      item.dataset.boundClick = '1';
+
+      item.addEventListener('click', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        showSlideFromItem(item);
+      });
+
+      item.addEventListener('dblclick', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        showSlideFromItem(item);
+        if(typeof addSlideToPromptedQueue === 'function'){
+          try { addSlideToPromptedQueue(item); } catch(e) { console.error(e); }
+        }
+      });
+    });
+  }
+
+  function bindMenus(){
+    const menuButtons = $$('.menu-btn');
+    const menuPanes = $$('.menu-pane');
+    const centerTitle = $('#centerPanelTitle');
+
+    menuButtons.forEach((btn) => {
+      btn.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        const menuId = btn.dataset.menu;
+        menuButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        menuPanes.forEach(p => {
+          p.classList.remove('active');
+          p.style.display = 'none';
+        });
+
+        const pane = document.getElementById(menuId);
+        if(pane){
+          pane.classList.add('active');
+          pane.style.display = 'block';
+        }
+
+        if(centerTitle){
+          centerTitle.textContent = (btn.textContent || 'Menu').trim() + ' Menu';
+        }
+
+        const menuMain = document.getElementById('menuMain');
+        const menuDetails = document.getElementById('menuDetails');
+        if(menuMain && menuDetails){
+          menuMain.classList.add('active');
+          menuMain.style.display = 'block';
+          menuDetails.classList.remove('active');
+          menuDetails.style.display = 'none';
+        }
+
+        $$('.subtab').forEach((t, idx) => {
+          t.classList.toggle('active', idx === 0);
+        });
+      };
+    });
+
+    $$('.subtab').forEach(tab => {
+      tab.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        const targetId = tab.dataset.subpane;
+        $$('.subtab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        $$('.subpane').forEach(p => {
+          p.classList.remove('active');
+          p.style.display = 'none';
+        });
+        const target = document.getElementById(targetId);
+        if(target){
+          target.classList.add('active');
+          target.style.display = 'block';
+        }
+      };
+    });
+
+    $$('.preview-tab').forEach(tab => {
+      tab.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        const targetId = tab.dataset.preview;
+        $$('.preview-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        ['projector','confidence','notes','signals'].forEach(id => {
+          const pane = document.getElementById(id + 'Preview');
+          if(!pane) return;
+          if(id === targetId){
+            pane.classList.add('active');
+            pane.style.display = 'block';
+          } else {
+            pane.classList.remove('active');
+            pane.style.display = 'none';
+          }
+        });
+        if(targetId === 'projector') forceProjectorVisible();
+      };
+    });
+
+    $$('.settings-tab').forEach(tab => {
+      tab.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        const wrapper = tab.closest('.menu-pane');
+        if(!wrapper) return;
+        wrapper.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+        wrapper.querySelectorAll('.settings-pane').forEach(p => {
+          p.classList.remove('active');
+          p.style.display = 'none';
+        });
+        tab.classList.add('active');
+        const target = document.getElementById(tab.dataset.pane);
+        if(target){
+          target.classList.add('active');
+          target.style.display = 'block';
+        }
+      };
+    });
+  }
+
+  function bindTopRight(){
+    function toggle(btnId, panelId){
+      const btn = document.getElementById(btnId);
+      const panel = document.getElementById(panelId);
+      if(!btn || !panel) return;
+      btn.onclick = function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        $$('.top-control-panel').forEach(p => {
+          if(p !== panel) p.classList.remove('active');
+        });
+        panel.classList.toggle('active');
+        panel.style.zIndex = '99999';
+      };
+    }
+    toggle('undoTopBtn','undoTopPanel');
+    toggle('redoTopBtn','redoTopPanel');
+    toggle('teamTopBtn','teamTopPanel');
+    toggle('recordingsTopBtn','recordingsTopPanel');
+    toggle('onAirBtn','onAirPanel');
+
+    document.addEventListener('click', function(ev){
+      if(!ev.target.closest('.top-control')){
+        $$('.top-control-panel').forEach(p => p.classList.remove('active'));
+      }
+    });
+  }
+
+  function ensureScroll(){
+    const leftBody = document.querySelector('.left-body');
+    if(leftBody){
+      leftBody.style.overflowY = 'auto';
+      leftBody.style.overflowX = 'hidden';
+      leftBody.style.maxHeight = '100%';
+      leftBody.style.webkitOverflowScrolling = 'touch';
+    }
+  }
+
+  function init(){
+    bindMenus();
+    bindSlides();
+    bindTopRight();
+    ensureScroll();
+    forceProjectorVisible();
+
+    const first = document.querySelector('#serviceSlideList .slide-item, #preServiceSlideList .slide-item, #warmupSlideList .slide-item, .slide-item');
+    if(first) showSlideFromItem(first);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Re-bind after dynamic additions
+  const obs = new MutationObserver(function(){
+    bindSlides();
+    ensureScroll();
+  });
+  obs.observe(document.body, {childList:true, subtree:true});
+})();
+</script>
+<style>
+.topbar,.top-actions,.top-control{overflow:visible !important}
+.top-control-panel,.popup-panel{z-index:99999 !important}
+#projectorPreview,#projectorPreview.active{display:block !important}
+#mainScreen{display:block !important;visibility:visible !important;min-height:560px !important}
+.left-body{overflow-y:auto !important;overflow-x:hidden !important}
+</style>
+
 </body>
 </html>

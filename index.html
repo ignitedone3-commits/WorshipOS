@@ -214,6 +214,96 @@
     #mainScreen{display:block !important;min-height:560px !important;visibility:visible !important}
     #overlayText{display:block}
 
+    
+    .strip, .queue-toolbar, #promptedSlideStrip, #toggleQueueBtn, #clearQueueBtn, #queueHintBadge{display:none !important}
+    .video-bar{display:none !important}
+    .stage{padding-bottom:10px !important}
+    #mainScreen{overflow:hidden !important}
+
+    
+    .projector-fs-btn{
+      position:absolute;
+      top:14px;
+      right:14px;
+      z-index:50;
+      padding:8px 12px;
+      border-radius:8px;
+      border:1px solid rgba(140,170,255,.22);
+      background:rgba(12,22,55,.78);
+      color:#fff;
+      cursor:pointer;
+      font-size:12px;
+      backdrop-filter:blur(8px);
+    }
+    .projector-fs-btn:hover{background:rgba(125,162,255,.18)}
+    #projectorFullscreenOverlay{
+      position:fixed;
+      inset:0;
+      background:#000;
+      z-index:100000;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    #projectorFullscreenOverlay.active{display:flex}
+    #projectorFullscreenSurface{
+      width:100vw;
+      height:100vh;
+      position:relative;
+      overflow:hidden;
+      background:#000;
+    }
+    #projectorFullscreenSurface #fsMainScreen{
+      width:100%;
+      height:100%;
+      min-height:100%;
+      display:block;
+      position:relative;
+      overflow:hidden;
+    }
+    .fs-close-btn{
+      position:absolute;
+      top:18px;
+      right:18px;
+      z-index:100001;
+      padding:10px 14px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.42);
+      color:#fff;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .fs-help{
+      position:absolute;
+      left:18px;
+      bottom:18px;
+      z-index:100001;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(0,0,0,.38);
+      color:#fff;
+      font-size:12px;
+      border:1px solid rgba(255,255,255,.14);
+    }
+
+    
+    /* Hide scrollbars but keep scrolling */
+    .settings-body,
+    .left-body,
+    .preview-body{
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .settings-body::-webkit-scrollbar,
+    .left-body::-webkit-scrollbar,
+    .preview-body::-webkit-scrollbar{
+      width: 0;
+      height: 0;
+      display: none;
+    }
+
     @media (max-width:1250px){body{overflow:auto}.app{height:auto;min-height:100vh;grid-template-rows:50px 28px 46px auto 150px}.workspace{grid-template-columns:1fr}.panel{min-height:320px;border-right:0;border-bottom:1px solid var(--line)}}
     @media (max-width:700px){.bilingual-grid,.info-grid{grid-template-columns:1fr}.overlay-text{left:20px;right:20px}.overlay-text h1{font-size:28px}.overlay-text p{font-size:16px}}
   </style>
@@ -569,12 +659,19 @@
               <div class="field"><label for="bibleRef">Bible reference</label><input id="bibleRef" value="Genesis 1:1"></div>
               <div class="field"><label for="englishVerse">English verse</label><textarea id="englishVerse">In the beginning God created the heaven and the earth.</textarea></div>
               <div class="field"><label for="swahiliVerse">Swahili verse</label><textarea id="swahiliVerse">Hapo mwanzo Mungu aliziumba mbingu na nchi.</textarea></div>
+              <div class="field"><label for="kirundiVerse">Kirundi verse</label><textarea id="kirundiVerse">Mu ntango Imana yaremye ijuru n’isi.</textarea></div>
+              <div class="field"><label for="kinyarwandaVerse">Kinyarwanda verse</label><textarea id="kinyarwandaVerse">Mu ntangiriro Imana yaremye ijuru n’isi.</textarea></div>
               <div class="field"><label for="bibleProjectionMode">Projection layout</label>
                 <select id="bibleProjectionMode">
                   <option value="bilingual">Bilingual split</option>
                   <option value="english">English only</option>
                   <option value="swahili">Swahili only</option>
+                  <option value="kirundi">Kirundi only</option>
+                  <option value="kinyarwanda">Kinyarwanda only</option>
                   <option value="stacked">Bilingual stacked</option>
+                  <option value="kirundi">Kirundi only</option>
+                  <option value="kinyarwanda">Kinyarwanda only</option>
+                  <option value="multi">English + Swahili + Kirundi + Kinyarwanda</option>
                 </select>
               </div>
               <div class="field"><label for="bibleKeywords">Highlight keywords</label><input id="bibleKeywords" value="God, beginning, earth"></div>
@@ -582,6 +679,9 @@
                 <button class="mini-btn" id="showEnglishBtn" type="button">English only</button>
                 <button class="mini-btn" id="showSwahiliBtn" type="button">Swahili only</button>
                 <button class="mini-btn" id="showBilingualBtn" type="button">Bilingual</button>
+                <button class="mini-btn" id="showKirundiBtn" type="button">Kirundi</button>
+                <button class="mini-btn" id="showKinyarwandaBtn" type="button">Kinyarwanda</button>
+                <button class="mini-btn" id="showMultiBibleBtn" type="button">4 Languages</button>
                 <button class="mini-btn" id="smartBibleFormatBtn" type="button">AI format verse</button>
               </div>
               <div class="info-block" id="bibleFormatResults"><p>AI can restructure the verse for projector readability, livestream readability, and keyword emphasis.</p></div>
@@ -849,6 +949,7 @@ Closing blessing</textarea></div>
         </div>
         <div class="preview-body"><div class="stage">
           <div id="projectorPreview" class="preview-pane active">
+            <button id="openProjectorFsBtn" class="projector-fs-btn" type="button">Fullscreen Projector</button>
             <div class="screen" id="mainScreen">
               <div class="ray r1"></div><div class="ray r2"></div><div class="ray r3"></div><div class="ray r4"></div><div class="ray r5"></div>
               <div class="cloud one"></div><div class="cloud two"></div><div class="cloud three"></div>
@@ -869,12 +970,8 @@ Closing blessing</textarea></div>
     </div>
 
     
-    <footer class="strip hidden" id="promptedSlideStrip"></footer>
-    <div class="queue-toolbar">
-      <span class="queue-badge" id="queueHintBadge">Single click = display • Double click = add to prompted queue</span>
-      <button class="mini-btn" id="toggleQueueBtn" type="button">Show Prompted Slides</button>
-      <button class="mini-btn" id="clearQueueBtn" type="button">Clear Queue</button>
-    </div>
+    
+    
 
   </div>
 
@@ -1074,24 +1171,21 @@ Closing blessing</textarea></div>
 
         if(item.dataset.type === 'AI OCR'){
           activateMenu('aiMenu');
-          detailText.textContent = 'Pastor Note Capture selected. Single click previews it. Double click adds it to the prompted queue.';
+          detailText.textContent = 'Pastor Note Capture selected. Click to preview on the display panel.';
         } else if(item.dataset.type === 'Lyrics' || item.dataset.type === 'Wokovu Song' || item.dataset.type === 'Tenzi Song'){
           activateMenu('songsLiveMenu');
-          detailText.textContent = 'Song item selected. Single click previews it. Double click adds it to the prompted queue.';
+          detailText.textContent = 'Song item selected. Click to preview on the display panel.';
         } else if(item.dataset.type === 'Video' || item.dataset.type === 'Background' || item.dataset.type === 'Graphic' || item.dataset.type === 'Form' || item.dataset.type === 'Canva Slide' || item.dataset.type === 'Announcement' || item.dataset.type === 'Scripture' || item.dataset.type === 'Sermon Point' || item.dataset.type === 'Offering' || item.dataset.type === 'Image Slide Show' || item.dataset.type === 'Import' || item.dataset.type === 'Service Item'){
           activateMenu('mediaMenu');
-          detailText.textContent = 'Service item selected. Single click previews it. Double click adds it to the prompted queue.';
+          detailText.textContent = 'Service item selected. Click to preview on the display panel.';
         } else {
-          detailText.textContent = 'Slide preview updated. Double click the slide to add it to the prompted queue.';
+          detailText.textContent = 'Slide preview updated on the display panel.';
         }
       });
 
       item.addEventListener('dblclick', () => {
         setActive([...document.querySelectorAll('.slide-item')], item);
         showInDisplay();
-        if (typeof addSlideToPromptedQueue === 'function') {
-          addSlideToPromptedQueue(item);
-        }
       });
     }
 
@@ -1600,6 +1694,8 @@ Closing blessing</textarea></div>
       const ref = document.getElementById('bibleRef').value.trim();
       const eng = document.getElementById('englishVerse').value.trim();
       const swa = document.getElementById('swahiliVerse').value.trim();
+      const kir = document.getElementById('kirundiVerse').value.trim();
+      const kin = document.getElementById('kinyarwandaVerse').value.trim();
       const mode = document.getElementById('bibleProjectionMode').value;
       const keywords = document.getElementById('bibleKeywords').value;
       document.getElementById('bibleFormatResults').innerHTML = `
@@ -1617,6 +1713,16 @@ Closing blessing</textarea></div>
       } else if(mode === 'stacked'){
         bilingualGrid.style.display = 'block';
         bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+smartHighlight(eng, keywords)+'</div><hr style="border-color:rgba(255,255,255,.15)"><strong>Swahili</strong><div style="margin-top:6px">'+smartHighlight(swa, keywords)+'</div></div>';
+      } else if(mode === 'kirundi'){
+        bilingualGrid.style.display = 'block';
+        bilingualGrid.innerHTML = '<div><strong>Kirundi</strong><div style="margin-top:6px">'+smartHighlight(kir, keywords)+'</div></div>';
+      } else if(mode === 'kinyarwanda'){
+        bilingualGrid.style.display = 'block';
+        bilingualGrid.innerHTML = '<div><strong>Kinyarwanda</strong><div style="margin-top:6px">'+smartHighlight(kin, keywords)+'</div></div>';
+      } else if(mode === 'multi'){
+        bilingualGrid.style.display = 'grid';
+        bilingualGrid.style.gridTemplateColumns = '1fr 1fr';
+        bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+smartHighlight(eng, keywords)+'</div></div><div><strong>Swahili</strong><div style="margin-top:6px">'+smartHighlight(swa, keywords)+'</div></div><div><strong>Kirundi</strong><div style="margin-top:6px">'+smartHighlight(kir, keywords)+'</div></div><div><strong>Kinyarwanda</strong><div style="margin-top:6px">'+smartHighlight(kin, keywords)+'</div></div>';
       } else {
         bilingualGrid.style.display = 'grid';
         bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+smartHighlight(eng, keywords)+'</div></div><div><strong>Swahili</strong><div style="margin-top:6px">'+smartHighlight(swa, keywords)+'</div></div>';
@@ -1850,9 +1956,7 @@ Closing blessing</textarea></div>
         btn.addEventListener('click', () => {
           calendarState.selectedDay = day;
       
-    document.getElementById('toggleQueueBtn')?.addEventListener('click', () => {
-      const strip = document.getElementById('promptedSlideStrip');
-      if(!strip.querySelector('.film')){
+          if(!strip.querySelector('.film')){
         detailText.textContent = 'The prompted queue is empty. Double click a slide in the left sidebar to add it.';
         strip.classList.add('hidden');
       } else {
@@ -1861,9 +1965,7 @@ Closing blessing</textarea></div>
       document.getElementById('toggleQueueBtn').textContent = strip.classList.contains('hidden') ? 'Show Prompted Slides' : 'Hide Prompted Slides';
     });
 
-    document.getElementById('clearQueueBtn')?.addEventListener('click', () => {
-      const strip = document.getElementById('promptedSlideStrip');
-      strip.innerHTML = '';
+          strip.innerHTML = '';
       ensurePromptedStripVisibility();
       detailText.textContent = 'Prompted queue cleared.';
     });
@@ -2325,5 +2427,504 @@ document.addEventListener('DOMContentLoaded', function () {
 .left-body{overflow-y:auto !important;overflow-x:hidden !important}
 </style>
 
+
+  <div id="projectorFullscreenOverlay" aria-hidden="true">
+    <button id="closeProjectorFsBtn" class="fs-close-btn" type="button">Exit Fullscreen</button>
+    <div class="fs-help">Esc to exit • Arrow keys to move slides</div>
+    <div id="projectorFullscreenSurface">
+      <div id="fsMainScreen"></div>
+    </div>
+  </div>
+
+
+<script>
+(function(){
+  function syncProjectorToFullscreen(){
+    const main = document.getElementById('mainScreen');
+    const fs = document.getElementById('fsMainScreen');
+    if(!main || !fs) return;
+
+    fs.className = main.className;
+    fs.style.cssText = main.style.cssText + ';width:100%;height:100%;min-height:100%;display:block;';
+    fs.innerHTML = main.innerHTML;
+
+    // remove buttons copied into fullscreen if any
+    fs.querySelectorAll('.projector-fs-btn,.fs-close-btn,.fs-help').forEach(el => el.remove());
+
+    // ensure fullscreen surface fills
+    const overlayText = fs.querySelector('#overlayText');
+    if(overlayText){
+      overlayText.style.display = 'block';
+      overlayText.style.visibility = 'visible';
+    }
+    const videoBar = fs.querySelector('.video-bar');
+    if(videoBar){
+      videoBar.style.display = 'none';
+    }
+  }
+
+  async function enterBrowserFullscreen(el){
+    try{
+      if(el.requestFullscreen) await el.requestFullscreen();
+      else if(el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+      else if(el.msRequestFullscreen) await el.msRequestFullscreen();
+    }catch(e){
+      console.error('Fullscreen request failed', e);
+    }
+  }
+
+  async function exitBrowserFullscreen(){
+    try{
+      if(document.fullscreenElement && document.exitFullscreen) await document.exitFullscreen();
+      else if(document.webkitFullscreenElement && document.webkitExitFullscreen) await document.webkitExitFullscreen();
+      else if(document.msFullscreenElement && document.msExitFullscreen) await document.msExitFullscreen();
+    }catch(e){
+      console.error('Exit fullscreen failed', e);
+    }
+  }
+
+  function openProjectorFullscreen(){
+    const overlay = document.getElementById('projectorFullscreenOverlay');
+    const surface = document.getElementById('projectorFullscreenSurface');
+    if(!overlay || !surface) return;
+    syncProjectorToFullscreen();
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden', 'false');
+    enterBrowserFullscreen(surface);
+  }
+
+  function closeProjectorFullscreen(){
+    const overlay = document.getElementById('projectorFullscreenOverlay');
+    if(!overlay) return;
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden', 'true');
+    exitBrowserFullscreen();
+  }
+
+  function bindFullscreenControls(){
+    const openBtn = document.getElementById('openProjectorFsBtn');
+    const closeBtn = document.getElementById('closeProjectorFsBtn');
+    if(openBtn){
+      openBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        openProjectorFullscreen();
+      });
+    }
+    if(closeBtn){
+      closeBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        closeProjectorFullscreen();
+      });
+    }
+
+    document.addEventListener('keydown', function(e){
+      const overlay = document.getElementById('projectorFullscreenOverlay');
+      const isOpen = overlay && overlay.classList.contains('active');
+      if(e.key === 'Escape' && isOpen){
+        closeProjectorFullscreen();
+      }
+      if((e.key === 'ArrowDown' || e.key === 'ArrowRight') && isOpen){
+        const slides = Array.from(document.querySelectorAll('.slide-item'));
+        const current = document.querySelector('.slide-item.active');
+        const idx = Math.max(0, slides.indexOf(current));
+        const next = slides[Math.min(slides.length - 1, idx + 1)];
+        if(next) {
+          next.click();
+          setTimeout(syncProjectorToFullscreen, 30);
+        }
+      }
+      if((e.key === 'ArrowUp' || e.key === 'ArrowLeft') && isOpen){
+        const slides = Array.from(document.querySelectorAll('.slide-item'));
+        const current = document.querySelector('.slide-item.active');
+        const idx = Math.max(0, slides.indexOf(current));
+        const prev = slides[Math.max(0, idx - 1)];
+        if(prev) {
+          prev.click();
+          setTimeout(syncProjectorToFullscreen, 30);
+        }
+      }
+    });
+
+    document.addEventListener('fullscreenchange', function(){
+      const overlay = document.getElementById('projectorFullscreenOverlay');
+      if(overlay && overlay.classList.contains('active')){
+        syncProjectorToFullscreen();
+      }
+    });
+
+    // keep fullscreen projector synced whenever slides change
+    const obsTarget = document.getElementById('mainScreen');
+    if(obsTarget){
+      const obs = new MutationObserver(function(){
+        const overlay = document.getElementById('projectorFullscreenOverlay');
+        if(overlay && overlay.classList.contains('active')){
+          syncProjectorToFullscreen();
+        }
+      });
+      obs.observe(obsTarget, {childList:true, subtree:true, attributes:true, characterData:true});
+    }
+
+    document.querySelectorAll('.slide-item').forEach(item => {
+      item.addEventListener('click', function(){
+        const overlay = document.getElementById('projectorFullscreenOverlay');
+        if(overlay && overlay.classList.contains('active')){
+          setTimeout(syncProjectorToFullscreen, 40);
+        }
+      });
+    });
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', bindFullscreenControls);
+  } else {
+    bindFullscreenControls();
+  }
+})();
+</script>
+
+
+<script>
+(function(){
+  const q = (s,r=document)=>r.querySelector(s);
+  const qa = (s,r=document)=>Array.from(r.querySelectorAll(s));
+
+  function forceDisplayPanel(){
+    const projector = q('#projectorPreview');
+    const screen = q('#mainScreen');
+    const overlay = q('#overlayText');
+    if(projector){
+      projector.style.display = 'block';
+      projector.classList.add('active');
+    }
+    if(screen){
+      screen.style.display = 'block';
+      screen.style.visibility = 'visible';
+      screen.style.minHeight = '560px';
+    }
+    if(overlay){
+      overlay.style.display = 'block';
+      overlay.style.visibility = 'visible';
+    }
+  }
+
+  function hardActivatePreview(id){
+    qa('.preview-tab').forEach(tab=>{
+      tab.classList.toggle('active', tab.dataset.preview === id);
+    });
+    ['projector','confidence','notes','signals'].forEach(name=>{
+      const pane = q('#'+name+'Preview');
+      if(!pane) return;
+      const on = name === id;
+      pane.style.display = on ? 'block' : 'none';
+      pane.classList.toggle('active', on);
+    });
+    if(id === 'projector') forceDisplayPanel();
+  }
+
+  function hardActivateMenu(menuId){
+    qa('.menu-btn').forEach(btn=>{
+      btn.classList.toggle('active', btn.dataset.menu === menuId);
+    });
+    qa('.menu-pane').forEach(pane=>{
+      const on = pane.id === menuId;
+      pane.style.display = on ? 'block' : 'none';
+      pane.classList.toggle('active', on);
+    });
+
+    const title = q('#centerPanelTitle');
+    const activeBtn = q('.menu-btn.active');
+    if(title && activeBtn) title.textContent = activeBtn.textContent.trim() + ' Menu';
+
+    const main = q('#menuMain');
+    const details = q('#menuDetails');
+    if(main){ main.style.display = 'block'; main.classList.add('active'); }
+    if(details){ details.style.display = 'none'; details.classList.remove('active'); }
+    qa('.subtab').forEach((tab,i)=>tab.classList.toggle('active', i===0));
+  }
+
+  function showSlide(item){
+    if(!item) return;
+    const title = (item.dataset.title || item.querySelector('.slide-meta b')?.textContent || 'Slide').trim();
+    const body = item.dataset.body || '';
+    const style = item.dataset.style || 'blue';
+
+    try{
+      if(typeof applyStyle === 'function'){
+        applyStyle(style, title, body);
+      }
+    }catch(e){
+      console.error(e);
+    }
+
+    forceDisplayPanel();
+    hardActivatePreview('projector');
+
+    const titleEl = q('#overlayTitle');
+    const bodyEl = q('#overlayBody');
+    const overlay = q('#overlayText');
+    const centerOverlay = q('#centerOverlay');
+    if(titleEl) titleEl.textContent = title;
+    if(bodyEl) bodyEl.innerHTML = body;
+    if(overlay){ overlay.style.display = 'block'; overlay.style.visibility = 'visible'; }
+    if(centerOverlay) centerOverlay.style.display = (title || body) ? 'none' : 'grid';
+
+    qa('.slide-item').forEach(s=>s.classList.remove('active'));
+    item.classList.add('active');
+  }
+
+  function bindMenus(){
+    qa('.menu-btn').forEach(btn=>{
+      btn.onclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        hardActivateMenu(btn.dataset.menu);
+      };
+    });
+
+    qa('.subtab').forEach(tab=>{
+      tab.onclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        qa('.subtab').forEach(t=>t.classList.remove('active'));
+        tab.classList.add('active');
+        qa('.subpane').forEach(p=>{
+          p.style.display = 'none';
+          p.classList.remove('active');
+        });
+        const target = q('#'+tab.dataset.subpane);
+        if(target){
+          target.style.display = 'block';
+          target.classList.add('active');
+        }
+      };
+    });
+
+    qa('.preview-tab').forEach(tab=>{
+      tab.onclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        hardActivatePreview(tab.dataset.preview);
+      };
+    });
+
+    qa('.settings-tab').forEach(tab=>{
+      tab.onclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        const wrapper = tab.closest('.menu-pane');
+        if(!wrapper) return;
+        qa('.settings-tab', wrapper).forEach(t=>t.classList.remove('active'));
+        qa('.settings-pane', wrapper).forEach(p=>{
+          p.style.display = 'none';
+          p.classList.remove('active');
+        });
+        tab.classList.add('active');
+        const target = q('#'+tab.dataset.pane);
+        if(target){
+          target.style.display = 'block';
+          target.classList.add('active');
+        }
+      };
+    });
+  }
+
+  function bindSlides(){
+    qa('.slide-item').forEach(item=>{
+      if(item.dataset.repairedClick === '1') return;
+      item.dataset.repairedClick = '1';
+
+      item.onclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        showSlide(item);
+      };
+
+      item.ondblclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        showSlide(item);
+      };
+    });
+  }
+
+  function bindTopRight(){
+    qa('.top-control-panel').forEach(p=>{
+      p.style.zIndex = '99999';
+    });
+
+    const pairs = [
+      ['undoTopBtn','undoTopPanel'],
+      ['redoTopBtn','redoTopPanel'],
+      ['teamTopBtn','teamTopPanel'],
+      ['recordingsTopBtn','recordingsTopPanel'],
+      ['onAirBtn','onAirPanel']
+    ];
+
+    pairs.forEach(([btnId,panelId])=>{
+      const btn = q('#'+btnId);
+      const panel = q('#'+panelId);
+      if(!btn || !panel) return;
+      btn.onclick = (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        qa('.top-control-panel').forEach(p=>{
+          if(p !== panel) p.classList.remove('active');
+        });
+        panel.classList.toggle('active');
+        panel.style.display = panel.classList.contains('active') ? 'block' : '';
+      };
+    });
+
+    document.addEventListener('click', (e)=>{
+      if(!e.target.closest('.top-control')){
+        qa('.top-control-panel').forEach(p=>p.classList.remove('active'));
+      }
+    });
+  }
+
+  function ensureLeftScroll(){
+    const left = q('.left-body');
+    if(left){
+      left.style.overflowY = 'auto';
+      left.style.overflowX = 'hidden';
+      left.style.maxHeight = '100%';
+    }
+  }
+
+  function initRepair(){
+    bindMenus();
+    bindSlides();
+    bindTopRight();
+    ensureLeftScroll();
+    forceDisplayPanel();
+
+    const first = q('#serviceSlideList .slide-item') || q('#preServiceSlideList .slide-item') || q('#warmupSlideList .slide-item') || q('.slide-item');
+    if(first) showSlide(first);
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initRepair);
+  } else {
+    initRepair();
+  }
+
+  const obs = new MutationObserver(()=>{
+    bindMenus();
+    bindSlides();
+    bindTopRight();
+    ensureLeftScroll();
+  });
+  obs.observe(document.body, {subtree:true, childList:true});
+})();
+</script>
+<style>
+.topbar,.top-actions,.top-control,.panel,.settings-body,.preview-body{overflow:visible !important}
+.top-control-panel,.popup-panel{z-index:99999 !important}
+#projectorPreview,#projectorPreview.active{display:block !important}
+#mainScreen{display:block !important;visibility:visible !important;min-height:560px !important}
+.left-body{overflow-y:auto !important;overflow-x:hidden !important}
+</style>
+
+<script>
+    const tenziLanguageLibrary = {
+      swahili: {
+        "Nifunze Kuomba": {title:"Nifunze Kuomba", lyrics:"Nifunze kuomba Bwana\nNikaribie kiti cha neema."},
+        "Mungu Yu Mwema": {title:"Mungu Yu Mwema", lyrics:"Mungu yu mwema siku zote\nNa rehema zake zadumu."},
+        "Twende Mbele": {title:"Twende Mbele", lyrics:"Twende mbele kwa imani\nBwana atatuongoza."}
+      },
+      kirundi: {
+        "Nifunze Kuomba": {title:"Ntohoza Gusenga", lyrics:"Ntohoza gusenga Mwami\nNyegere intebe y'ubuntu."},
+        "Mungu Yu Mwema": {title:"Imana Ni Nziza", lyrics:"Imana ni nziza iminsi yose\nKandi ubuntu bwayo buragumaho."},
+        "Twende Mbele": {title:"Dutere Imbere", lyrics:"Dutere imbere mu kwizera\nUmwami azotuyobora."}
+      },
+      kinyarwanda: {
+        "Nifunze Kuomba": {title:"Nyigisha Gusenga", lyrics:"Nyigisha gusenga Mwami\nNiyegere intebe y'ubuntu."},
+        "Mungu Yu Mwema": {title:"Imana Ni Nziza", lyrics:"Imana ni nziza ibihe byose\nKandi imbabazi zayo zihoraho."},
+        "Twende Mbele": {title:"Dukomeze Imbere", lyrics:"Dukomeze imbere mu kwizera\nUwiteka azatuyobora."}
+      }
+    };
+
+    function renderBibleExtended(mode){
+      const ref = document.getElementById('bibleRef').value.trim() || 'Genesis 1:1';
+      const eng = document.getElementById('englishVerse').value.trim();
+      const swa = document.getElementById('swahiliVerse').value.trim();
+      const kir = document.getElementById('kirundiVerse').value.trim();
+      const kin = document.getElementById('kinyarwandaVerse').value.trim();
+
+      applyStyle('bible', ref, '');
+      overlayTitle.textContent = ref;
+      overlayBody.style.display = 'none';
+
+      if(mode === 'english'){
+        bilingualGrid.style.display = 'block';
+        bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+eng+'</div></div>';
+      } else if(mode === 'swahili'){
+        bilingualGrid.style.display = 'block';
+        bilingualGrid.innerHTML = '<div><strong>Swahili</strong><div style="margin-top:6px">'+swa+'</div></div>';
+      } else if(mode === 'kirundi'){
+        bilingualGrid.style.display = 'block';
+        bilingualGrid.innerHTML = '<div><strong>Kirundi</strong><div style="margin-top:6px">'+kir+'</div></div>';
+      } else if(mode === 'kinyarwanda'){
+        bilingualGrid.style.display = 'block';
+        bilingualGrid.innerHTML = '<div><strong>Kinyarwanda</strong><div style="margin-top:6px">'+kin+'</div></div>';
+      } else if(mode === 'multi'){
+        bilingualGrid.style.display = 'grid';
+        bilingualGrid.style.gridTemplateColumns = '1fr 1fr';
+        bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+eng+'</div></div><div><strong>Swahili</strong><div style="margin-top:6px">'+swa+'</div></div><div><strong>Kirundi</strong><div style="margin-top:6px">'+kir+'</div></div><div><strong>Kinyarwanda</strong><div style="margin-top:6px">'+kin+'</div></div>';
+      } else {
+        bilingualGrid.style.display = 'grid';
+        bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+eng+'</div></div><div><strong>Swahili</strong><div style="margin-top:6px">'+swa+'</div></div>';
+      }
+      activatePreview('projector');
+    }
+
+    document.getElementById('showEnglishBtn')?.addEventListener('click', () => renderBibleExtended('english'));
+    document.getElementById('showSwahiliBtn')?.addEventListener('click', () => renderBibleExtended('swahili'));
+    document.getElementById('showBilingualBtn')?.addEventListener('click', () => renderBibleExtended('bilingual'));
+    document.getElementById('showKirundiBtn')?.addEventListener('click', () => renderBibleExtended('kirundi'));
+    document.getElementById('showKinyarwandaBtn')?.addEventListener('click', () => renderBibleExtended('kinyarwanda'));
+    document.getElementById('showMultiBibleBtn')?.addEventListener('click', () => renderBibleExtended('multi'));
+
+    document.getElementById('tenziLanguage')?.addEventListener('change', () => {
+      const lang = document.getElementById('tenziLanguage').value;
+      const selected = document.getElementById('tenziSelect').value.split('|')[0];
+      const entry = tenziLanguageLibrary[lang]?.[selected];
+      if(entry){
+        document.getElementById('tenziTitle').value = entry.title;
+        document.getElementById('tenziLyrics').value = entry.lyrics;
+      }
+    });
+
+    document.getElementById('tenziSelect')?.addEventListener('change', () => {
+      const lang = document.getElementById('tenziLanguage')?.value || 'swahili';
+      const selected = document.getElementById('tenziSelect').value.split('|')[0];
+      const entry = tenziLanguageLibrary[lang]?.[selected];
+      if(entry){
+        document.getElementById('tenziTitle').value = entry.title;
+        document.getElementById('tenziLyrics').value = entry.lyrics;
+      }
+    });
+</script>
+<script>
+// Ensure primary bible mode supports Kirundi & Kinyarwanda
+function applyPrimaryBibleMode(mode){
+  const eng = document.getElementById('englishVerse')?.value || '';
+  const swa = document.getElementById('swahiliVerse')?.value || '';
+  const kir = document.getElementById('kirundiVerse')?.value || '';
+  const kin = document.getElementById('kinyarwandaVerse')?.value || '';
+
+  let content = '';
+  if(mode === 'english') content = eng;
+  else if(mode === 'swahili') content = swa;
+  else if(mode === 'kirundi') content = kir;
+  else if(mode === 'kinyarwanda') content = kin;
+  else content = eng;
+
+  const display = document.getElementById('projectorPreview') || document.getElementById('mainScreen');
+  if(display) display.innerText = content;
+}
+</script>
 </body>
 </html>

@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,168 +7,81 @@
   <title>ChurchFlow AI — Clickable Proclaim-style Frontend</title>
   <style>
     :root{
-      --bg:#2d2c39;
-      --panel:#2b2a3a;
-      --line:#4a4858;
-      --text:#f0f0f5;
-      --muted:#b8b7c5;
-      --accent:#9ac6ff;
-      --accent-2:#ffd85e;
-      --green:#60d394;
-      --sidebar:#313041;
-      --shadow:0 10px 30px rgba(0,0,0,.24);
+      --bg:#2d2c39;--panel:#2b2a3a;--line:#4a4858;--text:#f0f0f5;--muted:#b8b7c5;
+      --green:#60d394;--shadow:0 10px 30px rgba(0,0,0,.24)
     }
-    *{box-sizing:border-box}
-    html,body{margin:0;height:100%;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
-    body{overflow:hidden}
-    button,input,select,textarea{font:inherit}
+    *{box-sizing:border-box} html,body{margin:0;height:100%;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    body{overflow:hidden} button,input,select,textarea{font:inherit}
     .app{display:grid;grid-template-rows:50px 28px 1fr 150px;height:100vh}
-    .topbar{
-      background:#4b4958;border-bottom:1px solid #5e5c6a;
-      display:flex;align-items:center;justify-content:space-between;padding:0 12px;gap:14px
-    }
+    .topbar{background:#4b4958;border-bottom:1px solid #5e5c6a;display:flex;align-items:center;justify-content:space-between;padding:0 12px;gap:14px}
     .menu,.top-actions{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
-    .menu button,.top-actions button,.toggle-wrap,.status-pill{
-      background:transparent;border:0;color:#f6f6fa;padding:10px 12px;cursor:pointer
-    }
+    .menu button,.top-actions button,.toggle-wrap,.status-pill{background:transparent;border:0;color:#f6f6fa;padding:10px 12px;cursor:pointer}
     .menu button:hover,.menu button.active,.top-actions button:hover{background:rgba(255,255,255,.08)}
     .toggle-wrap{display:flex;align-items:center;gap:10px;color:#fff}
     .switch{width:48px;height:24px;border-radius:999px;background:#1c1b22;position:relative;border:1px solid rgba(255,255,255,.18)}
     .switch::after{content:"";width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;left:3px;top:2px}
-    .status-pill{padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.18);font-weight:700}
-    .status-pill.live{background:#59525f}
+    .status-pill{padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.18);font-weight:700}.status-pill.live{background:#59525f}
     .light{width:11px;height:11px;border-radius:50%;background:var(--green);display:inline-block;margin-right:8px;box-shadow:0 0 0 4px rgba(96,211,148,.18)}
     .update-bar{background:#a8d2f3;color:#25435d;font-weight:600;display:flex;align-items:center;justify-content:center;position:relative}
     .update-bar .close{position:absolute;right:10px;top:4px;background:transparent;border:0;font-size:18px;color:#547896;cursor:pointer}
-
     .workspace{display:grid;grid-template-columns:290px 330px 1fr;min-height:0;background:var(--bg)}
-    .panel{border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column;background:var(--panel)}
-    .panel:last-child{border-right:0}
-    .panel-head{
-      min-height:40px;padding:8px 10px;border-bottom:1px solid var(--line);
-      display:flex;align-items:center;justify-content:space-between;gap:8px;background:#2d2c3d
-    }
+    .panel{border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column;background:var(--panel)} .panel:last-child{border-right:0}
+    .panel-head{min-height:40px;padding:8px 10px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px;background:#2d2c3d}
     .panel-head h3{margin:0;font-size:14px;font-weight:600}
     .mini-btn{border:1px solid #676577;background:#403f4f;color:#fff;border-radius:4px;padding:6px 9px;cursor:pointer}
     .mini-btn:hover,.mini-btn.active{background:#4a495b}
-    .dropdown{width:100%;padding:8px 10px;background:#555462;border:1px solid #696776;color:#fff;border-radius:3px}
     .left-body,.settings-body,.preview-body{padding:8px;overflow:auto}
-    .presentation-card,.view-card{
-      background:#292838;border:1px solid #3c3b4b;color:#f4f4f8;padding:8px 10px;border-radius:2px;font-size:13px
-    }
+    .presentation-card,.view-card{background:#292838;border:1px solid #3c3b4b;color:#f4f4f8;padding:8px 10px;border-radius:2px;font-size:13px}
     .view-card{margin-bottom:10px}
     .old-warning{margin-top:10px;background:#b3d7f3;color:#3a617e;padding:12px;border-radius:2px;line-height:1.35}
-    .group-title{
-      margin:14px -8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-      padding:8px 10px;font-size:12px;color:#ddd;text-transform:uppercase;background:#353444;font-weight:700
-    }
+    .group-title{margin:14px -8px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px 10px;font-size:12px;color:#ddd;text-transform:uppercase;background:#353444;font-weight:700}
     .slide-list{padding:6px 0}
-    .slide-item{
-      display:grid;grid-template-columns:38px 1fr 18px;gap:9px;align-items:center;
-      padding:6px 8px;cursor:pointer;border-left:3px solid transparent
-    }
+    .slide-item{display:grid;grid-template-columns:38px 1fr 18px;gap:9px;align-items:center;padding:6px 8px;cursor:pointer;border-left:3px solid transparent}
     .slide-item:hover,.slide-item.active{background:#3a3949;border-left-color:#ffdc5c}
     .thumb-sm{height:22px;border-radius:2px;background:linear-gradient(135deg,#76b8ff,#d0ecff);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16)}
-    .thumb-sm.purple{background:linear-gradient(135deg,#781aff,#ff5e9a)}
-    .thumb-sm.gold{background:linear-gradient(135deg,#c68a1d,#f7e4a0)}
-    .thumb-sm.blue{background:linear-gradient(135deg,#d7f3ff,#6ecbff)}
-    .thumb-sm.teal{background:linear-gradient(135deg,#0aa5c0,#8bf0ff)}
+    .thumb-sm.purple{background:linear-gradient(135deg,#781aff,#ff5e9a)} .thumb-sm.gold{background:linear-gradient(135deg,#c68a1d,#f7e4a0)}
+    .thumb-sm.blue{background:linear-gradient(135deg,#d7f3ff,#6ecbff)} .thumb-sm.teal{background:linear-gradient(135deg,#0aa5c0,#8bf0ff)}
     .thumb-sm.green{background:linear-gradient(135deg,#26705b,#63d39a)}
-    .slide-meta b{display:block;font-weight:600}
-    .slide-meta span{font-size:12px;color:var(--muted)}
-    .play-dot{width:12px;height:12px;border-radius:50%;background:#4f8dfd;position:relative}
-    .play-dot::after{content:"";position:absolute;left:4px;top:2px;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid #fff}
-
-    .settings-tabs,.preview-tabs,.subtabs{
-      display:flex;gap:0;border-bottom:1px solid var(--line);background:#302f40;overflow:auto
-    }
-    .settings-tab,.preview-tab,.subtab{
-      padding:10px 8px;font-size:12px;text-align:center;cursor:pointer;border-right:1px solid var(--line);color:#d0cedb;white-space:nowrap
-    }
+    .slide-meta b{display:block;font-weight:600}.slide-meta span{font-size:12px;color:var(--muted)}
+    .play-dot{width:12px;height:12px;border-radius:50%;background:#4f8dfd;position:relative}.play-dot::after{content:"";position:absolute;left:4px;top:2px;border-top:4px solid transparent;border-bottom:4px solid transparent;border-left:5px solid #fff}
+    .settings-tabs,.preview-tabs,.subtabs{display:flex;gap:0;border-bottom:1px solid var(--line);background:#302f40;overflow:auto}
+    .settings-tab,.preview-tab,.subtab{padding:10px 8px;font-size:12px;text-align:center;cursor:pointer;border-right:1px solid var(--line);color:#d0cedb;white-space:nowrap}
     .settings-tab.active,.preview-tab.active,.subtab.active{background:#3a3949;color:#ffe66d;font-weight:700}
-    .settings-pane,.menu-pane,.subpane{display:none}
-    .settings-pane.active,.menu-pane.active,.subpane.active{display:block}
-    .field{margin-top:10px}
-    .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
-    .field input,.field textarea,.field select{
-      width:100%;padding:9px 10px;background:#4d4b5a;color:#fff;border:1px solid #696776;border-radius:3px
-    }
+    .settings-pane,.menu-pane,.subpane,.preview-pane{display:none}.settings-pane.active,.menu-pane.active,.subpane.active,.preview-pane.active{display:block}
+    .field{margin-top:10px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+    .field input,.field textarea,.field select{width:100%;padding:9px 10px;background:#4d4b5a;color:#fff;border:1px solid #696776;border-radius:3px}
     .field textarea{min-height:92px;resize:vertical}
     .small-actions,.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
     .chip{font-size:11px;padding:6px 8px;border-radius:999px;background:#3e4e67;border:1px solid #5a7493;color:#dce9f9}
-    .note-shot{
-      margin-top:12px;border:1px solid #6c6a79;background:#ede4cd;color:#2b2619;border-radius:4px;padding:12px;min-height:150px;position:relative;line-height:1.7;
-      background-image:linear-gradient(to bottom, rgba(60,90,160,.08) 1px, transparent 1px);background-size:100% 28px;
-    }
-    .note-shot::before{content:"";position:absolute;top:0;bottom:0;left:44px;width:2px;background:rgba(194,67,67,.2)}
-    .note-shot p{margin:0;padding-left:56px}
+    .note-shot{margin-top:12px;border:1px solid #6c6a79;background:#ede4cd;color:#2b2619;border-radius:4px;padding:12px;min-height:150px;position:relative;line-height:1.7;background-image:linear-gradient(to bottom, rgba(60,90,160,.08) 1px, transparent 1px);background-size:100% 28px}
+    .note-shot::before{content:"";position:absolute;top:0;bottom:0;left:44px;width:2px;background:rgba(194,67,67,.2)} .note-shot p{margin:0;padding-left:56px}
     .editor-block,.info-block{margin-top:12px;background:#343344;border:1px solid #595767;border-radius:4px;padding:10px}
-    .slide-card{padding:10px;border:1px solid #595767;border-radius:4px;background:#3c3b4a;margin-top:8px}
-    .slide-card h4{margin:0 0 6px;font-size:13px}
+    .slide-card{padding:10px;border:1px solid #595767;border-radius:4px;background:#3c3b4a;margin-top:8px}.slide-card h4{margin:0 0 6px;font-size:13px}
     .slide-card p,.info-block p{margin:0;color:var(--muted);font-size:12px;line-height:1.45}
-    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .info-tile{background:#3c3b4a;border:1px solid #595767;border-radius:4px;padding:10px}
-    .info-tile strong{display:block;margin-bottom:6px}
-
-    .preview-body{display:flex;flex-direction:column}
-    .stage{flex:1;background:#2c2b3a;padding:10px;display:flex;flex-direction:column;min-height:0}
-    .screen{
-      flex:1;border:1px solid #3f4f66;background:
-        radial-gradient(circle at top center, rgba(255,255,255,.58), transparent 24%),
-        radial-gradient(circle at 78% 22%, rgba(255,255,255,.28), transparent 16%),
-        radial-gradient(circle at 22% 72%, rgba(255,255,255,.16), transparent 14%),
-        linear-gradient(180deg, #5c90c9 0%, #9ed0ff 28%, #7db8e6 56%, #e8d6d3 77%, #f4e8ee 100%);
-      position:relative;overflow:hidden;box-shadow:var(--shadow);
-    }
-    .cloud{position:absolute;border-radius:50%;background:rgba(255,255,255,.84);filter:blur(1px)}
-    .cloud.one{width:230px;height:96px;left:220px;top:130px}
-    .cloud.two{width:160px;height:74px;right:170px;top:92px}
-    .cloud.three{width:250px;height:110px;right:70px;bottom:40px}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.info-tile{background:#3c3b4a;border:1px solid #595767;border-radius:4px;padding:10px}.info-tile strong{display:block;margin-bottom:6px}
+    .preview-body{display:flex;flex-direction:column}.stage{flex:1;background:#2c2b3a;padding:10px;display:flex;flex-direction:column;min-height:0}
+    .screen{flex:1;border:1px solid #3f4f66;background:radial-gradient(circle at top center, rgba(255,255,255,.58), transparent 24%),radial-gradient(circle at 78% 22%, rgba(255,255,255,.28), transparent 16%),radial-gradient(circle at 22% 72%, rgba(255,255,255,.16), transparent 14%),linear-gradient(180deg, #5c90c9 0%, #9ed0ff 28%, #7db8e6 56%, #e8d6d3 77%, #f4e8ee 100%);position:relative;overflow:hidden;box-shadow:var(--shadow)}
+    .cloud{position:absolute;border-radius:50%;background:rgba(255,255,255,.84);filter:blur(1px)} .cloud.one{width:230px;height:96px;left:220px;top:130px}
+    .cloud.two{width:160px;height:74px;right:170px;top:92px}.cloud.three{width:250px;height:110px;right:70px;bottom:40px}
     .ray{position:absolute;left:50%;top:0;transform-origin:top center;background:linear-gradient(180deg, rgba(255,255,255,.55), transparent);width:20px;height:480px;filter:blur(1px);opacity:.62}
-    .ray.r1{transform:translateX(-180px) rotate(8deg)}
-    .ray.r2{transform:translateX(-95px) rotate(-6deg)}
-    .ray.r3{transform:translateX(8px) rotate(3deg)}
-    .ray.r4{transform:translateX(105px) rotate(-12deg)}
-    .ray.r5{transform:translateX(185px) rotate(11deg)}
-    .play-overlay{position:absolute;inset:0;display:grid;place-items:center}
-    .play-btn{width:70px;height:62px;border-radius:12px;background:rgba(70,92,122,.45);display:grid;place-items:center;backdrop-filter:blur(3px)}
+    .ray.r1{transform:translateX(-180px) rotate(8deg)} .ray.r2{transform:translateX(-95px) rotate(-6deg)} .ray.r3{transform:translateX(8px) rotate(3deg)}
+    .ray.r4{transform:translateX(105px) rotate(-12deg)} .ray.r5{transform:translateX(185px) rotate(11deg)}
+    .play-overlay{position:absolute;inset:0;display:grid;place-items:center}.play-btn{width:70px;height:62px;border-radius:12px;background:rgba(70,92,122,.45);display:grid;place-items:center;backdrop-filter:blur(3px)}
     .play-btn::after{content:"";border-top:12px solid transparent;border-bottom:12px solid transparent;border-left:18px solid #fff;margin-left:5px}
-    .overlay-text{position:absolute;left:60px;right:60px;bottom:62px;text-align:center;display:none}
-    .overlay-text h1{margin:0 0 10px;font-size:46px;text-shadow:0 2px 15px rgba(0,0,0,.45)}
+    .overlay-text{position:absolute;left:60px;right:60px;bottom:62px;text-align:center;display:none}.overlay-text h1{margin:0 0 10px;font-size:46px;text-shadow:0 2px 15px rgba(0,0,0,.45)}
     .overlay-text p{margin:0;font-size:22px;line-height:1.45;text-shadow:0 2px 15px rgba(0,0,0,.45)}
-    .bilingual-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;text-align:left}
-    .bilingual-grid div{background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.14);padding:12px;border-radius:4px}
-    .video-bar{position:absolute;left:0;right:0;bottom:0;height:22px;background:rgba(48,53,68,.55);display:flex;align-items:center;padding:0 8px;gap:10px}
-    .video-progress{flex:1;height:4px;background:rgba(255,255,255,.28);border-radius:999px;position:relative}
-    .video-progress span{position:absolute;left:0;top:0;bottom:0;width:87%;background:#75b7ff;border-radius:999px}
-    .video-time{font-size:12px;color:#ddd}
-
+    .bilingual-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px;text-align:left}.bilingual-grid div{background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.14);padding:12px;border-radius:4px}
+    .video-bar{position:absolute;left:0;right:0;bottom:0;height:22px;background:rgba(48,53,68,.55);display:flex;align-items:center;padding:0 8px;gap:10px}.video-progress{flex:1;height:4px;background:rgba(255,255,255,.28);border-radius:999px;position:relative}
+    .video-progress span{position:absolute;left:0;top:0;bottom:0;width:87%;background:#75b7ff;border-radius:999px}.video-time{font-size:12px;color:#ddd}
     .strip{border-top:1px solid var(--line);background:#43414f;display:flex;overflow:auto;gap:8px;padding:8px}
-    .film{min-width:170px;max-width:170px;border-radius:2px;cursor:pointer}
-    .film.active .film-label{color:#ffe66d}
-    .film-label{font-size:13px;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .film-thumb{height:95px;border:1px solid #5c5968;border-radius:2px;position:relative;overflow:hidden}
-    .film-thumb.blue{background:linear-gradient(135deg,#9fd8ff,#5ea6df)}
-    .film-thumb.welcome{background:linear-gradient(135deg,#871cff,#ff6aaa)}
-    .film-thumb.form{background:linear-gradient(135deg,#0e1146,#3039af)}
-    .film-thumb.cross{background:linear-gradient(180deg,#f9c874,#fff3d2 50%,#f4e8d8)}
-    .film-thumb.teal{background:linear-gradient(135deg,#1db5d8,#6be8ff)}
-    .film-thumb.sky{background:radial-gradient(circle at top center, rgba(255,255,255,.55), transparent 25%), linear-gradient(180deg,#6195c8 0,#a1d4ff 33%,#8ac1ea 66%,#f8eef1 100%)}
-    .film-thumb.green{background:linear-gradient(135deg,#26705b,#63d39a)}
-    .film-thumb::after{content:"";position:absolute;inset:auto 10px 10px auto;width:28px;height:28px;border-radius:6px;background:rgba(200,200,220,.55)}
-
-    @media (max-width:1250px){
-      body{overflow:auto}
-      .app{height:auto;min-height:100vh;grid-template-rows:50px 28px auto 150px}
-      .workspace{grid-template-columns:1fr}
-      .panel{min-height:320px;border-right:0;border-bottom:1px solid var(--line)}
-    }
-    @media (max-width:700px){
-      .bilingual-grid,.info-grid{grid-template-columns:1fr}
-      .overlay-text{left:20px;right:20px}
-      .overlay-text h1{font-size:28px}
-      .overlay-text p{font-size:16px}
-    }
+    .film{min-width:170px;max-width:170px;border-radius:2px;cursor:pointer}.film.active .film-label{color:#ffe66d}
+    .film-label{font-size:13px;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.film-thumb{height:95px;border:1px solid #5c5968;border-radius:2px;position:relative;overflow:hidden}
+    .film-thumb.blue{background:linear-gradient(135deg,#9fd8ff,#5ea6df)} .film-thumb.welcome{background:linear-gradient(135deg,#871cff,#ff6aaa)}
+    .film-thumb.form{background:linear-gradient(135deg,#0e1146,#3039af)} .film-thumb.cross{background:linear-gradient(180deg,#f9c874,#fff3d2 50%,#f4e8d8)}
+    .film-thumb.teal{background:linear-gradient(135deg,#1db5d8,#6be8ff)} .film-thumb.sky{background:radial-gradient(circle at top center, rgba(255,255,255,.55), transparent 25%), linear-gradient(180deg,#6195c8 0,#a1d4ff 33%,#8ac1ea 66%,#f8eef1 100%)}
+    .film-thumb.green{background:linear-gradient(135deg,#26705b,#63d39a)} .film-thumb::after{content:"";position:absolute;inset:auto 10px 10px auto;width:28px;height:28px;border-radius:6px;background:rgba(200,200,220,.55)}
+    @media (max-width:1250px){body{overflow:auto}.app{height:auto;min-height:100vh;grid-template-rows:50px 28px auto 150px}.workspace{grid-template-columns:1fr}.panel{min-height:320px;border-right:0;border-bottom:1px solid var(--line)}}
+    @media (max-width:700px){.bilingual-grid,.info-grid{grid-template-columns:1fr}.overlay-text{left:20px;right:20px}.overlay-text h1{font-size:28px}.overlay-text p{font-size:16px}}
   </style>
 </head>
 <body>
@@ -187,86 +99,32 @@
         <button class="menu-btn" data-menu="helpMenu">Help</button>
       </div>
       <div class="top-actions">
-        <button>↶</button>
-        <button>↷</button>
-        <button>Team ▾</button>
-        <button>🎙 Recordings ▾</button>
-        <div class="toggle-wrap">
-          <strong>EDIT</strong>
-          <div class="switch"></div>
-          <span style="opacity:.75">PREVIEW</span>
-        </div>
-        <div class="status-pill live">ON AIR</div>
-        <div><span class="light"></span></div>
+        <button type="button">↶</button><button type="button">↷</button><button type="button">Team ▾</button><button type="button">🎙 Recordings ▾</button>
+        <div class="toggle-wrap"><strong>EDIT</strong><div class="switch"></div><span style="opacity:.75">PREVIEW</span></div>
+        <div class="status-pill live">ON AIR</div><div><span class="light"></span></div>
       </div>
     </header>
 
-    <div class="update-bar">
-      Every main menu, panel, and section is now clickable so you can explore what is under each item.
-      <button class="close">×</button>
-    </div>
+    <div class="update-bar">Every main menu, panel, and section is now clickable so you can explore what is under each item.<button class="close" type="button">×</button></div>
 
     <div class="workspace">
       <aside class="panel">
-        <div class="panel-head">
-          <h3>Sunday Service 22FEB26 2.0</h3>
-          <button class="mini-btn">⤢</button>
-        </div>
+        <div class="panel-head"><h3>Sunday Service 22FEB26 2.0</h3><button class="mini-btn" type="button">⤢</button></div>
         <div class="left-body">
           <div class="presentation-card">📅 Sunday, March 22 <span style="float:right">Share ▾</span></div>
-          <div class="old-warning">
-            You are editing the weekly service lineup.<br><br>
-            • <strong>Create</strong> a new presentation from scratch<br>
-            • <strong>Duplicate</strong> this presentation and use it as a starting point
-          </div>
-
-          <div class="group-title">Pre-Service Loop</div>
-          <div class="group-title">Warm-Up</div>
-          <div class="group-title">Service <span style="float:right;text-transform:none;font-size:14px">11:00 AM</span></div>
+          <div class="old-warning">You are editing the weekly service lineup.<br><br>• <strong>Create</strong> a new presentation from scratch<br>• <strong>Duplicate</strong> this presentation and use it as a starting point</div>
+          <div class="group-title">Pre-Service Loop</div><div class="group-title">Warm-Up</div><div class="group-title">Service <span style="float:right;text-transform:none;font-size:14px">11:00 AM</span></div>
 
           <div class="slide-list">
-            <div class="slide-item active" data-style="sky" data-title="Levites" data-body="" data-type="Video">
-              <div class="thumb-sm blue"></div>
-              <div class="slide-meta"><b>Levites</b><span>3:12</span></div>
-              <div class="play-dot"></div>
-            </div>
-            <div class="slide-item" data-style="welcome" data-title="WELCOME" data-body="TO MOUNT OF OLIVES MINISTRY" data-type="Graphic">
-              <div class="thumb-sm purple"></div>
-              <div class="slide-meta"><b>Welcome Slide</b><span>Title slide</span></div>
-              <div></div>
-            </div>
-            <div class="slide-item" data-style="blue" data-title="" data-body="" data-type="Background">
-              <div class="thumb-sm blue"></div>
-              <div class="slide-meta"><b>Praise</b><span>Background loop</span></div>
-              <div class="play-dot"></div>
-            </div>
-            <div class="slide-item" data-style="form" data-title="TITHE & OFFERING" data-body="Simple form layout preview" data-type="Form">
-              <div class="thumb-sm gold"></div>
-              <div class="slide-meta"><b>Tithe Form</b><span>Offering input</span></div>
-              <div></div>
-            </div>
-            <div class="slide-item" data-style="cross" data-title="WORSHIP" data-body="Come before the Lord with thanksgiving" data-type="Graphic">
-              <div class="thumb-sm gold"></div>
-              <div class="slide-meta"><b>Worship</b><span>Cross visual</span></div>
-              <div class="play-dot"></div>
-            </div>
-            <div class="slide-item" data-style="teal" data-title="PREACHER" data-body="Speaker introduction slide" data-type="Graphic">
-              <div class="thumb-sm teal"></div>
-              <div class="slide-meta"><b>Preacher</b><span>Speaker slide</span></div>
-              <div class="play-dot"></div>
-            </div>
-            <div class="slide-item" data-style="teal" data-title="SALA YA BABA" data-body="Baba yetu uliye mbinguni, jina lako litukuzwe..." data-type="Lyrics">
-              <div class="thumb-sm teal"></div>
-              <div class="slide-meta"><b>Sala Ya Baba</b><span>Swahili lyrics</span></div>
-              <div></div>
-            </div>
-            <div class="slide-item" data-style="green" data-title="PASTOR NOTE CAPTURE" data-body="Photo note converted into editable sermon slides for the media team." data-type="AI OCR">
-              <div class="thumb-sm green"></div>
-              <div class="slide-meta"><b>Pastor Note Capture</b><span>Photo → slides → team edit</span></div>
-              <div></div>
-            </div>
+            <div class="slide-item active" data-style="sky" data-title="Levites" data-body="" data-type="Video"><div class="thumb-sm blue"></div><div class="slide-meta"><b>Levites</b><span>3:12</span></div><div class="play-dot"></div></div>
+            <div class="slide-item" data-style="welcome" data-title="WELCOME" data-body="TO MOUNT OF OLIVES MINISTRY" data-type="Graphic"><div class="thumb-sm purple"></div><div class="slide-meta"><b>Welcome Slide</b><span>Title slide</span></div><div></div></div>
+            <div class="slide-item" data-style="blue" data-title="" data-body="" data-type="Background"><div class="thumb-sm blue"></div><div class="slide-meta"><b>Praise</b><span>Background loop</span></div><div class="play-dot"></div></div>
+            <div class="slide-item" data-style="form" data-title="TITHE & OFFERING" data-body="Simple form layout preview" data-type="Form"><div class="thumb-sm gold"></div><div class="slide-meta"><b>Tithe Form</b><span>Offering input</span></div><div></div></div>
+            <div class="slide-item" data-style="cross" data-title="WORSHIP" data-body="Come before the Lord with thanksgiving" data-type="Graphic"><div class="thumb-sm gold"></div><div class="slide-meta"><b>Worship</b><span>Cross visual</span></div><div class="play-dot"></div></div>
+            <div class="slide-item" data-style="teal" data-title="PREACHER" data-body="Speaker introduction slide" data-type="Graphic"><div class="thumb-sm teal"></div><div class="slide-meta"><b>Preacher</b><span>Speaker slide</span></div><div class="play-dot"></div></div>
+            <div class="slide-item" data-style="teal" data-title="SALA YA BABA" data-body="Baba yetu uliye mbinguni, jina lako litukuzwe..." data-type="Lyrics"><div class="thumb-sm teal"></div><div class="slide-meta"><b>Sala Ya Baba</b><span>Swahili lyrics</span></div><div></div></div>
+            <div class="slide-item" data-style="green" data-title="PASTOR NOTE CAPTURE" data-body="Photo note converted into editable sermon slides for the media team." data-type="AI OCR"><div class="thumb-sm green"></div><div class="slide-meta"><b>Pastor Note Capture</b><span>Photo → slides → team edit</span></div><div></div></div>
           </div>
-
           <div class="group-title">Post-Service Loop</div>
         </div>
       </aside>
@@ -274,9 +132,9 @@
       <section class="panel">
         <div class="panel-head">
           <h3 id="centerPanelTitle">File Menu</h3>
-          <div>
-            <button class="mini-btn subtab active" data-subpane="menuMain">Overview</button>
-            <button class="mini-btn subtab" data-subpane="menuDetails">Details</button>
+          <div class="subtabs">
+            <button class="mini-btn subtab active" data-subpane="menuMain" type="button">Overview</button>
+            <button class="mini-btn subtab" data-subpane="menuDetails" type="button">Details</button>
           </div>
         </div>
         <div class="settings-body">
@@ -290,411 +148,322 @@
                 <div class="info-tile"><strong>Publish</strong><span style="color:#b8b7c5">Send approved presentation to church devices.</span></div>
               </div>
             </div>
+            
+<div id="addMenu" class="menu-pane">
+  <div class="view-card"><strong>Add Item</strong><br><span style="color:#b8b7c5">Create new presentation assets for services, announcements, worship, sermons, and media moments.</span></div>
 
-            <div id="addMenu" class="menu-pane">
-              <div class="view-card"><strong>Add Item</strong><br><span style="color:#b8b7c5">Insert new slides, Bible verses, notes, media, forms, and split-screen content.</span></div>
-              <div class="chip-row">
-                <div class="chip">Title slide</div><div class="chip">Scripture</div><div class="chip">Lyrics</div><div class="chip">Video</div><div class="chip">Offering form</div><div class="chip">Split screen</div>
-              </div>
-            </div>
+  <div class="settings-tabs">
+    <button class="settings-tab active" data-pane="addSlideCanvaPane" type="button">Slide Canva</button>
+    <button class="settings-tab" data-pane="addContentPane" type="button">Content</button>
+    <button class="settings-tab" data-pane="addImportPane" type="button">Import</button>
+    <button class="settings-tab" data-pane="addVideoPane" type="button">Video</button>
+    <button class="settings-tab" data-pane="addSlideshowPane" type="button">Image Slide Show</button>
+  </div>
 
-            <div id="mediaMenu" class="menu-pane">
-              <div class="view-card"><strong>Media Library</strong><br><span style="color:#b8b7c5">Upload images, videos, motion backgrounds, and speaker graphics.</span></div>
-              <div class="field">
-                <label>Upload media</label>
-                <input type="file" multiple>
-              </div>
-              <div class="info-block"><p>In the real app, this area would show folders, tags, search, recent uploads, and favorite backgrounds.</p></div>
-            </div>
+  <div class="settings-pane active" id="addSlideCanvaPane">
+    <div class="field"><label for="canvaTitle">Slide title</label><input id="canvaTitle" value="Sunday Worship"></div>
+    <div class="field"><label for="canvaSubtitle">Slide content</label><textarea id="canvaSubtitle">Welcome to Mount of Olives Ministry. Worship begins shortly.</textarea></div>
+    <div class="field"><label for="canvaTheme">Template style</label>
+      <select id="canvaTheme">
+        <option value="welcome">Welcome</option>
+        <option value="teal">Speaker / Announcement</option>
+        <option value="cross">Worship</option>
+        <option value="green">Sermon Theme</option>
+      </select>
+    </div>
+    <div class="chip-row">
+      <div class="chip">Text box</div>
+      <div class="chip">Background</div>
+      <div class="chip">Logo</div>
+      <div class="chip">Lower-third</div>
+      <div class="chip">Call to action</div>
+    </div>
+    <div class="small-actions">
+      <button class="mini-btn" id="applyCanvaBtn" type="button">Apply to preview</button>
+      <button class="mini-btn" id="saveCanvaBtn" type="button">Save slide draft</button>
+    </div>
+  </div>
 
-            <div id="songsMenu" class="menu-pane">
-              <div class="view-card"><strong>Song Library</strong><br><span style="color:#b8b7c5">Store worship songs, verses, language versions, and reusable lyric templates.</span></div>
-              <div class="slide-card"><h4>Sala Ya Baba</h4><p>Swahili lyrics available for projection.</p></div>
-              <div class="slide-card"><h4>Your Grace Is Enough</h4><p>English lyric layout with chorus breaks.</p></div>
-            </div>
+  <div class="settings-pane" id="addContentPane">
+    <div class="field"><label for="contentType">Content type</label>
+      <select id="contentType">
+        <option>Announcement</option>
+        <option>Scripture</option>
+        <option>Lyrics</option>
+        <option>Sermon Point</option>
+        <option>Offering</option>
+      </select>
+    </div>
+    <div class="field"><label for="contentTitle">Content heading</label><input id="contentTitle" value="Conference 2026"></div>
+    <div class="field"><label for="contentBody">Content text</label><textarea id="contentBody">Join us for prayer, worship, and the Word in Saint Louis, MO.</textarea></div>
+    <div class="small-actions">
+      <button class="mini-btn" id="previewContentBtn" type="button">Preview content</button>
+      <button class="mini-btn" id="addContentToListBtn" type="button">Add as new item</button>
+    </div>
+    <div class="info-block"><p>This section lets you build normal text slides without leaving the Add Item menu.</p></div>
+  </div>
 
+  <div class="settings-pane" id="addImportPane">
+    <div class="field"><label for="importFileInput">Import files</label><input id="importFileInput" type="file" multiple></div>
+    <div class="chip-row">
+      <div class="chip">PowerPoint mock</div>
+      <div class="chip">PDF mock</div>
+      <div class="chip">Images</div>
+      <div class="chip">Videos</div>
+    </div>
+    <div class="small-actions">
+      <button class="mini-btn" id="scanImportBtn" type="button">Scan files</button>
+      <button class="mini-btn" id="importToServiceBtn" type="button">Import to service</button>
+    </div>
+    <div class="editor-block">
+      <div class="subtle">Import results</div>
+      <div id="importResults" class="slide-card"><h4>No files scanned yet</h4><p>Select files, then click Scan files.</p></div>
+    </div>
+  </div>
+
+  <div class="settings-pane" id="addVideoPane">
+    <div class="field"><label for="videoTitle">Video item title</label><input id="videoTitle" value="Pre-Service Countdown"></div>
+    <div class="field"><label for="videoLength">Duration</label><input id="videoLength" value="03:00"></div>
+    <div class="field"><label for="videoBehavior">Playback behavior</label>
+      <select id="videoBehavior">
+        <option>Autoplay</option>
+        <option>Loop</option>
+        <option>Play once</option>
+      </select>
+    </div>
+    <div class="small-actions">
+      <button class="mini-btn" id="previewVideoBtn" type="button">Preview video item</button>
+      <button class="mini-btn" id="addVideoToListBtn" type="button">Add video item</button>
+    </div>
+    <div class="info-block"><p>This mock shows how a video slide could be created with title, duration, and playback behavior.</p></div>
+  </div>
+
+  <div class="settings-pane" id="addSlideshowPane">
+    <div class="field"><label for="slideshowTitle">Slide show title</label><input id="slideshowTitle" value="Mission Photos"></div>
+    <div class="field"><label for="slideshowImages">Choose images</label><input id="slideshowImages" type="file" accept="image/*" multiple></div>
+    <div class="field"><label for="slideshowSpeed">Transition speed</label>
+      <select id="slideshowSpeed">
+        <option>2 seconds</option>
+        <option>4 seconds</option>
+        <option>6 seconds</option>
+      </select>
+    </div>
+    <div class="small-actions">
+      <button class="mini-btn" id="buildSlideshowBtn" type="button">Build slide show</button>
+      <button class="mini-btn" id="addSlideshowToListBtn" type="button">Add to service</button>
+    </div>
+    <div id="slideshowResults" class="slide-card"><h4>No image slide show built yet</h4><p>Select images and click Build slide show.</p></div>
+  </div>
+</div>
+<div id="mediaMenu" class="menu-pane"><div class="view-card"><strong>Media Library</strong><br><span style="color:#b8b7c5">Upload images, videos, motion backgrounds, and speaker graphics.</span></div><div class="field"><label>Upload media</label><input type="file" multiple></div><div class="info-block"><p>In the real app, this area would show folders, tags, search, recent uploads, and favorite backgrounds.</p></div></div>
+            <div id="songsMenu" class="menu-pane"><div class="view-card"><strong>Song Library</strong><br><span style="color:#b8b7c5">Store worship songs, verses, language versions, and reusable lyric templates.</span></div><div class="slide-card"><h4>Sala Ya Baba</h4><p>Swahili lyrics available for projection.</p></div><div class="slide-card"><h4>Your Grace Is Enough</h4><p>English lyric layout with chorus breaks.</p></div></div>
             <div id="bibleMenu" class="menu-pane">
               <div class="view-card"><strong>Bible Projection</strong><br><span style="color:#b8b7c5">Show English, Swahili, or bilingual scriptures on screen.</span></div>
-              <div class="field">
-                <label for="bibleRef">Bible reference</label>
-                <input id="bibleRef" value="Genesis 1:1">
-              </div>
-              <div class="field">
-                <label for="englishVerse">English verse</label>
-                <textarea id="englishVerse">In the beginning God created the heaven and the earth.</textarea>
-              </div>
-              <div class="field">
-                <label for="swahiliVerse">Swahili verse</label>
-                <textarea id="swahiliVerse">Hapo mwanzo Mungu aliziumba mbingu na nchi.</textarea>
-              </div>
+              <div class="field"><label for="bibleRef">Bible reference</label><input id="bibleRef" value="Genesis 1:1"></div>
+              <div class="field"><label for="englishVerse">English verse</label><textarea id="englishVerse">In the beginning God created the heaven and the earth.</textarea></div>
+              <div class="field"><label for="swahiliVerse">Swahili verse</label><textarea id="swahiliVerse">Hapo mwanzo Mungu aliziumba mbingu na nchi.</textarea></div>
               <div class="small-actions">
-                <button class="mini-btn" id="showEnglishBtn">English only</button>
-                <button class="mini-btn" id="showSwahiliBtn">Swahili only</button>
-                <button class="mini-btn" id="showBilingualBtn">Bilingual</button>
+                <button class="mini-btn" id="showEnglishBtn" type="button">English only</button>
+                <button class="mini-btn" id="showSwahiliBtn" type="button">Swahili only</button>
+                <button class="mini-btn" id="showBilingualBtn" type="button">Bilingual</button>
               </div>
             </div>
-
             <div id="aiMenu" class="menu-pane">
               <div class="view-card"><strong>AI Tools</strong><br><span style="color:#b8b7c5">Generate sermon slides, polish notes, suggest thumbnails, and convert note photos into editable content.</span></div>
-              <div class="settings-tabs" style="margin:-8px -8px 10px">
-                <div class="settings-tab active" data-pane="notesPane">Pastor Notes</div>
-                <div class="settings-tab" data-pane="thumbPane">Thumbnail</div>
-              </div>
-
+              <div class="settings-tabs"><button class="settings-tab active" data-pane="notesPane" type="button">Pastor Notes</button><button class="settings-tab" data-pane="thumbPane" type="button">Thumbnail</button><button class="settings-tab" data-pane="gammaPane" type="button">Gamma Design</button></div>
               <div class="settings-pane active" id="notesPane">
-                <div class="chip-row">
-                  <div class="chip">Photo upload mock</div>
-                  <div class="chip">OCR extraction mock</div>
-                  <div class="chip">AI slide outline</div>
-                  <div class="chip">Media team editing</div>
-                </div>
-                <div class="field">
-                  <label for="notePhotoInput">Take or upload a note picture</label>
-                  <input id="notePhotoInput" type="file" accept="image/*">
-                </div>
+                <div class="chip-row"><div class="chip">Photo upload mock</div><div class="chip">OCR extraction mock</div><div class="chip">AI slide outline</div><div class="chip">Media team editing</div></div>
+                <div class="field"><label for="notePhotoInput">Take or upload a note picture</label><input id="notePhotoInput" type="file" accept="image/*"></div>
                 <div class="note-shot" id="noteShotBox">
-                  <p>Theme: God's Promise Stands</p>
-                  <p>1. God speaks before results appear</p>
-                  <p>2. Faith stays steady in process</p>
-                  <p>3. Promise is bigger than pain</p>
-                  <p>4. Obedience prepares the way</p>
+                  <p>Theme: God's Promise Stands</p><p>1. God speaks before results appear</p><p>2. Faith stays steady in process</p><p>3. Promise is bigger than pain</p><p>4. Obedience prepares the way</p>
                 </div>
                 <div class="small-actions">
-                  <button class="mini-btn" id="extractNotesBtn">Extract note text</button>
-                  <button class="mini-btn" id="generateSlidesBtn">Turn into slides</button>
+                  <button class="mini-btn" id="extractNotesBtn" type="button">Extract note text</button>
+                  <button class="mini-btn" id="generateSlidesBtn" type="button">Turn into slides</button>
                 </div>
                 <div class="editor-block">
-                  <div class="field">
-                    <label for="ocrText">Extracted sermon text</label>
-                    <textarea id="ocrText">Theme: God's Promise Stands
+                  <div class="field"><label for="ocrText">Extracted sermon text</label><textarea id="ocrText">Theme: God's Promise Stands
 
 1. God speaks before results appear.
 2. Faith stays steady in process.
 3. Promise is bigger than pain.
-4. Obedience prepares the way.</textarea>
-                  </div>
+4. Obedience prepares the way.</textarea></div>
                   <div id="generatedSlideCards">
                     <div class="slide-card"><h4>Slide 1 — Title</h4><p>God's Promise Stands</p></div>
                     <div class="slide-card"><h4>Slide 2 — Key Point</h4><p>God speaks before results appear.</p></div>
                     <div class="slide-card"><h4>Slide 3 — Key Point</h4><p>Faith stays steady in process.</p></div>
                   </div>
                   <div class="small-actions">
-                    <button class="mini-btn" id="sendToPreviewBtn">Send to preview</button>
-                    <button class="mini-btn" id="openTeamEditBtn">Ready for media team</button>
+                    <button class="mini-btn" id="sendToPreviewBtn" type="button">Send to preview</button>
+                    <button class="mini-btn" id="openTeamEditBtn" type="button">Ready for media team</button>
                   </div>
                 </div>
               </div>
-
               <div class="settings-pane" id="thumbPane">
                 <div class="slide-card"><h4>Thumbnail Suggestion 1</h4><p>God's Promise Stands — clean dramatic worship background.</p></div>
                 <div class="slide-card"><h4>Thumbnail Suggestion 2</h4><p>Faith Through the Process — bold text and light rays.</p></div>
               </div>
             </div>
-
-            <div id="settingsMenu" class="menu-pane">
-              <div class="view-card"><strong>Settings</strong><br><span style="color:#b8b7c5">Configure projection, stream output, save behavior, and team workflow defaults.</span></div>
-              <div class="field"><label>Default output</label><select><option>Main screen</option><option>Confidence monitor</option><option>Stream overlay</option></select></div>
-              <div class="field"><label>Primary Bible mode</label><select><option>Bilingual</option><option>English</option><option>Swahili</option></select></div>
-            </div>
-
-            <div id="viewMenu" class="menu-pane">
-              <div class="view-card"><strong>View Options</strong><br><span style="color:#b8b7c5">Switch between edit, preview, confidence screen, notes, and signal monitoring.</span></div>
-              <div class="chip-row">
-                <div class="chip">Edit mode</div>
-                <div class="chip">Preview mode</div>
-                <div class="chip">Confidence</div>
-                <div class="chip">Notes</div>
-                <div class="chip">Signals</div>
-              </div>
-            </div>
-
-            <div id="helpMenu" class="menu-pane">
-              <div class="view-card"><strong>Help</strong><br><span style="color:#b8b7c5">Show onboarding, feature guides, keyboard shortcuts, and support links.</span></div>
-              <div class="slide-card"><h4>Getting Started</h4><p>Create a weekly service, add media, add Bible verses, and preview on the right panel.</p></div>
-              <div class="slide-card"><h4>Pastor Note Capture</h4><p>Upload a note photo, extract text, generate slides, and let the media team edit.</p></div>
-            </div>
+            <div id="settingsMenu" class="menu-pane"><div class="view-card"><strong>Settings</strong><br><span style="color:#b8b7c5">Configure projection, stream output, save behavior, and team workflow defaults.</span></div><div class="field"><label>Default output</label><select><option>Main screen</option><option>Confidence monitor</option><option>Stream overlay</option></select></div><div class="field"><label>Primary Bible mode</label><select><option>Bilingual</option><option>English</option><option>Swahili</option></select></div></div>
+            <div id="viewMenu" class="menu-pane"><div class="view-card"><strong>View Options</strong><br><span style="color:#b8b7c5">Switch between edit, preview, confidence screen, notes, and signal monitoring.</span></div><div class="chip-row"><div class="chip">Edit mode</div><div class="chip">Preview mode</div><div class="chip">Confidence</div><div class="chip">Notes</div><div class="chip">Signals</div></div></div>
+            <div id="helpMenu" class="menu-pane"><div class="view-card"><strong>Help</strong><br><span style="color:#b8b7c5">Show onboarding, feature guides, keyboard shortcuts, and support links.</span></div><div class="slide-card"><h4>Getting Started</h4><p>Create a weekly service, add media, add Bible verses, and preview on the right panel.</p></div><div class="slide-card"><h4>Pastor Note Capture</h4><p>Upload a note photo, extract text, generate slides, and let the media team edit.</p></div></div>
           </div>
-
-          <div id="menuDetails" class="subpane">
-            <div class="info-block">
-              <p id="detailText">Choose a top menu or slide item to see detailed controls here. This area is now clickable so you can explore the frontend more clearly.</p>
-            </div>
-          </div>
+          <div id="menuDetails" class="subpane"><div class="info-block"><p id="detailText">Choose a top menu or slide item to see detailed controls here. This area is now clickable so you can explore the frontend more clearly.</p></div></div>
         </div>
       </section>
 
       <main class="panel">
         <div class="preview-tabs">
-          <div class="preview-tab active" data-preview="projector">Text Over (Mirror)</div>
-          <div class="preview-tab" data-preview="confidence">Confidence (Default)</div>
-          <div class="preview-tab" data-preview="notes">Notes</div>
-          <div class="preview-tab" data-preview="signals">Signals</div>
+          <button class="preview-tab active" data-preview="projector" type="button">Text Over (Mirror)</button>
+          <button class="preview-tab" data-preview="confidence" type="button">Confidence (Default)</button>
+          <button class="preview-tab" data-preview="notes" type="button">Notes</button>
+          <button class="preview-tab" data-preview="signals" type="button">Signals</button>
         </div>
-        <div class="preview-body">
-          <div class="stage">
-            <div id="projectorPreview" class="preview-pane active">
-              <div class="screen" id="mainScreen">
-                <div class="ray r1"></div><div class="ray r2"></div><div class="ray r3"></div><div class="ray r4"></div><div class="ray r5"></div>
-                <div class="cloud one"></div><div class="cloud two"></div><div class="cloud three"></div>
-
-                <div class="play-overlay" id="centerOverlay"><div class="play-btn"></div></div>
-
-                <div class="overlay-text" id="overlayText">
-                  <h1 id="overlayTitle">Welcome</h1>
-                  <p id="overlayBody">ChurchFlow presentation preview</p>
-                  <div class="bilingual-grid" id="bilingualGrid" style="display:none"></div>
-                </div>
-
-                <div class="video-bar">
-                  <div class="video-progress"><span></span></div>
-                  <div class="video-time" id="timeLabel">0:00 / 3:12</div>
-                  <div style="font-size:14px">🔊</div>
-                </div>
-              </div>
+        <div class="preview-body"><div class="stage">
+          <div id="projectorPreview" class="preview-pane active">
+            <div class="screen" id="mainScreen">
+              <div class="ray r1"></div><div class="ray r2"></div><div class="ray r3"></div><div class="ray r4"></div><div class="ray r5"></div>
+              <div class="cloud one"></div><div class="cloud two"></div><div class="cloud three"></div>
+              <div class="play-overlay" id="centerOverlay"><div class="play-btn"></div></div>
+              <div class="overlay-text" id="overlayText"><h1 id="overlayTitle">Welcome</h1><p id="overlayBody">ChurchFlow presentation preview</p><div class="bilingual-grid" id="bilingualGrid" style="display:none"></div></div>
+              <div class="video-bar"><div class="video-progress"><span></span></div><div class="video-time" id="timeLabel">0:00 / 3:12</div><div style="font-size:14px">🔊</div></div>
             </div>
-
-            <div id="confidencePreview" class="preview-pane" style="display:none">
-              <div class="info-block">
-                <p><strong>Confidence Screen</strong><br>Shows the next item, current verse, timer, and presenter notes for the pastor or speaker.</p>
-              </div>
-              <div class="info-grid">
-                <div class="info-tile"><strong>Current</strong><span>Welcome Slide</span></div>
-                <div class="info-tile"><strong>Next</strong><span>Sala Ya Baba</span></div>
-                <div class="info-tile"><strong>Timer</strong><span>00:14:28</span></div>
-                <div class="info-tile"><strong>Speaker Note</strong><span>Pause after scripture reading.</span></div>
-              </div>
-            </div>
-
-            <div id="notesPreview" class="preview-pane" style="display:none">
-              <div class="editor-block">
-                <div class="field">
-                  <label>Live Notes</label>
-                  <textarea>Theme: God's Promise Stands
+          </div>
+          <div id="confidencePreview" class="preview-pane"><div class="info-block"><p><strong>Confidence Screen</strong><br>Shows the next item, current verse, timer, and presenter notes for the pastor or speaker.</p></div><div class="info-grid"><div class="info-tile"><strong>Current</strong><span>Welcome Slide</span></div><div class="info-tile"><strong>Next</strong><span>Sala Ya Baba</span></div><div class="info-tile"><strong>Timer</strong><span>00:14:28</span></div><div class="info-tile"><strong>Speaker Note</strong><span>Pause after scripture reading.</span></div></div></div>
+          <div id="notesPreview" class="preview-pane"><div class="editor-block"><div class="field"><label>Live Notes</label><textarea>Theme: God's Promise Stands
 
 1. God speaks before results appear.
 2. Faith stays steady in process.
-3. Promise is bigger than pain.</textarea>
-                </div>
-              </div>
-            </div>
-
-            <div id="signalsPreview" class="preview-pane" style="display:none">
-              <div class="info-grid">
-                <div class="info-tile"><strong>Stream Status</strong><span>Ready</span></div>
-                <div class="info-tile"><strong>Recording</strong><span>Standby</span></div>
-                <div class="info-tile"><strong>Camera Feed</strong><span>Connected</span></div>
-                <div class="info-tile"><strong>Overlay Sync</strong><span>Healthy</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
+3. Promise is bigger than pain.</textarea></div></div></div>
+          <div id="signalsPreview" class="preview-pane"><div class="info-grid"><div class="info-tile"><strong>Stream Status</strong><span>Ready</span></div><div class="info-tile"><strong>Recording</strong><span>Standby</span></div><div class="info-tile"><strong>Camera Feed</strong><span>Connected</span></div><div class="info-tile"><strong>Overlay Sync</strong><span>Healthy</span></div></div></div>
+        </div></div>
       </main>
     </div>
 
     <footer class="strip">
-      <div class="film active" data-style="sky" data-title="Levites" data-body="">
-        <div class="film-label">Levites</div><div class="film-thumb sky"></div>
-      </div>
-      <div class="film" data-style="welcome" data-title="WELCOME" data-body="TO MOUNT OF OLIVES MINISTRY">
-        <div class="film-label">Welcome Slide</div><div class="film-thumb welcome"></div>
-      </div>
-      <div class="film" data-style="form" data-title="TITHE & OFFERING" data-body="Simple form layout preview">
-        <div class="film-label">Tithe Form</div><div class="film-thumb form"></div>
-      </div>
-      <div class="film" data-style="cross" data-title="WORSHIP" data-body="Come before the Lord with thanksgiving">
-        <div class="film-label">Worship</div><div class="film-thumb cross"></div>
-      </div>
-      <div class="film" data-style="teal" data-title="PREACHER" data-body="Speaker introduction slide">
-        <div class="film-label">Preacher</div><div class="film-thumb teal"></div>
-      </div>
-      <div class="film" data-style="teal" data-title="SALA YA BABA" data-body="Baba yetu uliye mbinguni, jina lako litukuzwe...">
-        <div class="film-label">Sala Ya Baba</div><div class="film-thumb teal"></div>
-      </div>
-      <div class="film" data-style="green" data-title="PASTOR NOTE CAPTURE" data-body="Photo note converted into editable sermon slides for the media team.">
-        <div class="film-label">Pastor Note Capture</div><div class="film-thumb green"></div>
-      </div>
+      <div class="film active" data-style="sky" data-title="Levites" data-body=""><div class="film-label">Levites</div><div class="film-thumb sky"></div></div>
+      <div class="film" data-style="welcome" data-title="WELCOME" data-body="TO MOUNT OF OLIVES MINISTRY"><div class="film-label">Welcome Slide</div><div class="film-thumb welcome"></div></div>
+      <div class="film" data-style="form" data-title="TITHE & OFFERING" data-body="Simple form layout preview"><div class="film-label">Tithe Form</div><div class="film-thumb form"></div></div>
+      <div class="film" data-style="cross" data-title="WORSHIP" data-body="Come before the Lord with thanksgiving"><div class="film-label">Worship</div><div class="film-thumb cross"></div></div>
+      <div class="film" data-style="teal" data-title="PREACHER" data-body="Speaker introduction slide"><div class="film-label">Preacher</div><div class="film-thumb teal"></div></div>
+      <div class="film" data-style="teal" data-title="SALA YA BABA" data-body="Baba yetu uliye mbinguni, jina lako litukuzwe..."><div class="film-label">Sala Ya Baba</div><div class="film-thumb teal"></div></div>
+      <div class="film" data-style="green" data-title="PASTOR NOTE CAPTURE" data-body="Photo note converted into editable sermon slides for the media team."><div class="film-label">Pastor Note Capture</div><div class="film-thumb green"></div></div>
     </footer>
   </div>
 
   <script>
-    const menuButtons = document.querySelectorAll('.menu-btn');
-    const menuPanes = document.querySelectorAll('.menu-pane');
-    const centerPanelTitle = document.getElementById('centerPanelTitle');
-    const detailText = document.getElementById('detailText');
-    const subtabs = document.querySelectorAll('.subtab');
-    const subpanes = document.querySelectorAll('.subpane');
-    const slideItems = document.querySelectorAll('.slide-item');
-    const films = document.querySelectorAll('.film');
-    const previewTabs = document.querySelectorAll('.preview-tab');
-    const previewPanes = {
-      projector: document.getElementById('projectorPreview'),
-      confidence: document.getElementById('confidencePreview'),
-      notes: document.getElementById('notesPreview'),
-      signals: document.getElementById('signalsPreview')
-    };
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 
-    const overlayText = document.getElementById('overlayText');
-    const overlayTitle = document.getElementById('overlayTitle');
-    const overlayBody = document.getElementById('overlayBody');
-    const centerOverlay = document.getElementById('centerOverlay');
-    const timeLabel = document.getElementById('timeLabel');
-    const mainScreen = document.getElementById('mainScreen');
-    const bilingualGrid = document.getElementById('bilingualGrid');
+    const menuButtons = $$('.menu-btn');
+    const menuPanes = $$('.menu-pane');
+    const subtabs = $$('.subtab');
+    const subpanes = $$('.subpane');
+    const slideItems = $$('.slide-item');
+    const films = $$('.film');
+    const previewTabs = $$('.preview-tab');
+
+    const centerPanelTitle = $('#centerPanelTitle');
+    const detailText = $('#detailText');
+    const overlayText = $('#overlayText');
+    const overlayTitle = $('#overlayTitle');
+    const overlayBody = $('#overlayBody');
+    const centerOverlay = $('#centerOverlay');
+    const timeLabel = $('#timeLabel');
+    const mainScreen = $('#mainScreen');
+    const bilingualGrid = $('#bilingualGrid');
+
+    const previewPanes = {
+      projector: $('#projectorPreview'),
+      confidence: $('#confidencePreview'),
+      notes: $('#notesPreview'),
+      signals: $('#signalsPreview')
+    };
 
     function activateMenu(menuId){
       menuButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.menu === menuId));
       menuPanes.forEach(pane => pane.classList.toggle('active', pane.id === menuId));
-      const label = [...menuButtons].find(btn => btn.dataset.menu === menuId)?.textContent || 'Menu';
+      const label = menuButtons.find(btn => btn.dataset.menu === menuId)?.textContent || 'Menu';
       centerPanelTitle.textContent = label + ' Menu';
-      detailText.textContent = label + ' is open. Explore the controls in the center panel. This is where the frontend shows what is under each top menu.';
+      detailText.textContent = label + ' is open. Explore the controls in the center panel.';
     }
 
-    menuButtons.forEach(btn => btn.addEventListener('click', () => activateMenu(btn.dataset.menu)));
+    function activateSubpane(id){
+      subtabs.forEach(t => t.classList.toggle('active', t.dataset.subpane === id));
+      subpanes.forEach(p => p.classList.toggle('active', p.id === id));
+    }
 
-    subtabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        subtabs.forEach(t => t.classList.remove('active'));
-        subpanes.forEach(p => p.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.subpane).classList.add('active');
-      });
-    });
+    function activatePreview(id){
+      previewTabs.forEach(t => t.classList.toggle('active', t.dataset.preview === id));
+      Object.entries(previewPanes).forEach(([key, pane]) => pane.classList.toggle('active', key === id));
+    }
+
+    function setActive(list, current){
+      list.forEach(el => el.classList.remove('active'));
+      current.classList.add('active');
+    }
 
     function resetPreviewBase(){
-      document.querySelectorAll('.cloud,.ray').forEach(el => el.style.display = '');
+      $$('.cloud,.ray').forEach(el => el.style.display = '');
       bilingualGrid.style.display = 'none';
       overlayBody.style.display = 'block';
       overlayTitle.style.fontSize = '46px';
       overlayBody.style.fontSize = '22px';
     }
 
-    function applyStyle(style, title = '', body = ''){
+    function applyStyle(style, title='', body=''){
       resetPreviewBase();
       overlayTitle.textContent = title;
       overlayBody.innerHTML = body;
-      centerOverlay.style.display = title || body ? 'none' : 'grid';
-      overlayText.style.display = title || body ? 'block' : 'none';
+      centerOverlay.style.display = (title || body) ? 'none' : 'grid';
+      overlayText.style.display = (title || body) ? 'block' : 'none';
 
-      if(style === 'welcome'){
-        mainScreen.style.background = 'linear-gradient(135deg,#781aff,#ff59a1 58%,#5e2a95)';
-      } else if(style === 'form'){
-        mainScreen.style.background = 'linear-gradient(135deg,#101540,#2e3bb7)';
-      } else if(style === 'cross'){
-        mainScreen.style.background = 'linear-gradient(180deg,#f8ca77,#fff4da 52%,#f2e3d5)';
-      } else if(style === 'teal'){
-        mainScreen.style.background = 'linear-gradient(135deg,#18abd1,#6fefff)';
-      } else if(style === 'green'){
-        mainScreen.style.background = 'linear-gradient(135deg,#1f5548,#5fce9a)';
-      } else if(style === 'bible'){
-        mainScreen.style.background = 'linear-gradient(135deg,#102141,#27447a 56%,#14284a)';
-      } else {
-        mainScreen.style.background = 'radial-gradient(circle at top center, rgba(255,255,255,.58), transparent 24%), radial-gradient(circle at 78% 22%, rgba(255,255,255,.28), transparent 16%), radial-gradient(circle at 22% 72%, rgba(255,255,255,.16), transparent 14%), linear-gradient(180deg, #5c90c9 0%, #9ed0ff 28%, #7db8e6 56%, #e8d6d3 77%, #f4e8ee 100%)';
-      }
+      const backgrounds = {
+        welcome: 'linear-gradient(135deg,#781aff,#ff59a1 58%,#5e2a95)',
+        form: 'linear-gradient(135deg,#101540,#2e3bb7)',
+        cross: 'linear-gradient(180deg,#f8ca77,#fff4da 52%,#f2e3d5)',
+        teal: 'linear-gradient(135deg,#18abd1,#6fefff)',
+        green: 'linear-gradient(135deg,#1f5548,#5fce9a)',
+        bible: 'linear-gradient(135deg,#102141,#27447a 56%,#14284a)',
+        sky: 'radial-gradient(circle at top center, rgba(255,255,255,.58), transparent 24%),radial-gradient(circle at 78% 22%, rgba(255,255,255,.28), transparent 16%),radial-gradient(circle at 22% 72%, rgba(255,255,255,.16), transparent 14%),linear-gradient(180deg, #5c90c9 0%, #9ed0ff 28%, #7db8e6 56%, #e8d6d3 77%, #f4e8ee 100%)'
+      };
+      mainScreen.style.background = backgrounds[style] || backgrounds.sky;
 
       if(style === 'sky'){
-        document.querySelectorAll('.cloud,.ray').forEach(el => el.style.display = '');
+        $$('.cloud,.ray').forEach(el => el.style.display = '');
         timeLabel.textContent = '0:00 / 3:12';
       } else {
-        document.querySelectorAll('.cloud,.ray').forEach(el => el.style.display = 'none');
+        $$('.cloud,.ray').forEach(el => el.style.display = 'none');
         timeLabel.textContent = 'Still';
       }
     }
 
     function renderBible(mode){
-      const ref = document.getElementById('bibleRef').value.trim() || 'Genesis 1:1';
-      const eng = document.getElementById('englishVerse').value.trim();
-      const swa = document.getElementById('swahiliVerse').value.trim();
+      const ref = $('#bibleRef').value.trim() || 'Genesis 1:1';
+      const eng = $('#englishVerse').value.trim();
+      const swa = $('#swahiliVerse').value.trim();
 
       applyStyle('bible', ref, '');
       overlayTitle.textContent = ref;
       overlayBody.style.display = 'none';
+      bilingualGrid.style.display = mode === 'bilingual' ? 'grid' : 'block';
 
       if(mode === 'english'){
-        bilingualGrid.style.display = 'block';
         bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+eng+'</div></div>';
       } else if(mode === 'swahili'){
-        bilingualGrid.style.display = 'block';
         bilingualGrid.innerHTML = '<div><strong>Swahili</strong><div style="margin-top:6px">'+swa+'</div></div>';
       } else {
-        bilingualGrid.style.display = 'grid';
         bilingualGrid.innerHTML = '<div><strong>English</strong><div style="margin-top:6px">'+eng+'</div></div><div><strong>Swahili</strong><div style="margin-top:6px">'+swa+'</div></div>';
       }
+      activatePreview('projector');
     }
-
-    document.getElementById('showEnglishBtn').addEventListener('click', () => renderBible('english'));
-    document.getElementById('showSwahiliBtn').addEventListener('click', () => renderBible('swahili'));
-    document.getElementById('showBilingualBtn').addEventListener('click', () => renderBible('bilingual'));
-
-    function setActive(selector, current){
-      document.querySelectorAll(selector).forEach(el => el.classList.remove('active'));
-      current.classList.add('active');
-    }
-
-    slideItems.forEach((item, index) => {
-      item.addEventListener('click', () => {
-        setActive('.slide-item', item);
-        if(films[index]) setActive('.film', films[index]);
-        const style = item.dataset.style;
-        if(item.dataset.type === 'AI OCR'){
-          activateMenu('aiMenu');
-          detailText.textContent = 'Pastor Note Capture selected. Use the center AI Tools panel to upload a note photo, extract the text, generate slides, and prepare it for the media team.';
-        } else if(item.dataset.type === 'Lyrics'){
-          activateMenu('songsMenu');
-          detailText.textContent = 'Lyrics item selected. The center panel can hold song text, verse ordering, language versions, and presentation settings.';
-        } else if(item.dataset.type === 'Video' || item.dataset.type === 'Background' || item.dataset.type === 'Graphic' || item.dataset.type === 'Form'){
-          activateMenu('mediaMenu');
-          detailText.textContent = 'Media-related slide selected. The center panel can show file settings, transitions, asset replacement, and metadata.';
-        }
-        applyStyle(style, item.dataset.title, item.dataset.body);
-      });
-    });
-
-    films.forEach((film, index) => {
-      film.addEventListener('click', () => {
-        setActive('.film', film);
-        if(slideItems[index]) {
-          setActive('.slide-item', slideItems[index]);
-          slideItems[index].click();
-        } else {
-          applyStyle(film.dataset.style, film.dataset.title, film.dataset.body);
-        }
-      });
-    });
-
-    previewTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        previewTabs.forEach(t => t.classList.remove('active'));
-        Object.values(previewPanes).forEach(p => p.style.display = 'none');
-        tab.classList.add('active');
-        previewPanes[tab.dataset.preview].style.display = 'block';
-      });
-    });
-
-    document.querySelectorAll('.settings-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        const container = tab.closest('#aiMenu');
-        container.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
-        container.querySelectorAll('.settings-pane').forEach(p => p.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById(tab.dataset.pane).classList.add('active');
-      });
-    });
-
-    document.getElementById('extractNotesBtn').addEventListener('click', () => {
-      const file = document.getElementById('notePhotoInput').files[0];
-      if(file){
-        document.getElementById('noteShotBox').innerHTML = '<p>Captured from: '+file.name+'</p><p>Theme: God\\'s Promise Stands</p><p>1. God speaks before results appear</p><p>2. Faith stays steady in process</p><p>3. Promise is bigger than pain</p><p>4. Obedience prepares the way</p>';
-      }
-      document.getElementById('ocrText').value = "Theme: God's Promise Stands\n\n1. God speaks before results appear.\n2. Faith stays steady in process.\n3. Promise is bigger than pain.\n4. Obedience prepares the way.";
-      detailText.textContent = 'Note text extracted. The media team can now edit the text in the center panel before sending it to the main preview.';
-    });
 
     function generateSlidesFromOCR(){
-      const raw = document.getElementById('ocrText').value.trim();
+      const raw = $('#ocrText').value.trim();
       const lines = raw.split('\n').map(s => s.trim()).filter(Boolean);
-      const cards = document.getElementById('generatedSlideCards');
+      const cards = $('#generatedSlideCards');
       cards.innerHTML = '';
-      const titleLine = lines[0]?.replace(/^Theme:\s*/i, '') || 'Generated sermon title';
+      const titleLine = (lines[0] || 'Generated sermon title').replace(/^Theme:\s*/i, '');
 
       const intro = document.createElement('div');
       intro.className = 'slide-card';
@@ -711,20 +480,215 @@
 
       applyStyle('green', titleLine, lines.slice(1,3).map(line => line.replace(/^\d+\.\s*/, '')).join('<br>'));
       detailText.textContent = 'Slides generated from the pastor note. The preview on the right now shows the generated sermon content.';
+      activatePreview('projector');
     }
 
-    document.getElementById('generateSlidesBtn').addEventListener('click', generateSlidesFromOCR);
-    document.getElementById('sendToPreviewBtn').addEventListener('click', generateSlidesFromOCR);
-    document.getElementById('openTeamEditBtn').addEventListener('click', () => {
-      detailText.textContent = 'Marked ready for media team editing. In a real app, this would sync to the shared editing workspace.';
+    menuButtons.forEach(btn => btn.addEventListener('click', () => { activateMenu(btn.dataset.menu); activateSubpane('menuMain'); }));
+    subtabs.forEach(tab => tab.addEventListener('click', () => activateSubpane(tab.dataset.subpane)));
+    previewTabs.forEach(tab => tab.addEventListener('click', () => activatePreview(tab.dataset.preview)));
+
+    slideItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
+        setActive(slideItems, item);
+        if(films[index]) setActive(films, films[index]);
+        applyStyle(item.dataset.style, item.dataset.title, item.dataset.body);
+        activatePreview('projector');
+
+        if(item.dataset.type === 'AI OCR'){
+          activateMenu('aiMenu');
+          detailText.textContent = 'Pastor Note Capture selected. Use AI Tools to upload a note photo, extract text, generate slides, and prepare it for the media team.';
+        } else if(item.dataset.type === 'Lyrics'){
+          activateMenu('songsMenu');
+          detailText.textContent = 'Lyrics item selected. Song Library can hold worship text, verse order, and language versions.';
+        } else if(item.dataset.type === 'Video' || item.dataset.type === 'Background' || item.dataset.type === 'Graphic' || item.dataset.type === 'Form'){
+          activateMenu('mediaMenu');
+          detailText.textContent = 'Media-related slide selected. Media can show file settings, asset replacement, and transition controls.';
+        }
+      });
     });
 
-    document.querySelector('.close').addEventListener('click', e => {
-      e.target.parentElement.style.display = 'none';
+    films.forEach((film, index) => {
+      film.addEventListener('click', () => {
+        setActive(films, film);
+        if(slideItems[index]) {
+          slideItems[index].click();
+        } else {
+          applyStyle(film.dataset.style, film.dataset.title, film.dataset.body);
+          activatePreview('projector');
+        }
+      });
+    });
+
+    $('#showEnglishBtn').addEventListener('click', () => renderBible('english'));
+    $('#showSwahiliBtn').addEventListener('click', () => renderBible('swahili'));
+    $('#showBilingualBtn').addEventListener('click', () => renderBible('bilingual'));
+
+    $$('.settings-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const wrapper = tab.closest('#aiMenu');
+        $$('.settings-tab', wrapper).forEach(t => t.classList.remove('active'));
+        $$('.settings-pane', wrapper).forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        $('#'+tab.dataset.pane).classList.add('active');
+      });
+    });
+
+    $('#extractNotesBtn').addEventListener('click', () => {
+      const file = $('#notePhotoInput').files[0];
+      if(file){
+        $('#noteShotBox').innerHTML = "<p>Captured from: "+file.name+"</p><p>Theme: God's Promise Stands</p><p>1. God speaks before results appear</p><p>2. Faith stays steady in process</p><p>3. Promise is bigger than pain</p><p>4. Obedience prepares the way</p>";
+      }
+      $('#ocrText').value = "Theme: God's Promise Stands\n\n1. God speaks before results appear.\n2. Faith stays steady in process.\n3. Promise is bigger than pain.\n4. Obedience prepares the way.";
+      detailText.textContent = 'Note text extracted. The media team can now edit the text in the center panel before sending it to the main preview.';
+    });
+
+    $('#generateSlidesBtn').addEventListener('click', generateSlidesFromOCR);
+    $('#sendToPreviewBtn').addEventListener('click', generateSlidesFromOCR);
+    $('#openTeamEditBtn').addEventListener('click', () => {
+      detailText.textContent = 'Marked ready for media team editing. In a real app, this would sync to the shared editing workspace.';
+      activateSubpane('menuDetails');
+    });
+
+    $('.close').addEventListener('click', e => { e.target.parentElement.style.display = 'none'; });
+
+
+    // Add Item menu functions
+    function addPlaylistItem(title, subtitle, style, type){
+      const list = document.querySelector('.slide-list');
+      const thumbClass = style === 'welcome' ? 'purple' : style === 'cross' ? 'gold' : style === 'green' ? 'green' : style === 'teal' ? 'teal' : 'blue';
+      const item = document.createElement('div');
+      item.className = 'slide-item';
+      item.dataset.style = style;
+      item.dataset.title = title;
+      item.dataset.body = subtitle;
+      item.dataset.type = type;
+      item.innerHTML = `<div class="thumb-sm ${thumbClass}"></div><div class="slide-meta"><b>${title}</b><span>${type}</span></div><div></div>`;
+      list.appendChild(item);
+      item.addEventListener('click', () => {
+        setActive([...document.querySelectorAll('.slide-item')], item);
+        applyStyle(item.dataset.style, item.dataset.title, item.dataset.body);
+        activatePreview('projector');
+        detailText.textContent = `${title} was added from Add Item and opened in the preview.`;
+      });
+
+      const strip = document.querySelector('.strip');
+      const film = document.createElement('div');
+      film.className = 'film';
+      film.dataset.style = style;
+      film.dataset.title = title;
+      film.dataset.body = subtitle;
+      film.innerHTML = `<div class="film-label">${title}</div><div class="film-thumb ${style === 'welcome' ? 'welcome' : style === 'cross' ? 'cross' : style === 'green' ? 'green' : style === 'teal' ? 'teal' : style === 'form' ? 'form' : 'blue'}"></div>`;
+      strip.appendChild(film);
+      film.addEventListener('click', () => {
+        setActive([...document.querySelectorAll('.film')], film);
+        applyStyle(film.dataset.style, film.dataset.title, film.dataset.body);
+        activatePreview('projector');
+      });
+    }
+
+    document.getElementById('applyCanvaBtn')?.addEventListener('click', () => {
+      const title = document.getElementById('canvaTitle').value.trim();
+      const body = document.getElementById('canvaSubtitle').value.trim();
+      const style = document.getElementById('canvaTheme').value;
+      applyStyle(style, title, body);
+      activatePreview('projector');
+      detailText.textContent = 'Slide Canva applied to preview.';
+    });
+
+    document.getElementById('saveCanvaBtn')?.addEventListener('click', () => {
+      addPlaylistItem(document.getElementById('canvaTitle').value.trim() || 'New Canva Slide', document.getElementById('canvaSubtitle').value.trim(), document.getElementById('canvaTheme').value, 'Canva Slide');
+      detailText.textContent = 'Slide Canva saved as a new service item.';
+    });
+
+    document.getElementById('previewContentBtn')?.addEventListener('click', () => {
+      const title = document.getElementById('contentTitle').value.trim();
+      const body = document.getElementById('contentBody').value.trim();
+      applyStyle('teal', title, body);
+      activatePreview('projector');
+      detailText.textContent = 'Content preview opened.';
+    });
+
+    document.getElementById('addContentToListBtn')?.addEventListener('click', () => {
+      addPlaylistItem(document.getElementById('contentTitle').value.trim() || 'Content Item', document.getElementById('contentBody').value.trim(), 'teal', document.getElementById('contentType').value);
+      detailText.textContent = 'Content item added to the service list.';
+    });
+
+    document.getElementById('scanImportBtn')?.addEventListener('click', () => {
+      const files = [...(document.getElementById('importFileInput').files || [])];
+      const box = document.getElementById('importResults');
+      if(!files.length){
+        box.innerHTML = '<h4>No files selected</h4><p>Please choose files to scan.</p>';
+        return;
+      }
+      box.innerHTML = '<h4>Import scan results</h4><p>' + files.map(f => `${f.name} (${(f.size/1024).toFixed(1)} KB)`).join('<br>') + '</p>';
+      detailText.textContent = 'Import files scanned.';
+    });
+
+    document.getElementById('importToServiceBtn')?.addEventListener('click', () => {
+      const files = [...(document.getElementById('importFileInput').files || [])];
+      if(files.length){
+        addPlaylistItem('Imported Content', `${files.length} file(s) ready for service`, 'blue', 'Import');
+        detailText.textContent = 'Imported content added to the service.';
+      } else {
+        detailText.textContent = 'Select files first before importing.';
+      }
+    });
+
+    document.getElementById('previewVideoBtn')?.addEventListener('click', () => {
+      const title = document.getElementById('videoTitle').value.trim();
+      const behavior = document.getElementById('videoBehavior').value;
+      applyStyle('sky', title, behavior + ' • ' + document.getElementById('videoLength').value.trim());
+      activatePreview('projector');
+      detailText.textContent = 'Video item preview opened.';
+    });
+
+    document.getElementById('addVideoToListBtn')?.addEventListener('click', () => {
+      addPlaylistItem(document.getElementById('videoTitle').value.trim() || 'Video Item', document.getElementById('videoBehavior').value + ' • ' + document.getElementById('videoLength').value.trim(), 'sky', 'Video');
+      detailText.textContent = 'Video item added to the service.';
+    });
+
+    document.getElementById('buildSlideshowBtn')?.addEventListener('click', () => {
+      const files = [...(document.getElementById('slideshowImages').files || [])];
+      const title = document.getElementById('slideshowTitle').value.trim() || 'Image Slide Show';
+      const speed = document.getElementById('slideshowSpeed').value;
+      const box = document.getElementById('slideshowResults');
+      if(!files.length){
+        box.innerHTML = '<h4>No images selected</h4><p>Select images to build a slide show.</p>';
+        return;
+      }
+      box.innerHTML = `<h4>${title}</h4><p>${files.length} image(s) • ${speed} transition speed</p>`;
+      detailText.textContent = 'Image slide show built.';
+    });
+
+    document.getElementById('addSlideshowToListBtn')?.addEventListener('click', () => {
+      const files = [...(document.getElementById('slideshowImages').files || [])];
+      const title = document.getElementById('slideshowTitle').value.trim() || 'Image Slide Show';
+      addPlaylistItem(title, `${files.length || 0} image(s)`, 'blue', 'Image Slide Show');
+      detailText.textContent = 'Image slide show added to the service.';
+    });
+
+    document.getElementById('generateGammaBtn')?.addEventListener('click', () => {
+      const topic = document.getElementById('gammaTopic').value.trim();
+      const audience = document.getElementById('gammaAudience').value.trim();
+      const prompt = document.getElementById('gammaPrompt').value.trim();
+      document.getElementById('gammaResults').innerHTML = `
+        <div class="slide-card"><h4>Gamma outline — ${topic}</h4><p>1. Title slide<br>2. Scripture anchor<br>3. Key teaching points<br>4. Response / application<br>5. Closing call to action</p></div>
+        <div class="slide-card"><h4>Design direction</h4><p>Audience: ${audience}<br>Style: modern, bold, readable church presentation<br>Prompt summary: ${prompt.slice(0,140)}${prompt.length>140?'...':''}</p></div>
+      `;
+      detailText.textContent = 'Gamma design outline generated.';
+    });
+
+    document.getElementById('sendGammaBtn')?.addEventListener('click', () => {
+      const topic = document.getElementById('gammaTopic').value.trim() || 'Gamma Design';
+      applyStyle('green', topic, 'Gamma-style design concept ready for the media team to refine.');
+      activatePreview('projector');
+      detailText.textContent = 'Gamma design concept sent to preview.';
     });
 
     activateMenu('fileMenu');
-    applyStyle('sky', '', '');
+    activateSubpane('menuMain');
+    activatePreview('projector');
+    applyStyle('sky');
   </script>
 </body>
 </html>

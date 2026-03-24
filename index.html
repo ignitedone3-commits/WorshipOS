@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,6 +80,12 @@
     .film-thumb.form{background:linear-gradient(135deg,#0e1146,#3039af)} .film-thumb.cross{background:linear-gradient(180deg,#f9c874,#fff3d2 50%,#f4e8d8)}
     .film-thumb.teal{background:linear-gradient(135deg,#1db5d8,#6be8ff)} .film-thumb.sky{background:radial-gradient(circle at top center, rgba(255,255,255,.55), transparent 25%), linear-gradient(180deg,#6195c8 0,#a1d4ff 33%,#8ac1ea 66%,#f8eef1 100%)}
     .film-thumb.green{background:linear-gradient(135deg,#26705b,#63d39a)} .film-thumb::after{content:"";position:absolute;inset:auto 10px 10px auto;width:28px;height:28px;border-radius:6px;background:rgba(200,200,220,.55)}
+
+    .slide-item.draggable{user-select:none}
+    .slide-item.dragging{opacity:.45}
+    .slide-item.drag-over-top{box-shadow:inset 0 3px 0 #8db4ff}
+    .slide-item.drag-over-bottom{box-shadow:inset 0 -3px 0 #8db4ff}
+
     @media (max-width:1250px){body{overflow:auto}.app{height:auto;min-height:100vh;grid-template-rows:50px 28px auto 150px}.workspace{grid-template-columns:1fr}.panel{min-height:320px;border-right:0;border-bottom:1px solid var(--line)}}
     @media (max-width:700px){.bilingual-grid,.info-grid{grid-template-columns:1fr}.overlay-text{left:20px;right:20px}.overlay-text h1{font-size:28px}.overlay-text p{font-size:16px}}
   </style>
@@ -92,6 +99,7 @@
         <button class="menu-btn" data-menu="mediaMenu">Media</button>
         <button class="menu-btn" data-menu="songsMenu">Song Library</button>
         <button class="menu-btn" data-menu="bibleMenu">Bible</button>
+        <button class="menu-btn" data-menu="songsLiveMenu">Songs</button>
         <button class="menu-btn" data-menu="aiMenu">AI Tools</button>
         <button class="menu-btn" data-menu="settingsMenu">Settings</button>
         <button class="menu-btn" data-menu="viewMenu">View</button>
@@ -107,26 +115,98 @@
     <div class="update-bar">Every main menu, panel, and section is now clickable so you can explore what is under each item.<button class="close" type="button">×</button></div>
 
     <div class="workspace">
-      <aside class="panel">
-        <div class="panel-head"><h3>Sunday Service 22FEB26 2.0</h3><button class="mini-btn" type="button">⤢</button></div>
-        <div class="left-body">
-          <div class="presentation-card">📅 Sunday, March 22 <span style="float:right">Share ▾</span></div>
-          <div class="old-warning">You are editing the weekly service lineup.<br><br>• <strong>Create</strong> a new presentation from scratch<br>• <strong>Duplicate</strong> this presentation and use it as a starting point</div>
-          <div class="group-title">Pre-Service Loop</div><div class="group-title">Warm-Up</div><div class="group-title">Service <span style="float:right;text-transform:none;font-size:14px">11:00 AM</span></div>
-
-          <div class="slide-list">
-            <div class="slide-item active" data-style="sky" data-title="Levites" data-body="" data-type="Video"><div class="thumb-sm blue"></div><div class="slide-meta"><b>Levites</b><span>3:12</span></div><div class="play-dot"></div></div>
-            <div class="slide-item" data-style="welcome" data-title="WELCOME" data-body="TO MOUNT OF OLIVES MINISTRY" data-type="Graphic"><div class="thumb-sm purple"></div><div class="slide-meta"><b>Welcome Slide</b><span>Title slide</span></div><div></div></div>
-            <div class="slide-item" data-style="blue" data-title="" data-body="" data-type="Background"><div class="thumb-sm blue"></div><div class="slide-meta"><b>Praise</b><span>Background loop</span></div><div class="play-dot"></div></div>
-            <div class="slide-item" data-style="form" data-title="TITHE & OFFERING" data-body="Simple form layout preview" data-type="Form"><div class="thumb-sm gold"></div><div class="slide-meta"><b>Tithe Form</b><span>Offering input</span></div><div></div></div>
-            <div class="slide-item" data-style="cross" data-title="WORSHIP" data-body="Come before the Lord with thanksgiving" data-type="Graphic"><div class="thumb-sm gold"></div><div class="slide-meta"><b>Worship</b><span>Cross visual</span></div><div class="play-dot"></div></div>
-            <div class="slide-item" data-style="teal" data-title="PREACHER" data-body="Speaker introduction slide" data-type="Graphic"><div class="thumb-sm teal"></div><div class="slide-meta"><b>Preacher</b><span>Speaker slide</span></div><div class="play-dot"></div></div>
-            <div class="slide-item" data-style="teal" data-title="SALA YA BABA" data-body="Baba yetu uliye mbinguni, jina lako litukuzwe..." data-type="Lyrics"><div class="thumb-sm teal"></div><div class="slide-meta"><b>Sala Ya Baba</b><span>Swahili lyrics</span></div><div></div></div>
-            <div class="slide-item" data-style="green" data-title="PASTOR NOTE CAPTURE" data-body="Photo note converted into editable sermon slides for the media team." data-type="AI OCR"><div class="thumb-sm green"></div><div class="slide-meta"><b>Pastor Note Capture</b><span>Photo → slides → team edit</span></div><div></div></div>
+      
+<aside class="panel" style="background:#4a4856;">
+        <div class="panel-head" style="background:#4a4856;border-bottom:1px solid #5a5866;padding:8px 10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <div style="background:#323141;border:1px solid #4a4858;border-radius:3px;padding:8px 10px;font-size:13px;min-width:0;flex:1;margin-right:10px;">
+              Sunday Service 22FEB26 2.0
+            </div>
+            <button class="mini-btn" type="button" style="background:transparent;border:0;padding:4px 6px;font-size:22px;line-height:1;">◫</button>
           </div>
-          <div class="group-title">Post-Service Loop</div>
+        </div>
+        <div class="left-body" style="padding:0;overflow:auto;background:#4a4856;">
+          <div style="padding:14px 12px;border-bottom:1px solid #5a5866;display:flex;align-items:center;justify-content:space-between;font-size:16px;">
+            <div>🗓️ <span style="margin-left:6px;">Sunday, March 22</span> <span style="font-size:12px;">▾</span></div>
+            <div style="font-size:15px;">⤴ <span style="margin-left:4px;">Share</span> <span style="font-size:12px;">▾</span></div>
+          </div>
+
+          <div class="group-title" style="margin:0;padding:9px 14px;background:#4a4856;border-top:0;border-bottom:1px solid #5a5866;color:#f1f1f5;font-size:12px;">▼ PRE-SERVICE LOOP</div>
+          <div class="group-title" style="margin:0;padding:9px 14px;background:#4a4856;border-top:0;border-bottom:1px solid #5a5866;color:#f1f1f5;font-size:12px;">▼ WARM-UP</div>
+
+          <div style="border-top:1px solid #668cff;border-bottom:1px solid #5a5866;">
+            <div style="padding:9px 14px;background:#4a4856;color:#fff;font-size:13px;display:flex;justify-content:space-between;align-items:center;">
+              <span>▼ SERVICE</span>
+              <span style="font-size:16px;">11:00 AM</span>
+            </div>
+
+            <div class="slide-list" id="serviceSlideList" style="padding:4px 0 8px;">
+              <div class="slide-item active draggable" data-style="sky" data-title="Levites" data-body="" data-type="Video" style="grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 12px;border-left:4px solid #ffdf5a;background:#4a4856;">
+                <div class="thumb-sm blue" style="height:28px;"></div>
+                <div class="slide-meta"><b style="color:#ffe75c;font-weight:500;">Levites <span style="color:#c8bfd5;font-weight:400;margin-left:6px;">3:12</span></b></div>
+                <div class="play-dot"></div>
+              </div>
+
+              <div class="slide-item draggable" data-style="welcome" data-title="Welcome Slide" data-body="TO MOUNT OF OLIVES MINISTRY" data-type="Graphic" style="grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 28px;">
+                <div class="thumb-sm purple" style="height:28px;"></div>
+                <div class="slide-meta"><b style="font-weight:500;">Welcome Slide</b></div>
+                <div></div>
+              </div>
+
+              <div class="slide-item draggable" data-style="blue" data-title="Praise" data-body="" data-type="Background" style="grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 28px;">
+                <div class="thumb-sm blue" style="height:28px;"></div>
+                <div class="slide-meta"><b style="font-weight:500;">Praise</b></div>
+                <div class="play-dot"></div>
+              </div>
+
+              <div class="slide-item draggable" data-style="form" data-title="Tithe Form" data-body="Simple form layout preview" data-type="Form" style="grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 28px;">
+                <div class="thumb-sm gold" style="height:28px;"></div>
+                <div class="slide-meta"><b style="font-weight:500;">Tithe Form</b></div>
+                <div></div>
+              </div>
+
+              <div class="slide-item draggable" data-style="cross" data-title="Worship" data-body="Come before the Lord with thanksgiving" data-type="Graphic" style="grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 28px;">
+                <div class="thumb-sm gold" style="height:28px;"></div>
+                <div class="slide-meta"><b style="font-weight:500;">Worship</b></div>
+                <div class="play-dot"></div>
+              </div>
+
+              <div class="slide-item draggable" data-style="cross" data-title="Worship" data-body="Come before the Lord with thanksgiving" data-type="Graphic" style="grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 28px;">
+                <div class="thumb-sm gold" style="height:28px;"></div>
+                <div class="slide-meta"><b style="font-weight:500;">Worship</b></div>
+                <div class="play-dot"></div>
+              </div>
+
+              <div class="slide-item draggable" data-style="blue" data-title="Main Background" data-body="" data-type="Background" style="grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 28px;">
+                <div class="thumb-sm blue" style="height:28px;"></div>
+                <div class="slide-meta"><b style="font-weight:500;">Main Background</b></div>
+                <div class="play-dot"></div>
+              </div>
+
+              <div class="slide-item draggable" data-style="teal" data-title="Preacher" data-body="Speaker introduction slide" data-type="Graphic" style="grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 28px;">
+                <div class="thumb-sm teal" style="height:28px;"></div>
+                <div class="slide-meta"><b style="font-weight:500;">Preacher</b></div>
+                <div class="play-dot"></div>
+              </div>
+
+              <div class="slide-item draggable" data-style="teal" data-title="Sala Ya Baba" data-body="Baba yetu uliye mbinguni, jina lako litukuzwe..." data-type="Lyrics" style="grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 28px;">
+                <div class="thumb-sm teal" style="height:28px;"></div>
+                <div class="slide-meta"><b style="font-weight:500;">Sala Ya Baba</b></div>
+                <div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="group-title" style="margin:0;padding:9px 14px;background:#4a4856;border-top:0;border-bottom:1px solid #5a5866;color:#f1f1f5;font-size:12px;">▼ POST-SERVICE LOOP</div>
+
+          <div style="padding:10px 12px 18px;">
+            <button id="newPresentationBtn" class="mini-btn" type="button" style="width:100%;padding:10px 12px;background:#343342;border:1px solid #61606c;border-radius:4px;text-align:left;">
+              + Create New Presentation
+            </button>
+          </div>
         </div>
       </aside>
+
 
       <section class="panel">
         <div class="panel-head">
@@ -265,6 +345,143 @@
                 <button class="mini-btn" id="showEnglishBtn" type="button">English only</button>
                 <button class="mini-btn" id="showSwahiliBtn" type="button">Swahili only</button>
                 <button class="mini-btn" id="showBilingualBtn" type="button">Bilingual</button>
+              </div>
+            </div>
+
+            <div id="songsLiveMenu" class="menu-pane">
+              <div class="view-card"><strong>Songs</strong><br><span style="color:#b8b7c5">Project Wokovu and Tenzi lyrics live, choose their slide design, and let AI help style the layout in real time.</span></div>
+
+              <div class="settings-tabs">
+                <button class="settings-tab active" data-pane="wokovuPane" type="button">Wokovu Songs</button>
+                <button class="settings-tab" data-pane="tenziPane" type="button">Tenzi</button>
+                <button class="settings-tab" data-pane="songsDesignPane" type="button">AI Song Design</button>
+              </div>
+
+              <div class="settings-pane active" id="wokovuPane">
+                <div class="field">
+                  <label for="wokovuNumber">Enter Wokovu song number</label>
+                  <input id="wokovuNumber" type="number" min="1" placeholder="Example: 1">
+                </div>
+                <div class="small-actions">
+                  <button class="mini-btn" id="loadWokovuByNumberBtn" type="button">Load by number</button>
+                </div>
+                <div class="field">
+                  <label for="wokovuSelect">Choose Wokovu song</label>
+                  <select id="wokovuSelect">
+                    <option value="1|E Yesu mshindaji wa Golgotha|E Yesu mshindaji wa Golgotha
+[Frontend placeholder lyrics — full source sync can be connected later]">1 — E Yesu mshindaji wa Golgotha</option>
+                    <option value="2|Kijito kiko chenye damu itokayo Mwokozi|Kijito kiko chenye damu itokayo Mwokozi
+[Frontend placeholder lyrics — full source sync can be connected later]">2 — Kijito kiko chenye damu itokayo Mwokozi</option>
+                    <option value="3|Kisima safi sana chatoka msalaba|Kisima safi sana chatoka msalaba
+[Frontend placeholder lyrics — full source sync can be connected later]">3 — Kisima safi sana chatoka msalaba</option>
+                    <option value="4|Usiku kabla ya kuteswa Yesu|Usiku kabla ya kuteswa Yesu
+[Frontend placeholder lyrics — full source sync can be connected later]">4 — Usiku kabla ya kuteswa Yesu</option>
+                    <option value="5|Dhahabu na fedha haziniokoi|Dhahabu na fedha haziniokoi
+[Frontend placeholder lyrics — full source sync can be connected later]">5 — Dhahabu na fedha haziniokoi</option>
+                    <option value="6|Twa'sifu Mungu kwa ajili ya damu|Twa'sifu Mungu kwa ajili ya damu
+[Frontend placeholder lyrics — full source sync can be connected later]">6 — Twa'sifu Mungu kwa ajili ya damu</option>
+                    <option value="7|Mwokozi ameutimiza wokovu|Mwokozi ameutimiza wokovu
+[Frontend placeholder lyrics — full source sync can be connected later]">7 — Mwokozi ameutimiza wokovu</option>
+                    <option value="8|Yesu Kristo asifiwe|Yesu Kristo asifiwe
+[Frontend placeholder lyrics — full source sync can be connected later]">8 — Yesu Kristo asifiwe</option>
+                    <option value="9|Naiamini damu yako|Naiamini damu yako
+[Frontend placeholder lyrics — full source sync can be connected later]">9 — Naiamini damu yako</option>
+                    <option value="10|Damu yako yenye baraka|Damu yako yenye baraka
+[Frontend placeholder lyrics — full source sync can be connected later]">10 — Damu yako yenye baraka</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="wokovuTitle">Song title</label>
+                  <input id="wokovuTitle" value="E Yesu mshindaji wa Golgotha">
+                </div>
+                <div class="field">
+                  <label for="wokovuLyrics">Lyrics</label>
+                  <textarea id="wokovuLyrics">E Yesu mshindaji wa Golgotha
+[Frontend placeholder lyrics — full source sync can be connected later]</textarea>
+                </div>
+                <div class="field">
+                  <label for="wokovuStyle">Slide design</label>
+                  <select id="wokovuStyle">
+                    <option value="teal">Live worship teal</option>
+                    <option value="cross">Golden worship</option>
+                    <option value="green">Sermon green</option>
+                    <option value="welcome">Bold concert</option>
+                  </select>
+                </div>
+                <div class="small-actions">
+                  <button class="mini-btn" id="previewWokovuBtn" type="button">Preview Wokovu</button>
+                  <button class="mini-btn" id="goLiveWokovuBtn" type="button">Go live</button>
+                  <button class="mini-btn" id="addWokovuBtn" type="button">Add to service</button>
+                </div>
+                <div class="info-block"><p>Number lookup is wired into the frontend. Full automatic lyrics for the entire songbook can be connected once the backend imports every numbered song page.</p></div>
+              </div>
+
+              <div class="settings-pane" id="tenziPane">
+                <div class="field">
+                  <label for="tenziNumber">Enter Tenzi song number</label>
+                  <input id="tenziNumber" type="number" min="1" placeholder="Tenzi number will load after you provide the Tenzi link">
+                </div>
+                <div class="small-actions">
+                  <button class="mini-btn" id="loadTenziByNumberBtn" type="button">Load by number</button>
+                </div>
+                <div class="field">
+                  <label for="tenziSelect">Choose Tenzi song</label>
+                  <select id="tenziSelect">
+                    <option value="Nifunze Kuomba|Nifunze kuomba Bwana
+Nikaribie kiti cha neema.">Nifunze Kuomba</option>
+                    <option value="Mungu Yu Mwema|Mungu yu mwema siku zote
+Na rehema zake zadumu.">Mungu Yu Mwema</option>
+                    <option value="Twende Mbele|Twende mbele kwa imani
+Bwana atatuongoza.">Twende Mbele</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="tenziTitle">Song title</label>
+                  <input id="tenziTitle" value="Nifunze Kuomba">
+                </div>
+                <div class="field">
+                  <label for="tenziLyrics">Lyrics</label>
+                  <textarea id="tenziLyrics">Nifunze kuomba Bwana
+Nikaribie kiti cha neema.</textarea>
+                </div>
+                <div class="field">
+                  <label for="tenziStyle">Slide design</label>
+                  <select id="tenziStyle">
+                    <option value="cross">Classic Tenzi gold</option>
+                    <option value="teal">Modern lyric teal</option>
+                    <option value="green">Simple clean green</option>
+                    <option value="welcome">Bold lyric purple</option>
+                  </select>
+                </div>
+                <div class="small-actions">
+                  <button class="mini-btn" id="previewTenziBtn" type="button">Preview Tenzi</button>
+                  <button class="mini-btn" id="goLiveTenziBtn" type="button">Go live</button>
+                  <button class="mini-btn" id="addTenziBtn" type="button">Add to service</button>
+                </div>
+                <div class="info-block"><p>Tenzi number lookup input is ready. Once you send the Tenzi source link, the same number-based loading can be connected.</p></div>
+              </div>
+
+              <div class="settings-pane" id="songsDesignPane">
+                <div class="view-card"><strong>AI Song Design</strong><br><span style="color:#b8b7c5">Use AI-style presets for Wokovu and Tenzi lyrics with live-ready readability.</span></div>
+                <div class="field">
+                  <label for="songDesignPrompt">Design prompt</label>
+                  <textarea id="songDesignPrompt">Create a highly readable worship lyric slide with large centered text, soft motion background feel, strong contrast, and projector-friendly spacing for Wokovu and Tenzi songs.</textarea>
+                </div>
+                <div class="field">
+                  <label for="songAudienceMode">Song use mode</label>
+                  <select id="songAudienceMode">
+                    <option>Projector only</option>
+                    <option>Projector + livestream</option>
+                    <option>Projector + confidence screen</option>
+                  </select>
+                </div>
+                <div class="small-actions">
+                  <button class="mini-btn" id="generateSongDesignBtn" type="button">Generate AI design idea</button>
+                  <button class="mini-btn" id="applySongDesignBtn" type="button">Apply to live preview</button>
+                </div>
+                <div id="songDesignResults" class="editor-block">
+                  <div class="slide-card"><h4>AI song design</h4><p>No song design generated yet.</p></div>
+                </div>
               </div>
             </div>
             <div id="aiMenu" class="menu-pane">
@@ -486,25 +703,47 @@
     subtabs.forEach(tab => tab.addEventListener('click', () => activateSubpane(tab.dataset.subpane)));
     previewTabs.forEach(tab => tab.addEventListener('click', () => activatePreview(tab.dataset.preview)));
 
-    slideItems.forEach((item, index) => {
+    
+    function bindSlideItem(item){
+      item.classList.add('draggable');
+      attachDragHandlers(item);
       item.addEventListener('click', () => {
-        setActive(slideItems, item);
-        if(films[index]) setActive(films, films[index]);
+        setActive([...document.querySelectorAll('.slide-item')], item);
         applyStyle(item.dataset.style, item.dataset.title, item.dataset.body);
         activatePreview('projector');
 
         if(item.dataset.type === 'AI OCR'){
           activateMenu('aiMenu');
           detailText.textContent = 'Pastor Note Capture selected. Use AI Tools to upload a note photo, extract text, generate slides, and prepare it for the media team.';
-        } else if(item.dataset.type === 'Lyrics'){
-          activateMenu('songsMenu');
-          detailText.textContent = 'Lyrics item selected. Song Library can hold worship text, verse order, and language versions.';
-        } else if(item.dataset.type === 'Video' || item.dataset.type === 'Background' || item.dataset.type === 'Graphic' || item.dataset.type === 'Form'){
+        } else if(item.dataset.type === 'Lyrics' || item.dataset.type === 'Wokovu Song' || item.dataset.type === 'Tenzi Song'){
+          activateMenu('songsLiveMenu');
+          detailText.textContent = 'Song item selected. Use Songs to preview, go live, and style lyrics.';
+        } else if(item.dataset.type === 'Video' || item.dataset.type === 'Background' || item.dataset.type === 'Graphic' || item.dataset.type === 'Form' || item.dataset.type === 'Canva Slide' || item.dataset.type === 'Announcement' || item.dataset.type === 'Scripture' || item.dataset.type === 'Sermon Point' || item.dataset.type === 'Offering' || item.dataset.type === 'Image Slide Show' || item.dataset.type === 'Import'){
           activateMenu('mediaMenu');
-          detailText.textContent = 'Media-related slide selected. Media can show file settings, asset replacement, and transition controls.';
+          detailText.textContent = 'Service item selected. The center panel shows controls related to that content.';
         }
       });
+    }
+
+    document.querySelectorAll('.slide-item').forEach(bindSlideItem);
+    bindAllDragHandlers();
+
+    document.getElementById('newPresentationBtn')?.addEventListener('click', () => {
+      const list = document.getElementById('serviceSlideList');
+      const item = document.createElement('div');
+      item.className = 'slide-item';
+      item.dataset.style = 'welcome';
+      item.dataset.title = 'New Presentation';
+      item.dataset.body = 'Create and edit your first slide';
+      item.dataset.type = 'Canva Slide';
+      item.style.cssText = 'grid-template-columns:46px 1fr 18px;padding:7px 10px 7px 28px;';
+      item.innerHTML = '<div class="thumb-sm purple" style="height:28px;"></div><div class="slide-meta"><b style="font-weight:500;">New Presentation</b></div><div></div>';
+      list.appendChild(item);
+      bindSlideItem(item);
+      item.click();
+      detailText.textContent = 'New Presentation was created in the left service panel.';
     });
+
 
     films.forEach((film, index) => {
       film.addEventListener('click', () => {
@@ -524,11 +763,12 @@
 
     $$('.settings-tab').forEach(tab => {
       tab.addEventListener('click', () => {
-        const wrapper = tab.closest('#aiMenu');
+        const wrapper = tab.closest('.menu-pane') || document;
         $$('.settings-tab', wrapper).forEach(t => t.classList.remove('active'));
         $$('.settings-pane', wrapper).forEach(p => p.classList.remove('active'));
         tab.classList.add('active');
-        $('#'+tab.dataset.pane).classList.add('active');
+        const target = $('#'+tab.dataset.pane);
+        if (target) target.classList.add('active');
       });
     });
 
@@ -553,7 +793,7 @@
 
     // Add Item menu functions
     function addPlaylistItem(title, subtitle, style, type){
-      const list = document.querySelector('.slide-list');
+      const list = document.getElementById('serviceSlideList') || document.querySelector('.slide-list');
       const thumbClass = style === 'welcome' ? 'purple' : style === 'cross' ? 'gold' : style === 'green' ? 'green' : style === 'teal' ? 'teal' : 'blue';
       const item = document.createElement('div');
       item.className = 'slide-item';
@@ -563,10 +803,8 @@
       item.dataset.type = type;
       item.innerHTML = `<div class="thumb-sm ${thumbClass}"></div><div class="slide-meta"><b>${title}</b><span>${type}</span></div><div></div>`;
       list.appendChild(item);
+      bindSlideItem(item);
       item.addEventListener('click', () => {
-        setActive([...document.querySelectorAll('.slide-item')], item);
-        applyStyle(item.dataset.style, item.dataset.title, item.dataset.body);
-        activatePreview('projector');
         detailText.textContent = `${title} was added from Add Item and opened in the preview.`;
       });
 
@@ -684,6 +922,206 @@
       detailText.textContent = 'Gamma design concept sent to preview.';
     });
 
+
+    const wokovuSongs = {
+      1: { title: 'E Yesu mshindaji wa Golgotha', lyrics: 'E Yesu mshindaji wa Golgotha\n[Frontend placeholder lyrics — full source sync can be connected later]' },
+      2: { title: 'Kijito kiko chenye damu itokayo Mwokozi', lyrics: 'Kijito kiko chenye damu itokayo Mwokozi\n[Frontend placeholder lyrics — full source sync can be connected later]' },
+      3: { title: 'Kisima safi sana chatoka msalaba', lyrics: 'Kisima safi sana chatoka msalaba\n[Frontend placeholder lyrics — full source sync can be connected later]' },
+      4: { title: 'Usiku kabla ya kuteswa Yesu', lyrics: 'Usiku kabla ya kuteswa Yesu\n[Frontend placeholder lyrics — full source sync can be connected later]' },
+      5: { title: 'Dhahabu na fedha haziniokoi', lyrics: 'Dhahabu na fedha haziniokoi\n[Frontend placeholder lyrics — full source sync can be connected later]' },
+      6: { title: "Twa'sifu Mungu kwa ajili ya damu", lyrics: "Twa'sifu Mungu kwa ajili ya damu\n[Frontend placeholder lyrics — full source sync can be connected later]" },
+      7: { title: 'Mwokozi ameutimiza wokovu', lyrics: 'Mwokozi ameutimiza wokovu\n[Frontend placeholder lyrics — full source sync can be connected later]' },
+      8: { title: 'Yesu Kristo asifiwe', lyrics: 'Yesu Kristo asifiwe\n[Frontend placeholder lyrics — full source sync can be connected later]' },
+      9: { title: 'Naiamini damu yako', lyrics: 'Naiamini damu yako\n[Frontend placeholder lyrics — full source sync can be connected later]' },
+      10: { title: 'Damu yako yenye baraka', lyrics: 'Damu yako yenye baraka\n[Frontend placeholder lyrics — full source sync can be connected later]' }
+    };
+
+    function syncWokovuSelect(){
+      const val = document.getElementById('wokovuSelect').value;
+      const parts = val.split('|');
+      document.getElementById('wokovuNumber').value = parts[0];
+      document.getElementById('wokovuTitle').value = parts[1];
+      document.getElementById('wokovuLyrics').value = parts[2].replace(/\\n/g, '\n');
+    }
+
+    function syncTenziSelect(){
+      const val = document.getElementById('tenziSelect').value;
+      const parts = val.split('|');
+      document.getElementById('tenziTitle').value = parts[0];
+      document.getElementById('tenziLyrics').value = parts[1].replace(/\\n/g, '\n');
+    }
+
+    document.getElementById('wokovuSelect')?.addEventListener('change', syncWokovuSelect);
+    document.getElementById('tenziSelect')?.addEventListener('change', syncTenziSelect);
+
+    document.getElementById('loadWokovuByNumberBtn')?.addEventListener('click', () => {
+      const num = Number(document.getElementById('wokovuNumber').value);
+      if (!wokovuSongs[num]) {
+        detailText.textContent = 'That Wokovu number is not loaded in this frontend demo yet. Full songbook loading can be connected through the backend.';
+        return;
+      }
+      const song = wokovuSongs[num];
+      document.getElementById('wokovuTitle').value = song.title;
+      document.getElementById('wokovuLyrics').value = song.lyrics;
+      detailText.textContent = `Wokovu song ${num} loaded by number.`;
+    });
+
+    document.getElementById('loadTenziByNumberBtn')?.addEventListener('click', () => {
+      detailText.textContent = 'Tenzi number lookup is ready. Send the Tenzi source link and the same numbered loading will be connected.';
+    });
+
+    function showSongLive(title, lyrics, style, typeLabel){
+      const htmlLyrics = lyrics.trim().replace(/\n/g, '<br>');
+      applyStyle(style, title, htmlLyrics);
+      activatePreview('projector');
+      detailText.textContent = `${title} is now shown in live song preview for ${typeLabel}.`;
+    }
+
+    document.getElementById('previewWokovuBtn')?.addEventListener('click', () => {
+      showSongLive(
+        document.getElementById('wokovuTitle').value,
+        document.getElementById('wokovuLyrics').value,
+        document.getElementById('wokovuStyle').value,
+        'Wokovu'
+      );
+    });
+
+    document.getElementById('goLiveWokovuBtn')?.addEventListener('click', () => {
+      showSongLive(
+        document.getElementById('wokovuTitle').value + ' — LIVE',
+        document.getElementById('wokovuLyrics').value,
+        document.getElementById('wokovuStyle').value,
+        'Wokovu'
+      );
+      activateMenu('songsLiveMenu');
+      activateSubpane('menuDetails');
+    });
+
+    document.getElementById('addWokovuBtn')?.addEventListener('click', () => {
+      addPlaylistItem(
+        document.getElementById('wokovuTitle').value,
+        document.getElementById('wokovuLyrics').value.split('\n')[0] || 'Wokovu lyrics',
+        document.getElementById('wokovuStyle').value,
+        'Wokovu Song'
+      );
+      detailText.textContent = 'Wokovu song added to the service list.';
+    });
+
+    document.getElementById('previewTenziBtn')?.addEventListener('click', () => {
+      showSongLive(
+        document.getElementById('tenziTitle').value,
+        document.getElementById('tenziLyrics').value,
+        document.getElementById('tenziStyle').value,
+        'Tenzi'
+      );
+    });
+
+    document.getElementById('goLiveTenziBtn')?.addEventListener('click', () => {
+      showSongLive(
+        document.getElementById('tenziTitle').value + ' — LIVE',
+        document.getElementById('tenziLyrics').value,
+        document.getElementById('tenziStyle').value,
+        'Tenzi'
+      );
+      activateMenu('songsLiveMenu');
+      activateSubpane('menuDetails');
+    });
+
+    document.getElementById('addTenziBtn')?.addEventListener('click', () => {
+      addPlaylistItem(
+        document.getElementById('tenziTitle').value,
+        document.getElementById('tenziLyrics').value.split('\n')[0] || 'Tenzi lyrics',
+        document.getElementById('tenziStyle').value,
+        'Tenzi Song'
+      );
+      detailText.textContent = 'Tenzi song added to the service list.';
+    });
+
+    document.getElementById('generateSongDesignBtn')?.addEventListener('click', () => {
+      const prompt = document.getElementById('songDesignPrompt').value.trim();
+      const mode = document.getElementById('songAudienceMode').value;
+      document.getElementById('songDesignResults').innerHTML = `
+        <div class="slide-card"><h4>AI design recommendation</h4><p>Use very large centered lyrics, 2-line grouping, high contrast text, and extra spacing between stanzas for ${mode.toLowerCase()}.</p></div>
+        <div class="slide-card"><h4>Prompt summary</h4><p>${prompt.slice(0,180)}${prompt.length > 180 ? '...' : ''}</p></div>
+        <div class="slide-card"><h4>Suggested presets</h4><p>Wokovu: teal or green live look<br>Tenzi: cross gold or classic modern teal</p></div>
+      `;
+      detailText.textContent = 'AI song design idea generated for Wokovu and Tenzi.';
+    });
+
+    document.getElementById('applySongDesignBtn')?.addEventListener('click', () => {
+      applyStyle('teal', 'AI Song Design Ready', 'Live-ready lyric style applied for Wokovu and Tenzi with readable spacing and projector contrast.');
+      activatePreview('projector');
+      detailText.textContent = 'AI song design applied to preview.';
+    });
+
+
+    let draggedSlide = null;
+
+    function refreshSlideOrderDetail(){
+      const titles = [...document.querySelectorAll('#serviceSlideList .slide-item')]
+        .map(el => el.dataset.title || el.querySelector('.slide-meta b')?.textContent?.trim() || 'Untitled');
+      detailText.textContent = 'Service order updated: ' + titles.join(' → ');
+    }
+
+    function attachDragHandlers(item){
+      item.setAttribute('draggable', 'true');
+
+      item.addEventListener('dragstart', (e) => {
+        draggedSlide = item;
+        item.classList.add('dragging');
+        try { e.dataTransfer.setData('text/plain', item.dataset.title || 'slide'); } catch(err) {}
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      item.addEventListener('dragend', () => {
+        item.classList.remove('dragging');
+        document.querySelectorAll('#serviceSlideList .slide-item').forEach(el => {
+          el.classList.remove('drag-over-top', 'drag-over-bottom');
+        });
+        draggedSlide = null;
+      });
+
+      item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        if (!draggedSlide || draggedSlide === item) return;
+        const rect = item.getBoundingClientRect();
+        const halfway = rect.top + rect.height / 2;
+        item.classList.remove('drag-over-top', 'drag-over-bottom');
+        if (e.clientY < halfway) {
+          item.classList.add('drag-over-top');
+        } else {
+          item.classList.add('drag-over-bottom');
+        }
+      });
+
+      item.addEventListener('dragleave', () => {
+        item.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+
+      item.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (!draggedSlide || draggedSlide === item) return;
+        const rect = item.getBoundingClientRect();
+        const halfway = rect.top + rect.height / 2;
+        const parent = item.parentNode;
+
+        item.classList.remove('drag-over-top', 'drag-over-bottom');
+
+        if (e.clientY < halfway) {
+          parent.insertBefore(draggedSlide, item);
+        } else {
+          parent.insertBefore(draggedSlide, item.nextSibling);
+        }
+        refreshSlideOrderDetail();
+      });
+    }
+
+    function bindAllDragHandlers(){
+      document.querySelectorAll('#serviceSlideList .slide-item').forEach(attachDragHandlers);
+    }
+
+        syncWokovuSelect();
+    syncTenziSelect();
     activateMenu('fileMenu');
     activateSubpane('menuMain');
     activatePreview('projector');
